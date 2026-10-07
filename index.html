@@ -648,7 +648,11 @@ function call(fn){var args=Array.prototype.slice.call(arguments,1);
     .then(function(r){return r.text()}).then(function(t){var j;try{j=JSON.parse(t)}catch(e){throw {retry:true}}if(!j.ok)throw new Error(j.error||'เกิดข้อผิดพลาด');return j.r})
     .catch(function(e){if((e&&e.retry||e instanceof TypeError)&&n>1)return new Promise(function(ok){setTimeout(ok,700)}).then(function(){return go(n-1)});
       if(e&&e.retry||e instanceof TypeError)throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');throw e})}
-  return go(tries)}
+  if(tries===1)return go(1);
+  /* Google ตอบช้าแบบสุ่มบางครั้ง (8–30 วิ) → คำสั่งอ่านข้อมูล: ถ้า 4 วิยังไม่ตอบ ยิงซ้ำคู่ขนาน ใช้ผลที่มาก่อน */
+  return new Promise(function(res,rej){var done=false,fails=0,n=1;
+    function run(k){go(k).then(function(r){if(!done){done=true;res(r)}},function(e){fails++;if(!done&&fails>=n){done=true;rej(e)}})}
+    run(tries);setTimeout(function(){if(!done){n=2;run(2)}},4000)})}
 function em(e){return String((e&&e.message)||e||'เกิดข้อผิดพลาด').replace(/^(Exception|Error):\s*/,'')}
 function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
 var toastT;
@@ -749,14 +753,23 @@ function saveDraft(){clearTimeout(saveT);saveT=setTimeout(function(){var f={};Ob
 function pos(id){return (CFG&&CFG.positions||[]).filter(function(p){return p.id===id})[0]||{name:id||'',dept:'ฝากประวัติ (ไม่ระบุแผนก)',desc:''}}
 
 function startApply(){
-  MAIN.innerHTML=loadingHtml('กำลังโหลดแบบฟอร์ม...');
-  call('getPublicConfig').then(function(c){
-    CFG=c;setCO(c.company);buildFD(c.fields);
+  var cached=store('pmc_cfg');if(!cached||!cached.v||Date.now()-cached.t>7*86400000)cached=null;
+  function boot(cf){
+    CFG=cf;setCO(cf.company);buildFD(cf.fields);
     var d=store('pmc_draft');
     if(d&&d.form&&Date.now()-d.t<7*86400000){S.form=Object.assign(emptyForm(),d.form);S.files=d.files||{};S.draftId=d.draftId;S.step=Math.min(d.step||0,5)}
     else{S.form=emptyForm();S.draftId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
     renderApply();
-  }).catch(function(e){MAIN.innerHTML='<div class="card track-card"><div class="err-box">โหลดแบบฟอร์มไม่สำเร็จ: '+esc(em(e))+'</div><button class="btn" onclick="location.reload()">ลองใหม่</button></div>'});
+  }
+  if(cached)boot(cached.v);else MAIN.innerHTML=loadingHtml('กำลังโหลดแบบฟอร์ม...');
+  call('getPublicConfig').then(function(cf){
+    store('pmc_cfg',{t:Date.now(),v:cf});
+    if(!cached)return boot(cf);
+    var changed=JSON.stringify(cached.v)!==JSON.stringify(cf);
+    CFG=cf;setCO(cf.company);buildFD(cf.fields);
+    /* ตำแหน่ง/ตั้งค่าเปลี่ยน → วาดใหม่ เฉพาะตอนผู้ใช้ไม่ได้พิมพ์อยู่ */
+    var ae=document.activeElement;if(changed&&S.view==='apply'&&!(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))){var y=window.scrollY;renderApply();window.scrollTo(0,y)}
+  }).catch(function(e){if(!cached)MAIN.innerHTML='<div class="card track-card"><div class="err-box">โหลดแบบฟอร์มไม่สำเร็จ: '+esc(em(e))+'</div><button class="btn" onclick="location.reload()">ลองใหม่</button></div>'});
 }
 function renderApply(){
   if(S.view==='status')return renderStatus();
