@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ใบสมัครงาน · Push Media</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<meta name="color-scheme" content="light only">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --ink:#16181D; --ink-2:#4A5060; --ink-3:#7C8394;
+  --paper:#F3F4F2; --surface:#FFFFFF; --sunk:#ECEEEA; --line:#DCDFD8; --line-2:#E8EAE5;
+  --accent:#1E4FD8; --accent-ink:#FFFFFF; --accent-soft:#E6ECFC;
+  --ok:#147D4F; --ok-soft:#E2F3EA; --warn:#A35D00; --warn-soft:#FBEFD9; --bad:#B42318; --bad-soft:#FCE8E6; --vio:#6B3FC7; --vio-soft:#EEE7FB;
+  --sheet:#FFFFFF; --sheet-ink:#111;
+  --r:10px;
+  --f-ui:"Sarabun","TH Sarabun New","Leelawadee UI",Tahoma,sans-serif;
+  --f-doc:"Sarabun","TH Sarabun New",Tahoma,serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--f-ui);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{text-wrap:balance;margin:0;line-height:1.25}
+.mono{font-family:var(--f-mono);font-size:.86em;letter-spacing:.02em}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ink);color:#fff}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:58px;flex-wrap:wrap;padding-block:8px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.01em}
+.brand svg{flex:none}
+.brand small{display:block;font-weight:400;font-size:11px;opacity:.65;letter-spacing:.08em;text-transform:uppercase}
+.modes{margin-left:auto;display:flex;gap:4px;background:#ffffff14;padding:4px;border-radius:999px;flex-wrap:wrap}
+.modes button{border:0;background:none;color:#fff;opacity:.72;padding:6px 14px;border-radius:999px;cursor:pointer;font-size:14px}
+.modes button[aria-pressed="true"]{background:#fff;color:#16181D;opacity:1;font-weight:600}
+.modes button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.demo-note{background:var(--warn-soft);color:var(--warn);font-size:12.5px;text-align:center;padding:6px 16px}
+
+main{padding-block:24px 64px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:500;font-size:14px;text-decoration:none}
+.btn:hover{border-color:var(--ink-3)}
+.btn:focus-visible,.chip:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btn-p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn-p:hover{filter:brightness(1.07);border-color:var(--accent)}
+.btn-sm{padding:5px 10px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.muted{color:var(--ink-3)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.s-new{background:var(--accent-soft);color:var(--accent)}
+.s-screen{background:var(--warn-soft);color:var(--warn)}
+.s-interview{background:var(--vio-soft);color:var(--vio)}
+.s-offer{background:#E3F1F7;color:#0B6A8C}
+.s-hired{background:var(--ok-soft);color:var(--ok)}
+.s-reject{background:var(--bad-soft);color:var(--bad)}
+
+/* ── applicant ── */
+.apply{display:grid;grid-template-columns:260px minmax(0,1fr);gap:24px;align-items:start}
+.steps{position:sticky;top:84px;display:flex;flex-direction:column;gap:2px;padding:10px}
+.steps button{display:flex;align-items:center;gap:10px;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--ink-2);font-size:14px}
+.steps button .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:600;border:1.5px solid var(--line);color:var(--ink-3)}
+.steps button.done .n{background:var(--ok);border-color:var(--ok);color:#fff}
+.steps button[aria-current="step"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.steps button[aria-current="step"] .n{border-color:var(--accent);color:var(--accent)}
+.steps .save{margin-top:10px;font-size:12.5px;color:var(--ink-3);padding:0 10px}
+.panel{padding:28px}
+.panel h2{font-size:22px;margin-bottom:4px}
+.panel .lead{color:var(--ink-2);margin:0 0 22px;max-width:62ch}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px 16px}
+.f{display:flex;flex-direction:column;gap:5px;grid-column:span 3}
+.f.s2{grid-column:span 2}.f.s6{grid-column:span 6}.f.s4{grid-column:span 4}
+.f label,.lbl{font-size:13px;font-weight:600;color:var(--ink-2)}
+.f label .req{color:var(--bad)}
+.inp{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 12px;min-height:40px}
+textarea.inp{min-height:84px;resize:vertical}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13.5px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.sec{grid-column:span 6;margin-top:10px;padding-top:14px;border-top:1px solid var(--line-2);font-weight:600;font-size:15px}
+.navrow{display:flex;justify-content:space-between;gap:10px;margin-top:26px;flex-wrap:wrap}
+.tbl-wrap{overflow-x:auto;grid-column:span 6;border:1px solid var(--line);border-radius:8px}
+table.edu{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+table.edu th{background:var(--sunk);text-align:left;font-weight:600;font-size:12.5px;color:var(--ink-2);padding:8px 10px;border-bottom:1px solid var(--line)}
+table.edu td{padding:4px;border-bottom:1px solid var(--line-2)}
+table.edu td:first-child{padding-left:10px;font-weight:500;white-space:nowrap}
+table.edu input{width:100%;border:1px solid transparent;background:transparent;border-radius:6px;padding:6px 8px}
+table.edu input:hover{border-color:var(--line)}
+
+/* step 3 blocks */
+.blk{border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;background:var(--surface)}
+.blk+.blk{margin-top:14px}
+.blk-h{display:flex;align-items:center;gap:10px;margin:0 0 4px;font-size:16px;font-weight:600}
+.blk-h .ico{flex:none;width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.blk-h .ico svg{width:17px;height:17px}
+.blk-sub{margin:0 0 14px 40px;font-size:13px;color:var(--ink-3)}
+.fam{display:grid;grid-template-columns:110px minmax(0,2fr) 76px auto minmax(0,1.3fr);gap:12px;align-items:end;padding:12px 0;border-top:1px dashed var(--line-2)}
+.fam:first-of-type{border-top:0;padding-top:0}
+.fam .who-l{font-weight:600;font-size:14px;padding-bottom:9px}
+.fam .f{grid-column:auto}
+.fam .seg{min-height:40px;align-items:center}
+.yn{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line-2)}
+.yn:first-of-type{border-top:0}
+.yn .q{font-size:14.5px}
+.veh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.veh{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--sunk);display:flex;flex-direction:column;gap:12px}
+.veh.on{background:var(--surface);border-color:var(--accent)}
+.veh-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.veh-top svg{width:34px;height:34px;flex:none;color:var(--ink-2)}
+.veh-top b{font-size:15px;flex:1}
+.veh .sub{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.veh .sub .f{grid-column:auto}
+.veh .off-note{font-size:13px;color:var(--ink-3)}
+.sk-grp{margin-top:12px}
+.sk-grp:first-of-type{margin-top:0}
+.sk-grp .gt{font-size:12.5px;font-weight:600;color:var(--ink-3);margin-bottom:6px;letter-spacing:.02em}
+.sk{display:flex;flex-wrap:wrap;gap:6px}
+.sk .chip{display:inline-flex;align-items:center;gap:6px}
+.sk .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.sk .chip[aria-pressed="true"]::before{content:"✓";font-weight:700}
+.sk-add{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.sk-add .inp{flex:1;min-width:200px}
+.sk-count{font-size:12.5px;color:var(--ink-3);margin-left:auto}
+.skills-out{display:flex;flex-wrap:wrap;gap:5px}
+.skills-out span{font-size:12.5px;padding:2px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:500}
+.sk-admin .sk-row{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line-2);flex-wrap:wrap}
+.sk-admin .sk-row:first-child{border-top:0}
+.sk-admin .sk-row>b{width:180px;font-weight:600;padding-top:4px}
+.sk-admin .sk{flex:1;min-width:220px}
+.sk-admin .tg{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:3px 4px 3px 10px;font-size:13px;background:var(--surface)}
+.sk-admin .tg button{border:0;background:none;cursor:pointer;color:var(--ink-3);width:20px;height:20px;border-radius:50%}
+.sk-admin .tg button:hover{background:var(--bad-soft);color:var(--bad)}
+@media (max-width:760px){.fam{grid-template-columns:1fr 1fr}.fam .who-l{grid-column:span 2;padding-bottom:0}.fam .fname{grid-column:span 2}.veh-grid{grid-template-columns:1fr}}
+/* position combobox */
+.combo{position:relative}
+.combo .inp{padding-right:36px}
+.combo .clr{position:absolute;right:6px;top:31px;width:28px;height:28px;border:0;background:none;color:var(--ink-3);cursor:pointer;border-radius:6px}
+.combo .clr:hover{background:var(--sunk)}
+.cb-list{margin-top:4px;border:1px solid var(--line);border-radius:10px;max-height:320px;overflow:auto;background:var(--surface)}
+.cb-grp{padding:8px 12px 4px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);font-weight:600;background:var(--sunk);position:sticky;top:0}
+.cb-opt{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;border-top:1px solid var(--line-2);background:none;padding:10px 12px;cursor:pointer}
+.cb-opt:hover,.cb-opt.act{background:var(--accent-soft)}
+.cb-opt[aria-selected="true"]{font-weight:600}
+.cb-opt[aria-selected="true"]::after{content:"✓";color:var(--accent);font-weight:700}
+.cb-opt .o{margin-left:auto;font-size:12.5px;color:var(--ink-3);white-space:nowrap;font-weight:400}
+.cb-opt mark{background:#FFE58A;color:#16181D;border-radius:3px;padding:0 1px}
+.cb-empty{padding:14px 12px;color:var(--ink-3);font-size:13.5px}
+.cb-custom{border-top:1px dashed var(--line)}
+/* uploads */
+.up-grid{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px}
+.photo-box{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.photo{width:150px;aspect-ratio:3/4;max-width:100%;border-radius:8px;border:1.5px dashed var(--line);background:var(--sunk) center/cover no-repeat;display:grid;place-items:center;color:var(--ink-3);font-size:12.5px;text-align:center;padding:8px}
+.photo.has{border-style:solid}
+.drop{border:1.5px dashed var(--line);border-radius:10px;padding:22px;text-align:center;background:var(--sunk);transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{display:block;margin-bottom:2px}
+.req-list{display:grid;gap:8px;margin-top:16px}
+.req-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);flex-wrap:wrap}
+.req-item .ic{flex:none;width:38px;height:46px;border-radius:5px;background:var(--sunk);display:grid;place-items:center;font-size:10.5px;font-weight:700;color:var(--ink-3);overflow:hidden;background-size:cover;background-position:center}
+.req-item .ic.pdf{background:#FCE8E6;color:#B42318}
+.req-item .meta{flex:1;min-width:150px}
+.req-item .meta b{display:block;font-size:14px;font-weight:600}
+.req-item .meta span{font-size:12.5px;color:var(--ink-3)}
+.req-item .st{font-size:12.5px;font-weight:600}
+.req-item .st.ok{color:var(--ok)} .req-item .st.miss{color:var(--bad)}
+.consent{display:flex;gap:10px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:8px;background:var(--sunk);font-size:14px;margin-top:18px}
+.consent input{margin-top:4px;width:18px;height:18px;flex:none}
+
+/* A4 doc */
+.doc-stage{background:var(--sunk);border-radius:10px;padding:24px;overflow-x:auto}
+.a4{width:794px;min-height:1123px;margin:0 auto;background:var(--sheet);color:var(--sheet-ink);font:15px/1.9 var(--f-doc);padding:46px 58px;box-shadow:0 1px 2px #0000001a,0 8px 24px #00000014;position:relative}
+.a4+.a4{margin-top:18px}
+.a4 .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.a4 .logo{display:flex;align-items:center;gap:8px;font:700 26px/1 var(--f-ui);letter-spacing:-.01em}
+.a4 .logo small{display:block;font:400 11px/1.2 var(--f-ui);letter-spacing:.02em}
+.a4 .ttl{font:700 34px/1 var(--f-doc);text-align:right}
+.a4 .ph{width:96px;height:124px;border:1px dotted #555;display:grid;place-items:center;font-size:12px;text-align:center;background:center/cover no-repeat;margin-top:8px;margin-left:auto}
+.a4 .co{font-size:13px;line-height:1.6;margin-top:6px}
+.a4 .ln{display:flex;flex-wrap:wrap;column-gap:14px}
+.a4 .fld{display:inline-flex;gap:6px;align-items:baseline}
+.a4 .v{display:inline-block;min-width:90px;border-bottom:1px dotted #444;padding:0 6px;font-weight:600;line-height:1.5;color:#0B2E8A}
+.a4 .v.w{min-width:230px}.a4 .v.xw{min-width:420px}
+.a4 .box{display:inline-flex;align-items:center;gap:4px;margin-right:12px}
+.a4 .box i{width:13px;height:13px;border:1px solid #222;display:inline-grid;place-items:center;font-style:normal;font-size:12px;line-height:1;color:#0B2E8A;font-weight:700}
+.a4 h4{font:700 15px/1.6 var(--f-doc);margin:14px 0 4px}
+.a4 table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.5}
+.a4 th,.a4 td{border:1px solid #333;padding:3px 6px;text-align:left}
+.a4 th{font-weight:700;text-align:center}
+.a4 td.v2{color:#0B2E8A;font-weight:600}
+.a4 .sign{margin-top:28px;text-align:right;padding-right:40px}
+.a4 .stamp{position:absolute;right:58px;bottom:40px;font:500 11px/1.4 var(--f-mono);color:#666;text-align:right}
+.a4 .pg{position:absolute;left:58px;bottom:40px;font:11px var(--f-mono);color:#888}
+.sheet-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+
+/* done */
+.done{text-align:center;padding:40px 24px}
+.done .big{font:600 13px var(--f-mono);letter-spacing:.06em;color:var(--ink-3)}
+.done h2{font-size:26px;margin:6px 0 10px}
+.track{display:flex;justify-content:center;gap:0;margin:26px auto 8px;max-width:640px;flex-wrap:wrap}
+.track div{flex:1;min-width:96px;position:relative;padding-top:28px;font-size:12.5px;color:var(--ink-3)}
+.track div::before{content:"";position:absolute;top:8px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--line);z-index:1}
+.track div::after{content:"";position:absolute;top:14px;left:0;right:0;height:2px;background:var(--line)}
+.track div.on{color:var(--ink);font-weight:600}
+.track div.on::before{background:var(--ok)}
+
+/* ── admin ── */
+.adm-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.adm-head h1{font-size:26px}
+.roles{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpi{padding:14px 16px}
+.kpi .k{font-size:12.5px;color:var(--ink-3);font-weight:600}
+.kpi .n{font:600 28px/1.2 var(--f-ui);font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .d{font-size:12px;color:var(--ink-3)}
+.pipe{display:flex;height:8px;border-radius:999px;overflow:hidden;gap:2px;margin-top:10px;background:var(--sunk)}
+.pipe span{display:block;height:100%}
+.adm-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:12px;border-bottom:1px solid var(--line)}
+.filters .inp{min-height:36px;padding:6px 10px;width:auto}
+.filters input.inp{flex:1;min-width:180px}
+.list-wrap{overflow-x:auto}
+table.list{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+table.list th{text-align:left;font-size:12px;letter-spacing:.04em;color:var(--ink-3);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+table.list td{padding:10px 12px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+table.list tr.row{cursor:pointer}
+table.list tr.row:hover td{background:var(--sunk)}
+table.list tr.row:focus-visible td{background:var(--accent-soft);outline:none}
+.who{display:flex;align-items:center;gap:10px}
+.av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--sunk) center/cover;display:grid;place-items:center;font-size:13px;font-weight:600;color:var(--ink-2)}
+.who b{display:block;font-weight:600}
+.who span{font-size:12.5px;color:var(--ink-3)}
+.dots{display:inline-flex;gap:3px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--ok)}
+.side{display:flex;flex-direction:column;gap:18px}
+.side .card{padding:16px}
+.side h3{font-size:15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.notif{display:flex;flex-direction:column;gap:0}
+.notif li{list-style:none;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line-2);font-size:13.5px}
+.notif li:first-child{border-top:0}
+.notif .ch{width:28px;height:28px;border-radius:7px;display:grid;place-items:center;font:700 10px var(--f-ui);color:#fff}
+.ch.line{background:#06C755}.ch.mail{background:#5B6475}.ch.sys{background:var(--accent)}
+.notif time{display:block;font-size:12px;color:var(--ink-3)}
+ul.notif,ul.sched{margin:0;padding:0}
+.unread{font-size:11.5px;background:var(--bad);color:#fff;border-radius:999px;padding:1px 8px;font-weight:600}
+.sched li{list-style:none;display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--line-2);font-size:13.5px}
+.sched li:first-child{border-top:0}
+.sched .dt{flex:none;width:52px;text-align:center;border-radius:7px;background:var(--sunk);padding:4px 0;font-weight:600;line-height:1.2}
+.sched .dt small{display:block;font-size:11px;color:var(--ink-3);font-weight:500}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:#0b0d1266;z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(1040px,100%);background:var(--paper);z-index:41;display:flex;flex-direction:column;box-shadow:-12px 0 40px #00000033}
+.dr-head{display:flex;align-items:center;gap:14px;padding:16px 20px;padding-top:calc(16px + env(safe-area-inset-top,0px));background:var(--surface);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dr-head .av{width:48px;height:48px;font-size:16px}
+.dr-head h2{font-size:20px}
+.dr-head .x{margin-left:auto}
+.dr-body{flex:1;overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;padding:18px 20px 40px;align-items:start}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;color:var(--ink-3);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink);font-weight:600}
+.kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:6px 14px;font-size:14px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0;font-weight:500}
+.lock{color:var(--ink-3);font-style:italic;font-weight:400}
+.att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.att{border:1px solid var(--line);border-radius:8px;background:var(--surface);overflow:hidden;cursor:pointer;text-align:left;padding:0}
+.att .th{aspect-ratio:4/3;max-width:100%;background:var(--sunk) center/cover;display:grid;place-items:center;font:700 13px var(--f-ui);color:var(--ink-3)}
+.att .th.pdf{background:#FCE8E6;color:#B42318}
+.att .cap{padding:8px 10px;font-size:12.5px}
+.att .cap b{display:block;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act .card{padding:16px}
+.act{display:flex;flex-direction:column;gap:14px}
+.stage-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.stage-btns button{justify-content:flex-start}
+.stage-btns button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.rating{display:flex;gap:4px}
+.rating button{border:1px solid var(--line);background:var(--surface);width:34px;height:34px;border-radius:8px;cursor:pointer;font-weight:600}
+.rating button[aria-pressed="true"]{background:var(--warn);border-color:var(--warn);color:#fff}
+.cm{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.cm li{font-size:13.5px;padding:10px 12px;border-radius:8px;background:var(--sunk)}
+.cm li b{font-weight:600}
+.cm li time{font-size:11.5px;color:var(--ink-3);margin-left:6px}
+.viewer{position:fixed;inset:0;z-index:60;background:#0b0d12e6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.viewer .img{max-width:min(900px,100%);max-height:78vh;border-radius:6px;background:#fff center/contain no-repeat;width:100%;aspect-ratio:3/4}
+.viewer .bar{color:#fff;display:flex;gap:12px;align-items:center;margin-bottom:12px;flex-wrap:wrap;justify-content:center}
+.viewer .bar .btn{background:#ffffff1a;border-color:#ffffff33;color:#fff}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:10px;z-index:80;font-size:14px;box-shadow:0 8px 24px #0004;display:flex;gap:10px;align-items:center;max-width:calc(100% - 32px)}
+.toast .ch{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font:700 9px var(--f-ui);color:#fff;flex:none}
+
+/* ── overview ── */
+.ov h1{font-size:28px;margin-bottom:6px}
+.ov .lead{color:var(--ink-2);max-width:68ch;margin:0 0 24px}
+.ov-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.ov .card{padding:20px}
+.ov h2{font-size:17px;margin-bottom:12px}
+.ov ul.plain{margin:0;padding-left:18px}
+.ov ul.plain li{margin-bottom:6px}
+.matrix{border-collapse:collapse;width:100%;font-size:13.5px;min-width:520px}
+.matrix th,.matrix td{padding:8px 10px;border-bottom:1px solid var(--line-2);text-align:center}
+.matrix th:first-child,.matrix td:first-child{text-align:left}
+.matrix th{font-size:12px;color:var(--ink-3);font-weight:600}
+.y{color:var(--ok);font-weight:700}.n0{color:var(--ink-3)}.p{color:var(--warn);font-weight:600}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13.5px}
+.flow span{padding:6px 12px;border-radius:8px;background:var(--sunk);border:1px solid var(--line)}
+.flow em{font-style:normal;color:var(--ink-3)}
+.span2{grid-column:span 2}
+.code{font:13px/1.6 var(--f-mono);background:var(--sunk);border-radius:8px;padding:12px 14px;overflow-x:auto;white-space:pre}
+
+/* admin tabs + settings */
+.adm-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+.adm-tabs button{border:0;background:none;padding:10px 14px;cursor:pointer;color:var(--ink-3);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;font-size:15px}
+.adm-tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.adm-tabs button[disabled]{opacity:.45;cursor:not-allowed}
+.set{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start}
+.set-nav{display:flex;flex-direction:column;gap:2px;padding:8px;position:sticky;top:84px}
+.set-nav button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;border:0;background:none;padding:9px 12px;border-radius:8px;cursor:pointer;color:var(--ink-2)}
+.set-nav button small{font-size:12px;color:var(--ink-3)}
+.set-nav button[aria-current="page"]{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.set-main{padding:22px}
+.set-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.set-head h2{font-size:20px}
+.set-head p{margin:4px 0 0;color:var(--ink-3);font-size:13.5px;max-width:60ch}
+table.mg{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+table.mg th{text-align:left;font-size:12px;letter-spacing:.04em;color:var(--ink-3);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line)}
+table.mg td{padding:9px 10px;border-bottom:1px solid var(--line-2);vertical-align:middle}
+table.mg tr.off td{color:var(--ink-3)}
+.acts{display:flex;gap:4px;justify-content:flex-end;flex-wrap:nowrap}
+.ib{border:1px solid var(--line);background:var(--surface);border-radius:7px;min-width:32px;height:30px;padding:0 8px;cursor:pointer;font-size:13px;color:var(--ink-2)}
+.ib:hover{border-color:var(--ink-3);color:var(--ink)}
+.ib.del:hover{border-color:var(--bad);color:var(--bad)}
+.ib[disabled]{opacity:.35;cursor:not-allowed}
+.sw{position:relative;display:inline-block;width:38px;height:22px;flex:none}
+.sw input{position:absolute;opacity:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:1}
+.sw span{position:absolute;inset:0;border-radius:999px;background:var(--line);transition:background .15s}
+.sw span::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 2px #0003}
+.sw input:checked+span{background:var(--ok)}
+.sw input:checked+span::after{transform:translateX(16px)}
+.sw input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.sw input:disabled+span{opacity:.5}
+.tag{display:inline-block;font-size:11.5px;padding:1px 8px;border-radius:999px;background:var(--sunk);color:var(--ink-3);font-weight:600}
+.tag.cu{background:var(--vio-soft);color:var(--vio)}
+.step-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.fl-row{display:grid;grid-template-columns:auto minmax(0,1fr) 110px 70px 70px auto;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line-2)}
+.fl-row.hd{font-size:12px;color:var(--ink-3);font-weight:600;letter-spacing:.04em}
+.fl-row.off .nm{color:var(--ink-3);text-decoration:line-through}
+.fl-row .nm b{font-weight:600}
+.fl-row .nm small{display:block;color:var(--ink-3);font-size:12px}
+.mv{display:flex;flex-direction:column;gap:2px}
+.mv .ib{height:18px;min-width:26px;font-size:10px;padding:0}
+.md-wrap{position:fixed;inset:0;z-index:70;background:#0b0d1266;display:grid;place-items:center;padding:16px}
+.md{background:var(--surface);border-radius:12px;width:min(620px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;box-shadow:0 20px 50px #0005}
+.md-h{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
+.md-h h3{font-size:17px}
+.md-b{padding:18px 20px;overflow:auto}
+.md-f{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid var(--line)}
+.md-err{color:var(--bad);font-size:13px;margin-top:8px}
+.ed-sec{position:relative}
+.ed-sec+.ed-sec{margin-top:14px}
+.ed-sec h4{font-size:14px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:center}
+.rule{display:grid;grid-template-columns:minmax(0,1fr) repeat(4,80px);align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid var(--line-2);font-size:14px}
+.rule.hd{font-size:12px;color:var(--ink-3);font-weight:600}
+.rule>span:not(:first-child){display:flex;justify-content:center}
+.extra-note{grid-column:span 6;font-size:12.5px;color:var(--vio);margin-top:4px}
+@media (max-width:900px){.set{grid-template-columns:1fr}.set-nav{position:static;flex-direction:row;overflow-x:auto}.set-nav button{white-space:nowrap}.set-nav button small{display:none}}
+@media (max-width:640px){.fl-row{grid-template-columns:auto minmax(0,1fr) auto}.fl-row>.c-type,.fl-row>.c-req,.fl-row>.c-on{display:none}.rule{grid-template-columns:minmax(0,1fr) repeat(4,46px)}}
+@media (max-width:900px){
+  .apply{grid-template-columns:1fr}
+  .steps{position:static;flex-direction:row;overflow-x:auto;padding:6px}
+  .steps button{white-space:nowrap}
+  .steps .save{display:none}
+  .adm-grid{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dr-body{grid-template-columns:1fr}
+  .ov-grid{grid-template-columns:1fr}.span2{grid-column:auto}
+  .up-grid{grid-template-columns:1fr}
+}
+@media (max-width:560px){
+  .panel{padding:18px}
+  .f,.f.s2,.f.s4{grid-column:span 6}
+  .doc-stage{padding:10px}
+  .kv{grid-template-columns:1fr}
+  .kv dt{margin-top:6px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ── production additions ── */
+.err-box{background:var(--bad-soft);color:var(--bad);border-radius:8px;padding:10px 14px;font-size:14px;margin:0 0 16px}
+.ok-box{background:var(--ok-soft);color:var(--ok);border-radius:8px;padding:10px 14px;font-size:14px;margin:0 0 16px}
+.f.bad .inp,.f.bad .seg .chip{border-color:var(--bad)}
+.f.bad .lbl,.f.bad label{color:var(--bad)}
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px 20px;color:var(--ink-3)}
+.spin{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.up-busy{font-size:12.5px;color:var(--accent);display:inline-flex;gap:6px;align-items:center}
+.up-busy .spin{width:12px;height:12px}
+.login{max-width:420px;margin:40px auto;padding:28px}
+.login h1{font-size:22px;margin-bottom:6px}
+.login p{color:var(--ink-3);margin:0 0 18px;font-size:14px}
+.login .f{grid-column:auto;margin-bottom:12px}
+.track-card{max-width:520px;margin:20px auto;padding:26px}
+.topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.topnav a,.topnav button{color:#fff;opacity:.8;text-decoration:none;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid #ffffff33;background:none;cursor:pointer}
+.topnav a:hover,.topnav button:hover{opacity:1}
+.topnav .me{border:0;opacity:.75;cursor:default}
+.pos-desc{font-size:13px;color:var(--ink-2);background:var(--sunk);border-radius:8px;padding:10px 12px;margin-top:8px;white-space:pre-line}
+.share-url{display:flex;gap:6px;margin-top:6px}
+.share-url input{flex:1;min-width:0;font-size:12.5px}
+#print-area{display:none}
+@media print{
+  body{background:#fff}
+  body>*:not(#print-area){display:none!important}
+  #print-area{display:block!important}
+  #print-area .a4{box-shadow:none;margin:0;width:auto;min-height:0;padding:12mm 14mm;page-break-after:always}
+  #print-area .a4:last-child{page-break-after:auto}
+  @page{size:A4;margin:0}
+}
+
+/* แบรนด์จริง Push Media */
+.brand{gap:12px}
+.brand .mark{width:34px;height:34px;flex:none;display:block;border-radius:8px;box-shadow:0 0 0 1px #ffffff38}
+.brand .wm{display:flex;flex-direction:column;line-height:1.05}
+.brand .wm b{font-weight:700;font-size:19px;letter-spacing:.02em}
+.brand .wm i{font-style:normal;font-size:11px;opacity:.75;letter-spacing:.03em}
+.brand .div{width:1px;height:28px;background:#ffffff40;flex:none}
+.brand .app{font-size:14px;opacity:.9;font-weight:500}
+@media (max-width:520px){.brand .div,.brand .app{display:none}}
+
+.brand .logo{height:34px;width:auto;flex:none;display:block}
+@media (max-width:520px){.brand .logo{height:28px}}
+
+.steps button.warn .n{background:var(--warn);border-color:var(--warn);color:#fff}
+.steps .miss-n{margin-left:auto;font-size:11.5px;font-weight:600;background:var(--warn-soft);color:var(--warn);border-radius:999px;padding:0 8px}
+.miss-list{margin:8px 0 0;padding-left:20px}
+.miss-list li{margin-top:4px}
+.miss-list a{color:inherit;font-weight:600}
+
+/* ใช้ธีมสว่างเสมอ (เอกสารทางการ) — ไม่ตามโหมดมืดของเครื่อง · 7 ต.ค. 2569 */
+:root{color-scheme:light only}
+html,body{background:var(--paper)!important;color:var(--ink)}
+.top{background:#16181D!important;color:#fff}
+.inp,select.inp,textarea.inp{background:#fff;color:var(--ink)}
+
+/* ที่อยู่ไทย autocomplete */
+.ac-wrap{position:relative}
+.ac-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:30;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px #0002;max-height:300px;overflow:auto;min-width:min(420px,90vw)}
+.ac-opt{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line-2);background:none;padding:9px 12px;cursor:pointer;font-size:14px;line-height:1.4}
+.ac-opt:first-child{border-top:0}
+.ac-opt:hover,.ac-opt.act{background:var(--accent-soft)}
+.ac-opt span{float:right;color:var(--ink-3);font-variant-numeric:tabular-nums;margin-left:8px}
+.ac-empty{padding:10px 12px;font-size:13.5px;color:var(--ink-3)}
+
+.bd-row{display:grid;grid-template-columns:.8fr 1fr 1.15fr;gap:6px}
+.bd-row .inp{padding:8px 6px;min-width:0}
+
+/* date picker วันเกิด */
+.dp-wrap{position:relative}
+.dp-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;cursor:pointer;width:100%}
+.dp-btn .ph{color:var(--ink-3)}
+.dp-btn svg{color:var(--ink-3);flex:none}
+.dp-pop{position:absolute;z-index:35;top:100%;left:0;margin-top:4px;width:300px;max-width:90vw;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px #0003;padding:10px}
+.dp-h{display:grid;grid-template-columns:30px 1fr 88px 30px;gap:6px;align-items:center;margin-bottom:8px}
+.dp-h .inp{min-height:34px;padding:4px 6px}
+.dp-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.dp-g b{font-size:12px;color:var(--ink-3);font-weight:600;padding:4px 0}
+.dp-d{border:0;background:none;border-radius:8px;height:34px;cursor:pointer;font-variant-numeric:tabular-nums}
+.dp-d:hover{background:var(--accent-soft)}
+.dp-d.on{background:var(--accent);color:#fff;font-weight:600}
+
+/* หน้าข้อมูลผู้สมัคร: เต็มจอ อ่านง่าย (7 ต.ค.) */
+.drawer{width:100%!important;left:0}
+.dr-head{padding-left:max(20px,calc((100% - 1280px)/2 + 20px));padding-right:max(20px,calc((100% - 1280px)/2 + 20px))}
+.dr-body{grid-template-columns:minmax(0,1fr) 340px;max-width:1280px;width:100%;margin:0 auto;box-sizing:border-box}
+.kv{grid-template-columns:170px minmax(0,1fr)}
+.kv dd{word-break:break-word}
+.a4 .ph{overflow:hidden}
+.a4 .ph img{width:100%;height:100%;object-fit:cover;display:block}
+@media print{#print-area .a4 .ph img{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media (max-width:900px){.dr-body{grid-template-columns:1fr}}
+
+/* รูปผู้สมัครในรายการ */
+table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover;background-position:center top;border:1px solid var(--line)}
+.dr-head .av{width:56px;height:72px;border-radius:10px;background-size:cover;background-position:center top}
+
+/* การ์ดลิงก์รับสมัครงาน */
+.share{padding:18px!important}
+.share-h{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px}
+.share-h h3{margin:0!important;font-size:16px}
+.share-h p{margin:2px 0 0;font-size:13px;color:var(--ink-3)}
+.share-ic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.share-ic svg{width:19px;height:19px}
+.share-qr{display:flex;gap:14px;align-items:center;background:var(--sunk);border-radius:12px;padding:12px;margin-bottom:12px}
+.qr{flex:none;width:112px;height:112px;background:#fff;border-radius:8px;padding:8px;box-shadow:0 1px 2px #0001}
+.qr svg{width:100%;height:100%;display:block}
+.share-qr-t b{display:block;font-size:14.5px}
+.share-qr-t span{font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.share-url .inp{font-size:12.5px;color:var(--ink-2);background:var(--sunk);border-style:dashed;min-height:36px;padding:6px 10px}
+.share-acts{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.share-acts #copyurl{grid-column:span 2;padding:9px}
+.share-acts .btn{gap:5px;padding:7px 6px;font-size:12.5px;white-space:nowrap}
+.share-acts .btn svg{width:14px;height:14px;flex:none}
+.share-drive{display:flex;gap:10px;align-items:center;margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink)}
+.share-drive:hover{border-color:var(--ink-3);background:var(--sunk)}
+.share-drive span{flex:none;width:32px;height:32px;border-radius:8px;background:#E8F0FE;color:#1A73E8;display:grid;place-items:center}
+.share-drive span svg{width:17px;height:17px}
+.share-drive b{display:block;font-size:13.5px;font-weight:600}
+.share-drive small{font-size:12px;color:var(--ink-3)}
+.share-drive i{margin-left:auto;font-style:normal;color:var(--ink-3);font-size:20px}
+
+.cf-wrap{z-index:90}
+.drawer.busy .dr-head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;background:linear-gradient(90deg,var(--accent) 0 30%,transparent 30% 100%);background-size:200% 100%;animation:busyb 1s linear infinite}
+.dr-head{position:relative}
+@keyframes busyb{from{background-position:100% 0}to{background-position:-100% 0}}
+
+.st-card{border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:14px;background:#fff}
+.st-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.st-top b{display:block;font-size:16px;margin:2px 0}
+.st-card .track{max-width:none}
+
+/* หน้าติดตามสถานะ (ออกแบบใหม่ 7 ต.ค.) */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.stx{max-width:640px;margin:28px auto 40px}
+.stx-hero{text-align:center;margin-bottom:22px}
+.stx-badge{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:14px;background:#16181D;color:#fff;margin-bottom:12px}
+.stx-badge svg{width:26px;height:26px}
+.stx-hero h1{font-size:28px;margin-bottom:6px}
+.stx-hero p{margin:0;color:var(--ink-3);font-size:15px}
+.stx-search{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px 6px 6px 14px;box-shadow:0 6px 20px #16181d0d}
+.stx-search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.stx-ic{color:var(--ink-3);display:grid}
+.stx-ic svg{width:20px;height:20px}
+.stx-search input{flex:1;min-width:0;border:0;outline:0;font-size:16px;padding:10px 4px;background:none;letter-spacing:.02em}
+.stx-search .btn{padding:11px 22px;border-radius:10px;font-size:15px}
+.stx-count{font-size:13px;color:var(--ink-3);margin:22px 0 8px}
+.stx-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:12px;box-shadow:0 2px 6px #16181d08;--c:var(--accent);--cs:var(--accent-soft)}
+.stx-card.t-ok{--c:var(--ok);--cs:var(--ok-soft)}.stx-card.t-bad{--c:var(--bad);--cs:var(--bad-soft)}.stx-card.t-vio{--c:var(--vio);--cs:var(--vio-soft)}.stx-card.t-warn{--c:var(--warn);--cs:var(--warn-soft)}
+.stx-card header{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding-bottom:16px;border-bottom:1px solid var(--line-2)}
+.stx-no{font:500 12px var(--f-mono);color:var(--ink-3);letter-spacing:.04em}
+.stx-card h2{font-size:20px;margin:2px 0 4px}
+.stx-card header p{margin:0;font-size:13.5px;color:var(--ink-3)}
+.stx-pill{flex:none;background:var(--cs);color:var(--c);font-weight:600;font-size:13px;padding:5px 12px;border-radius:999px}
+.stx-steps{list-style:none;margin:22px 0 4px;padding:0;display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.stx-steps::before,.stx-steps::after{content:"";position:absolute;top:15px;left:12.5%;height:3px;border-radius:3px}
+.stx-steps::before{right:12.5%;background:var(--line-2)}
+.stx-steps::after{width:calc(75% * var(--pct));background:var(--c)}
+.stx-steps li{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;position:relative;z-index:1}
+.stx-steps .dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:600;background:#fff;border:2px solid var(--line);color:var(--ink-3)}
+.stx-steps .dot svg{width:15px;height:15px}
+.stx-steps li.is-done .dot{background:var(--c);border-color:var(--c);color:#fff}
+.stx-steps li.is-cur .dot{border-color:var(--c);color:var(--c);box-shadow:0 0 0 5px var(--cs)}
+.stx-steps li.is-fail .dot{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:0 0 0 5px var(--bad-soft)}
+.stx-steps .lb{font-size:13px;color:var(--ink-3);line-height:1.35;max-width:110px}
+.stx-steps li.is-done .lb,.stx-steps li.is-cur .lb,.stx-steps li.is-fail .lb{color:var(--ink);font-weight:600}
+.stx-note{display:flex;gap:12px;align-items:flex-start;margin-top:16px;padding:12px 14px;border-radius:12px;font-size:14px;line-height:1.55}
+.stx-note>span{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fff}
+.stx-note>span svg{width:18px;height:18px}
+.stx-note b{display:block;font-size:13px}
+.stx-note small{display:block;font-size:12.5px;opacity:.8;margin-top:2px}
+.n-vio{background:var(--vio-soft);color:#3c2475}.n-vio>span{color:var(--vio)}
+.n-mute{background:var(--sunk);color:var(--ink-2)}
+.stx-empty{margin-top:18px;text-align:center;background:#fff;border:1px dashed var(--line);border-radius:14px;padding:22px}
+.stx-empty b{display:block;font-size:16px;margin-bottom:4px}
+.stx-empty span{font-size:14px;color:var(--ink-3)}
+.stx-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:22px;font-size:13.5px;color:var(--ink-3)}
+.stx-foot a{color:var(--ink-2);text-decoration:none;font-weight:500}
+.stx-foot a:hover{color:var(--accent)}
+.stx-foot span{display:inline-flex;align-items:center;gap:6px}
+.stx-foot svg{width:14px;height:14px}
+@media (max-width:520px){.stx-hero h1{font-size:23px}.stx-search .btn{padding:10px 14px}.stx-steps .lb{font-size:12px}.stx-card{padding:16px}}
+
+/* รูปตัวอย่างไฟล์แนบ */
+.att .th{position:relative;background-size:cover;background-position:center top;background-color:var(--sunk)}
+.att .th.has{background-color:#fff}
+.att .th .badge{position:absolute;left:8px;top:8px;background:#B42318;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:5px}
+.att .th:not(.pdf) .badge{background:var(--ink-2)}
+.att .th .spin{width:18px;height:18px}
+.att:hover .th.has{filter:brightness(.96)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand" aria-label="Push Media"><svg class="logo" role="img" aria-label="Push Media" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="86 84 728 132">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <g>
+    <path class="cls-1" d="M248.78,178.24v33.97h-4.43v-33.97h4.43Z"/>
+    <path class="cls-1" d="M256.8,194.41c0-2.56-.05-4.59-.21-6.6h3.94l.25,4.04h.1c1.21-2.27,4.03-4.54,8.07-4.54,3.37,0,8.62,2.01,8.62,10.38v14.51h-4.43v-14.05c0-3.93-1.47-7.22-5.66-7.22-2.87,0-5.14,2.08-5.95,4.55-.2.55-.3,1.3-.3,2.06v14.66h-4.43v-17.79Z"/>
+    <path class="cls-1" d="M284.76,194.41c0-2.56-.04-4.59-.2-6.6h3.93l.25,4.04h.1c1.21-2.27,4.03-4.54,8.06-4.54,3.38,0,8.62,2.01,8.62,10.38v14.51h-4.43v-14.05c0-3.93-1.46-7.22-5.65-7.22-2.87,0-5.15,2.08-5.95,4.55-.19.55-.3,1.3-.3,2.06v14.66h-4.44v-17.79Z"/>
+    <path class="cls-1" d="M334.81,199.8c0,9.03-6.3,12.96-12.16,12.96-6.54,0-11.69-4.83-11.69-12.56s5.39-12.89,12.1-12.89,11.75,5.08,11.75,12.49ZM315.51,200.07c0,5.34,3.02,9.37,7.35,9.37s7.4-3.97,7.4-9.48c0-4.14-2.06-9.33-7.29-9.33s-7.46,4.85-7.46,9.44Z"/>
+    <path class="cls-1" d="M341.77,187.81l4.78,13.66c.8,2.27,1.47,4.28,1.97,6.3h.15c.56-2.01,1.26-4.03,2.06-6.3l4.74-13.66h4.64l-9.57,24.39h-4.22l-9.28-24.39h4.74Z"/>
+    <path class="cls-1" d="M381.22,206.37c0,2.11.11,4.19.35,5.84h-3.98l-.35-3.06h-.15c-1.36,1.91-3.99,3.62-7.46,3.62-4.95,0-7.46-3.48-7.46-7,0-5.9,5.24-9.13,14.67-9.08v-.5c0-1.97-.56-5.66-5.55-5.61-2.32,0-4.68.66-6.41,1.82l-1-2.97c2-1.25,4.98-2.11,8.06-2.11,7.46,0,9.27,5.08,9.27,9.93v9.13ZM376.93,199.77c-4.84-.11-10.33.75-10.33,5.48,0,2.92,1.9,4.23,4.13,4.23,3.23,0,5.29-2.01,5.99-4.08.16-.51.21-1.01.21-1.41v-4.23Z"/>
+    <path class="cls-1" d="M393.51,181.96v5.85h6.35v3.39h-6.35v13.14c0,3.03.86,4.74,3.32,4.74,1.21,0,1.92-.11,2.57-.32l.21,3.39c-.86.3-2.22.61-3.93.61-2.08,0-3.73-.69-4.79-1.87-1.2-1.35-1.71-3.52-1.71-6.38v-13.31h-3.79v-3.39h3.79v-4.54l4.33-1.31Z"/>
+    <path class="cls-1" d="M409.78,180.96c0,1.5-1.06,2.72-2.81,2.72-1.61,0-2.68-1.21-2.68-2.72s1.12-2.77,2.78-2.77,2.72,1.21,2.72,2.77ZM404.85,212.2v-24.39h4.43v24.39h-4.43Z"/>
+    <path class="cls-1" d="M418.36,187.81l4.78,13.66c.8,2.27,1.46,4.28,1.97,6.3h.16c.55-2.01,1.25-4.03,2.06-6.3l4.73-13.66h4.63l-9.57,24.39h-4.23l-9.27-24.39h4.74Z"/>
+    <path class="cls-1" d="M442.84,200.82c.11,6.01,3.88,8.46,8.37,8.46,3.18,0,5.14-.55,6.76-1.26l.8,3.18c-1.57.72-4.28,1.57-8.17,1.57-7.5,0-12-4.99-12-12.34s4.34-13.11,11.45-13.11c8.01,0,10.08,6.94,10.08,11.43,0,.91-.05,1.57-.16,2.08h-17.15ZM455.85,197.64c.05-2.77-1.16-7.15-6.15-7.15-4.53,0-6.44,4.08-6.81,7.15h12.96Z"/>
+    <path class="cls-1" d="M475.7,207.73c1.36.8,3.69,1.71,5.9,1.71,3.18,0,4.68-1.57,4.68-3.63s-1.25-3.23-4.48-4.43c-4.44-1.61-6.5-3.99-6.5-6.92,0-3.93,3.22-7.15,8.42-7.15,2.46,0,4.64.64,5.95,1.5l-1.07,3.23c-.96-.61-2.72-1.47-4.99-1.47-2.62,0-4.03,1.52-4.03,3.34,0,2.01,1.41,2.92,4.59,4.17,4.19,1.57,6.41,3.69,6.41,7.32,0,4.33-3.39,7.35-9.08,7.35-2.67,0-5.14-.69-6.86-1.71l1.06-3.33Z"/>
+    <path class="cls-1" d="M647.05,207.73c1.37.8,3.69,1.71,5.9,1.71,3.18,0,4.7-1.57,4.7-3.63s-1.26-3.23-4.49-4.43c-4.43-1.61-6.5-3.99-6.5-6.92,0-3.93,3.23-7.15,8.42-7.15,2.48,0,4.64.64,5.95,1.5l-1.06,3.23c-.96-.61-2.73-1.47-5-1.47-2.62,0-4.03,1.52-4.03,3.34,0,2.01,1.41,2.92,4.59,4.17,4.19,1.57,6.41,3.69,6.41,7.32,0,4.33-3.39,7.35-9.08,7.35-2.67,0-5.15-.69-6.86-1.71l1.06-3.33Z"/>
+    <path class="cls-1" d="M518.34,199.8c0,9.03-6.3,12.96-12.15,12.96-6.56,0-11.7-4.83-11.7-12.56s5.4-12.89,12.1-12.89,11.75,5.08,11.75,12.49ZM499.02,200.07c0,5.34,3.03,9.37,7.38,9.37s7.4-3.97,7.4-9.48c0-4.14-2.06-9.33-7.31-9.33s-7.47,4.85-7.47,9.44Z"/>
+    <path class="cls-1" d="M523.92,176.42h4.44v35.79h-4.44v-35.79Z"/>
+    <path class="cls-1" d="M556.24,205.5c0,2.57.05,4.79.21,6.7h-3.94l-.24-3.97h-.11c-1.1,1.95-3.73,4.53-8.06,4.53-3.83,0-8.42-2.16-8.42-10.68v-14.27h4.43v13.46c0,4.65,1.47,7.82,5.44,7.82,3,0,5.05-2.06,5.86-4.08.25-.61.4-1.41.4-2.27v-14.93h4.44v17.69Z"/>
+    <path class="cls-1" d="M568.92,181.96v5.85h6.36v3.39h-6.36v13.14c0,3.03.87,4.74,3.34,4.74,1.21,0,1.92-.11,2.57-.32l.21,3.39c-.86.3-2.22.61-3.94.61-2.06,0-3.73-.69-4.78-1.87-1.21-1.35-1.71-3.52-1.71-6.38v-13.31h-3.77v-3.39h3.77v-4.54l4.32-1.31Z"/>
+    <path class="cls-1" d="M585.2,180.96c0,1.5-1.06,2.72-2.82,2.72-1.61,0-2.67-1.21-2.67-2.72s1.1-2.77,2.75-2.77,2.73,1.21,2.73,2.77ZM580.26,212.2v-24.39h4.44v24.39h-4.44Z"/>
+    <path class="cls-1" d="M614.13,199.8c0,9.03-6.3,12.96-12.15,12.96-6.55,0-11.7-4.83-11.7-12.56s5.4-12.89,12.1-12.89,11.75,5.08,11.75,12.49ZM594.82,200.07c0,5.34,3.03,9.37,7.37,9.37s7.4-3.97,7.4-9.48c0-4.14-2.06-9.33-7.31-9.33s-7.46,4.85-7.46,9.44Z"/>
+    <path class="cls-1" d="M619.72,194.41c0-2.56-.06-4.59-.22-6.6h3.94l.26,4.04h.1c1.2-2.27,4.04-4.54,8.07-4.54,3.39,0,8.62,2.01,8.62,10.38v14.51h-4.43v-14.05c0-3.93-1.46-7.22-5.65-7.22-2.86,0-5.13,2.08-5.95,4.55-.21.55-.3,1.3-.3,2.06v14.66h-4.43v-17.79Z"/>
+  </g>
+  <g>
+    <path class="cls-1" d="M244.35,89.16c4.74-.81,11.39-1.42,20.76-1.42s16.22,1.82,20.76,5.45c4.43,3.42,7.25,9.06,7.25,15.71s-2.11,12.39-6.24,16.11c-5.24,4.85-13.01,7.16-22.07,7.16-2.01,0-3.83-.1-5.24-.4v24.39h-15.22v-67.01ZM259.57,119.98c1.32.32,2.83.4,5.14.4,8.17,0,13.2-4.13,13.2-10.98,0-6.24-4.33-9.97-12.1-9.97-3.02,0-5.13.21-6.24.51v20.05Z"/>
+    <path class="cls-1" d="M318.23,88.25v38.99c0,11.8,4.53,17.74,12.29,17.74s12.5-5.64,12.5-17.74v-38.99h15.31v38.08c0,20.97-10.58,30.94-28.31,30.94s-27.11-9.57-27.11-31.14v-37.88h15.32Z"/>
+    <path class="cls-1" d="M372.14,140.34c4.03,2.11,10.48,4.22,17.03,4.22,7.05,0,10.79-2.91,10.79-7.34s-3.23-6.66-11.39-9.48c-11.29-4.04-18.75-10.28-18.75-20.16,0-11.59,9.78-20.35,25.71-20.35,7.75,0,13.3,1.5,17.33,3.42l-3.42,12.29c-2.62-1.31-7.56-3.22-14.11-3.22s-9.88,3.12-9.88,6.54c0,4.33,3.73,6.25,12.6,9.57,11.99,4.44,17.53,10.68,17.53,20.25,0,11.39-8.66,21.07-27.32,21.07-7.75,0-15.41-2.11-19.25-4.24l3.12-12.6Z"/>
+    <path class="cls-1" d="M441.48,88.25v26.09h25.29v-26.09h15.33v67.92h-15.33v-28.42h-25.29v28.42h-15.33v-67.92h15.33Z"/>
+    <path class="cls-1" d="M573.29,130.16c-.3-8.15-.61-18.03-.61-27.91h-.19c-2.21,8.66-5.05,18.35-7.66,26.3l-8.25,26.51h-12.01l-7.24-26.2c-2.22-8.07-4.43-17.74-6.15-26.61h-.21c-.3,9.16-.69,19.65-1.1,28.12l-1.3,25.8h-14.22l4.33-67.92h20.46l6.65,22.67c2.21,7.86,4.23,16.32,5.75,24.29h.41c1.8-7.86,4.11-16.83,6.44-24.4l7.15-22.56h20.16l3.63,67.92h-14.91l-1.12-26.01Z"/>
+    <path class="cls-1" d="M641.52,127.44h-24.99v16.13h27.91v12.6h-43.22v-67.92h41.8v12.58h-26.49v14.11h24.99v12.5Z"/>
+    <path class="cls-1" d="M654.93,89.25c5.64-.91,13.01-1.52,20.67-1.52,13,0,21.47,2.42,27.91,7.26,7.05,5.24,11.49,13.6,11.49,25.6,0,12.98-4.73,21.96-11.18,27.51-7.17,5.95-18.15,8.75-31.45,8.75-7.96,0-13.7-.5-17.44-1v-66.61ZM670.25,144.56c1.31.32,3.53.32,5.35.32,14,.1,23.18-7.57,23.18-23.78,0-14.1-8.28-21.56-21.58-21.56-3.33,0-5.64.29-6.95.61v44.43Z"/>
+    <path class="cls-1" d="M740.5,88.25v67.92h-15.3v-67.92h15.3Z"/>
+    <path class="cls-1" d="M769.62,138.73l-4.83,17.44h-15.82l20.65-67.92h20.16l21.16,67.92h-16.62l-5.24-17.44h-19.45ZM786.86,127.24l-4.24-14.4c-1.21-4.03-2.43-9.06-3.43-13.09h-.19c-1.02,4.03-2.01,9.16-3.12,13.09l-4.03,14.4h15.01Z"/>
+  </g>
+  <path class="cls-1" d="M192.21,88.28h-23.09v40.14c0,9-7.29,16.29-16.29,16.29s-16.29-7.3-16.29-16.29v-40.14h-26.13c-11.79,0-21.34,9.56-21.34,21.34v81.8c0,11.79,9.56,21.34,21.34,21.34h81.8c11.79,0,21.34-9.55,21.34-21.34v-81.8c0-11.79-9.55-21.34-21.34-21.34Z"/>
+</svg><span class="div"></span><span class="app" id="brand-sub">ใบสมัครงานออนไลน์</span></div>
+    <nav class="topnav" id="topnav"></nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+<div id="print-area"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>var BOOT={mode:/[?&](admin|page=admin)\b/.test(location.search)?'admin':'apply',url:location.origin+location.pathname,api:'https://script.google.com/macros/s/AKfycbyGN5XVhG4oc3oga4FJ96GTbSxxJ8igBMz86MwMUPlQZ1KgORm77r8SfbxjsynYBjnY/exec'};</script>
+<script>(function(){
+'use strict';
+var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+/* เรียกเซิร์ฟเวอร์: ใน Apps Script ใช้ google.script.run · บน GitHub Pages ใช้ fetch ไปที่ /exec (doPost) */
+var READ_FNS=['getPublicConfig','getStatus','adminBootstrap','listApplications','getApplication','getThumbs','getFileThumbs','getFileData'];
+function call(fn){var args=Array.prototype.slice.call(arguments,1);
+  if(window.google&&google.script&&google.script.run)return new Promise(function(res,rej){var r=google.script.run.withSuccessHandler(res).withFailureHandler(rej);r[fn].apply(r,args)});
+  var tries=READ_FNS.indexOf(fn)>=0?3:1;
+  function go(n){return fetch(window.BOOT.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:fn,args:args}),redirect:'follow'})
+    .then(function(r){return r.text()}).then(function(t){var j;try{j=JSON.parse(t)}catch(e){throw {retry:true}}if(!j.ok)throw new Error(j.error||'เกิดข้อผิดพลาด');return j.r})
+    .catch(function(e){if((e&&e.retry||e instanceof TypeError)&&n>1)return new Promise(function(ok){setTimeout(ok,700)}).then(function(){return go(n-1)});
+      if(e&&e.retry||e instanceof TypeError)throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');throw e})}
+  return go(tries)}
+function em(e){return String((e&&e.message)||e||'เกิดข้อผิดพลาด').replace(/^(Exception|Error):\s*/,'')}
+function store(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k)||'null');if(v===null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}}
+var toastT;
+function toast(msg,bad){if(/ยกเลิกแล้ว$/.test(String(msg)))return;var el=$('.toast');if(el)el.remove();el=document.createElement('div');el.className='toast';el.setAttribute('role','status');el.style.background=bad?'var(--bad)':'';el.innerHTML='<span>'+esc(msg)+'</span>';document.body.appendChild(el);clearTimeout(toastT);toastT=setTimeout(function(){el.remove()},bad?6000:3200)}
+function loadingHtml(t){return '<div class="loading"><span class="spin"></span>'+esc(t||'กำลังโหลด...')+'</div>'}
+var BOOTV=window.BOOT||{mode:'apply',url:''};
+var MAIN=$('#main');
+
+/* ───────── shared field definitions ───────── */
+var FIELD_STEPS=[
+  [['start','วันที่สามารถเริ่มงานได้',1,1],['salary','เงินเดือนที่ต้องการ (บาท)',1,0],['source','ทราบข่าวการรับสมัครจาก',0,0]],
+  [['title','คำนำหน้า',1,1],['first','ชื่อ',1,1],['last','นามสกุล',1,1],['idcard','เลขบัตรประชาชน',1,0],['nick','ชื่อเล่น',0,0],['age','อายุ (ปี)',1,0],['birth','วัน/เดือน/ปีเกิด',1,0],['race','เชื้อชาติ',0,0],['nation','สัญชาติ',0,0],['religion','ศาสนา',0,0],['height','ส่วนสูง (ซม.)',0,0],['weight','น้ำหนัก (กก.)',0,0],['email','อีเมล (รับการแจ้งผล)',1,1],['addr','บ้านเลขที่ / หมู่ / อาคาร / ซอย / ถนน',1,0],['subdistrict','แขวง / ตำบล',1,0],['district','เขต / อำเภอ',1,0],['province','จังหวัด',1,0],['zip','รหัสไปรษณีย์',1,0],['mobile','โทรศัพท์มือถือ',1,1],['home','โทรศัพท์บ้าน',0,0],['status','สถานภาพปัจจุบัน',0,0],['marital','สถานภาพครอบครัว',0,0]],
+  [['sib','จำนวนพี่น้อง (คน)',0,0],['order','ท่านเป็นคนที่',0,0],['sib1','พี่น้องคนที่ 1 ชื่อ–สกุล',0,0],['father','บิดา ชื่อ–สกุล',0,0],['mother','มารดา ชื่อ–สกุล',0,0],['emer','ชื่อ–สกุล (ผู้ติดต่อฉุกเฉิน)',1,0],['emerTel','โทรศัพท์ (ผู้ติดต่อฉุกเฉิน)',1,0],['emerRel','ความสัมพันธ์',0,0],['military','เคยผ่านการเกณฑ์ทหาร',0,0],['ordain','เคยอุปสมบท',0,0],['jail','เคยต้องโทษจำคุก',0,0],['carDrive','ขับรถยนต์ได้ไหม',1,0],['motoDrive','ขับรถจักรยานยนต์ได้ไหม',0,0],['skillTags','ทักษะและความสามารถ',0,0]],
+  [['ref','บุคคลอ้างอิง (หัวหน้าเก่า)',0,0],['refTel','โทรศัพท์บุคคลอ้างอิง',0,0],['refPos','ตำแหน่ง / บริษัท',0,0],['skills','รายละเอียดความสามารถเพิ่มเติม',0,0],['typeTh','พิมพ์ไทย (คำ/นาที)',0,0],['typeEn','พิมพ์อังกฤษ (คำ/นาที)',0,0],['prog','โปรแกรมคอมพิวเตอร์ที่ถนัด',0,0]]
+];
+var FD={};
+function buildFD(over){FD={};FIELD_STEPS.forEach(function(st,si){st.forEach(function(f,i){var o=(over||{})[f[0]]||{};FD[f[0]]={id:f[0],label:o.label||f[1],req:f[3]?true:(o.req!=null?!!o.req:!!f[2]),lock:!!f[3],on:f[3]?true:(o.on!==false),step:si,type:'builtin',ord:i,def:f[1],defReq:!!f[2],help:o.help||''}})})}
+var STEPS=['ตำแหน่งที่สมัคร','ข้อมูลส่วนตัว','ครอบครัว ขับขี่ & ทักษะ','การศึกษา & ประสบการณ์','รูปถ่าย & เอกสารแนบ','ตรวจทาน & ส่ง'];
+function drawQR(text){var b=$('#qrbox');if(!b||typeof qrcode!=='function')return;var q=qrcode(0,'M');q.addData(text);q.make();b.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true})}
+function qrPng(text){if(typeof qrcode!=='function')return '';var q=qrcode(0,'M');q.addData(text);q.make();var n=q.getModuleCount(),sc=12,m=4,W=(n+m*2)*sc,cv=document.createElement('canvas');cv.width=W;cv.height=W+90;var c=cv.getContext('2d');c.fillStyle='#fff';c.fillRect(0,0,W,W+90);c.fillStyle='#000';
+  for(var y=0;y<n;y++)for(var x=0;x<n;x++)if(q.isDark(y,x))c.fillRect((x+m)*sc,(y+m)*sc,sc,sc);
+  c.font='600 30px Sarabun, Tahoma, sans-serif';c.textAlign='center';c.fillText('สแกนเพื่อสมัครงาน · Push Media',W/2,W+50);return cv.toDataURL('image/png')}
+var ICONS={
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
+  ext:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>',
+  dl:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+  folder:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>',
+  family:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 20c0-2.5 1.2-4.5 3.5-4.5S22 17.5 22 20"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  car:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 17h14v-5l-2-5H7l-2 5z"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M5 12h14"/></svg>',
+  spark:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>'
+};
+var VEH_CAR='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M6 32V24l5-10h26l5 10v8z"/><circle cx="14" cy="33" r="4" fill="var(--surface)"/><circle cx="34" cy="33" r="4" fill="var(--surface)"/><path d="M11 24h26"/></svg>';
+var VEH_MOTO='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="32" r="7"/><circle cx="37" cy="32" r="7"/><path d="M12 32l9-12h8l8 12M27 20l-3-6h-5M29 20h6"/></svg>';
+var LOGO='<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="6" fill="#fff"/><path d="M8 8h5v9h4V8h5v14H8z" fill="#16181D"/></svg>';
+
+/* ═════════════════ A4 DOCUMENT (แบบฟอร์ม 5.4.67) ═════════════════ */
+function docHtml(a){
+  var F=a.form||{},isDraft=!!a.isDraft;
+  var v=function(x,c){return '<span class="v '+(c||'')+'">'+esc(x||'')+'</span>'};
+  var bx=function(on,t){return '<span class="box"><i>'+(on?'✓':'')+'</i>'+t+'</span>'};
+  var slots=a.slots||[],has=function(k){return slots.indexOf(k)>=0};
+  var eduL=['มัธยมปลาย / ปวช.','อนุปริญญา / ปวส.','ปริญญาตรี','สูงกว่าปริญญาตรี','ปัจจุบันกำลังศึกษาอยู่'];
+  var edu=F.edu||[],work=F.work||[],eng=F.eng||['','','',''];
+  var p1='<div class="a4"><div class="hd"><div><div class="logo"><svg width="40" height="40" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#000"/><g transform="translate(14 14) scale(1.8)"><path d="M3 0H7.62V6.43A2.62 2.62 0 0 0 12.86 6.43V0H17A3 3 0 0 1 20 3V17A3 3 0 0 1 17 20H3A3 3 0 0 1 0 17V3A3 3 0 0 1 3 0Z" fill="#fff"/></g></svg><div>PUSH MEDIA<small>Innovative solutions</small></div></div>'+
+    '<div class="co"><b>'+esc(CO.name)+'</b><br>'+esc(CO.addr1)+(CO.addr2?'<br>'+esc(CO.addr2):'')+(CO.phone||CO.fax?'<br><b>'+(CO.phone?'Tel.'+esc(CO.phone):'')+(CO.fax?' Fax.'+esc(CO.fax):'')+'</b>':'')+'</div></div>'+
+    '<div><div class="ttl">ใบสมัครงาน</div><div class="ph">'+(a.photo?'<img src="'+a.photo+'" alt="รูปผู้สมัคร">':'รูปถ่าย 1 นิ้ว')+'</div></div></div>'+
+    '<div style="margin-top:12px"><div class="ln"><span class="fld">ทราบแหล่งข่าวการสมัครจาก'+v(F.source,'w')+'</span></div>'+
+    '<div class="ln"><span class="fld">ตำแหน่งที่ต้องการสมัคร'+v(a.posName,'w')+'</span><span class="fld">ว/ด/ป ที่สมัคร'+v(a.at)+'</span></div>'+
+    '<div class="ln"><span class="fld">วันที่สามารถเริ่มงานได้'+v(F.start,'w')+'</span><span class="fld">ว/ด/ป ที่สัมภาษณ์'+v(a.interview||'')+'</span></div>'+
+    '<div class="ln"><span class="fld">เงินเดือนที่ต้องการ'+v(F.salary==null?'(ไม่แสดง)':F.salary,'w')+'</span><span class="fld">ว/ด/ป ที่เริ่มทำงาน'+v('')+'</span></div>'+
+    '<div class="ln"><b>เอกสารที่นำมาประกอบการพิจารณา</b>&nbsp; '+bx(has('house'),'สำเนาทะเบียนบ้าน')+bx(has('edu'),'วุฒิการศึกษา')+bx(has('idcard'),'สำเนาบัตรประชาชน')+bx(slots.some(function(s){return ['house','edu','idcard','photo'].indexOf(s)<0}),'อื่น ๆ')+'</div></div>'+
+    '<div style="margin-top:14px"><div class="ln"><span class="fld">ชื่อ – สกุล '+esc(F.title||'นาย/นาง/นางสาว')+v((F.first||'')+'  '+(F.last||''),'xw')+'</span></div><div class="ln"><span class="fld">เลขบัตรประชาชน'+v(F.idcard,'w')+'</span><span class="fld">ชื่อเล่น'+v(F.nick)+'</span><span class="fld">อายุ'+v(F.age)+'ปี</span></div>'+
+    '<div class="ln"><span class="fld">ว/ด/ป ที่เกิด'+v(F.birth)+'</span><span class="fld">เชื้อชาติ'+v(F.race)+'</span><span class="fld">สัญชาติ'+v(F.nation)+'</span><span class="fld">ศาสนา'+v(F.religion)+'</span></div>'+
+    '<div class="ln"><span class="fld">ส่วนสูง'+v(F.height)+'</span><span class="fld">น้ำหนัก'+v(F.weight)+'</span></div>'+
+    '<div class="ln"><span class="fld">ที่อยู่ที่สามารถติดต่อได้'+v(fullAddr(F),'xw')+'</span></div>'+
+    '<div class="ln"><span class="fld">โทรศัพท์บ้าน'+v(F.home)+'</span><span class="fld">ที่ทำงาน'+v(F.workPhone||'')+'</span><span class="fld">มือถือ'+v(F.mobile)+'</span></div>'+
+    '<div class="ln">สถานภาพปัจจุบัน&nbsp; '+['กำลังศึกษา','ทำงานประจำ','ว่างงาน','อื่น ๆ'].map(function(o){return bx(F.status===o,o)}).join('')+'</div>'+
+    '<div class="ln">สถานภาพครอบครัว&nbsp; '+['โสด','สมรส','หย่า','อื่น ๆ'].map(function(o){return bx(F.marital===o,o)}).join('')+'</div></div>'+
+    '<div style="margin-top:14px"><div class="ln"><span class="fld">จำนวนพี่น้อง'+v(F.sib)+'คน</span><span class="fld">ท่านเป็นคนที่'+v(F.order)+'</span></div>'+
+    '<div class="ln"><span class="fld">คนที่ 1 ชื่อ – สกุล'+v(F.sib1,'w')+'</span>'+bx(F.sib1s==='กำลังศึกษา','กำลังศึกษา')+bx(F.sib1s==='ทำงาน','ทำงาน')+'</div>'+
+    '<div class="ln"><span class="fld">บิดา ชื่อ – สกุล'+v(F.father,'w')+'</span><span class="fld">อายุ'+v(F.fage)+'ปี</span>'+bx(F.falive==='มีชีวิตอยู่','มีชีวิตอยู่')+bx(F.falive==='ถึงแก่กรรม','ถึงแก่กรรม')+'<span class="fld">อาชีพ'+v(F.fjob)+'</span></div>'+
+    '<div class="ln"><span class="fld">มารดา ชื่อ – สกุล'+v(F.mother,'w')+'</span><span class="fld">อายุ'+v(F.mage)+'ปี</span>'+bx(F.malive==='มีชีวิตอยู่','มีชีวิตอยู่')+bx(F.malive==='ถึงแก่กรรม','ถึงแก่กรรม')+'<span class="fld">อาชีพ'+v(F.mjob)+'</span></div>'+
+    '<div class="ln" style="margin-top:8px"><span class="fld">บุคคลที่ติดต่อได้กรณีฉุกเฉิน'+v(F.emer,'w')+'</span><span class="fld">โทรศัพท์'+v(F.emerTel)+'</span><span class="fld">ความสัมพันธ์'+v(F.emerRel)+'</span></div></div>'+
+    '<div style="margin-top:14px">'+[['ท่านเคยผ่านการเกณฑ์ทหารหรือไม่','military'],['ท่านเคยอุปสมบทหรือไม่','ordain'],['ท่านเคยต้องโทษจำคุกหรือไม่','jail']].map(function(q){return '<div class="ln"><span style="min-width:250px">'+q[0]+'</span>'+bx(F[q[1]]==='เคย','เคย')+bx(F[q[1]]==='ไม่เคย','ไม่เคย')+(F[q[1]]&&F[q[1]]!=='เคย'&&F[q[1]]!=='ไม่เคย'?'<span class="fld">'+v(F[q[1]])+'</span>':'')+'</div>'}).join('')+
+    '<div class="ln"><span style="min-width:250px">ความสามารถในการขับขี่ยานพาหนะ</span>'+bx(F.carLic==='มี','มี (รถยนต์)')+'<span class="fld">ใบขับขี่เลขที่'+v(F.carLic==='มี'?F.carLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.carOwn==='มี'?F.carNo:'')+'</span>'+bx(!!F.carDrive&&F.carLic!=='มี','ไม่มี')+'</div>'+
+    '<div class="ln"><span style="min-width:250px"></span>'+bx(F.motoLic==='มี','มี (จักรยานยนต์)')+'<span class="fld">ใบขับขี่เลขที่'+v(F.motoLic==='มี'?F.motoLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.motoOwn==='มี'?F.motoNo:'')+'</span>'+bx(!!F.motoDrive&&F.motoLic!=='มี','ไม่มี')+'</div></div>'+
+    '<div class="pg">หน้า 1/2</div><div class="stamp">'+(isDraft?'ฉบับร่าง · ยังไม่ได้ส่ง':'เลขที่ '+esc(a.no)+'<br>ส่งออนไลน์ '+esc(a.at))+'</div></div>';
+  var p2='<div class="a4"><h4>ประวัติการศึกษา</h4><table><thead><tr><th rowspan="2">ระดับการศึกษา</th><th rowspan="2">สถาบันการศึกษา</th><th rowspan="2">สาขาวิชาเอก</th><th colspan="2">ปีการศึกษา</th><th rowspan="2">คะแนนเฉลี่ย</th></tr><tr><th>เข้าศึกษา</th><th>สำเร็จ</th></tr></thead><tbody>'+
+    eduL.map(function(t,r){var row=edu[r]||[];return '<tr><td>'+t+'</td>'+[0,1,2,3,4].map(function(c){return '<td class="v2">'+esc(row[c]||'')+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+
+    '<h4>ประวัติ / ประสบการณ์การทำงาน (เรียงจากปัจจุบัน)</h4><table><thead><tr><th>ชื่อสถานประกอบการ</th><th>ระยะเวลาที่ทำงาน</th><th>เงินเดือน</th><th>หน้าที่รับผิดชอบ</th><th>สาเหตุที่ออก</th></tr></thead><tbody>'+
+    [0,1,2,3].map(function(r){var row=work[r]||[];return '<tr>'+[0,1,2,3,4].map(function(c){return '<td class="v2">'+esc(row[c]||'')+'&nbsp;</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+
+    '<div class="ln" style="margin-top:10px"><span class="fld">บุคคลอ้างอิง (หัวหน้าเก่า)'+v(F.ref,'w')+'</span><span class="fld">โทรศัพท์'+v(F.refTel)+'</span></div><div class="ln"><span class="fld">ตำแหน่ง / บริษัท'+v(F.refPos,'xw')+'</span></div>'+
+    '<table style="margin-top:12px"><thead><tr><th style="text-align:left">ความรู้ทางด้านภาษา</th>'+['การพูด','การอ่าน','การเขียน','การเข้าใจ'].map(function(t){return '<th>'+t+'<br><span style="font-weight:400;font-size:11px">ดีมาก · ดี · พอใช้</span></th>'}).join('')+'</tr></thead><tbody><tr><td>ภาษาอังกฤษ</td>'+eng.map(function(e){return '<td style="text-align:center">'+['ดีมาก','ดี','พอใช้'].map(function(o){return '<span class="box" style="margin:0 4px"><i>'+(e===o?'✓':'')+'</i></span>'}).join('')+'</td>'}).join('')+'</tr></tbody></table>'+
+    '<table style="margin-top:-1px"><tr><td style="width:55%;vertical-align:top"><b>ความรู้ความสามารถพิเศษอื่น ๆ</b><br><span style="color:#0B2E8A;font-weight:600">'+esc(((F.skillTags||[]).join(' · '))+(F.skills?((F.skillTags||[]).length?' · ':'')+F.skills:''))+'</span></td><td style="vertical-align:top">พิมพ์ดีดภาษาไทย <b style="color:#0B2E8A">'+esc(F.typeTh||'…')+'</b> คำ/นาที<br>พิมพ์ดีดภาษาอังกฤษ <b style="color:#0B2E8A">'+esc(F.typeEn||'…')+'</b> คำ/นาที<br>โปรแกรมที่ถนัด <b style="color:#0B2E8A">'+esc(F.prog||'')+'</b></td></tr></table>'+
+    (a.extraRows&&a.extraRows.length?'<table style="margin-top:12px"><tbody>'+a.extraRows.map(function(r){return '<tr><td style="width:38%">'+esc(r[0])+'</td><td class="v2">'+esc(r[1])+'</td></tr>'}).join('')+'</tbody></table>':'')+
+    '<p style="text-indent:48px;margin-top:16px;font-size:14px;line-height:1.8">ข้าพเจ้าขอรับรองว่า ข้อความที่ข้าพเจ้ากรอกในใบสมัครนี้ เป็นความจริงและสมบูรณ์ทุกประการ หากข้อความดังกล่าวข้างต้นเป็นความเท็จหรือบิดเบือนความจริง ข้าพเจ้ายินดีให้บริษัทเลิกจ้างได้ทันที โดยข้าพเจ้าจะไม่เรียกร้องใด ๆ ทั้งสิ้นและยินดีให้บริษัทฯ สอบถามรายละเอียดต่าง ๆ ได้จากบุคคลหรือหน่วยงานที่ข้าพเจ้าอ้างอิงในใบสมัครนี้</p>'+
+    '<div class="sign">ลงชื่อ <span class="v w" style="font-style:italic">'+(isDraft?'':'ยืนยันออนไลน์ ✓')+'</span> ผู้สมัคร<br>( '+esc((F.first||'')+' '+(F.last||''))+' )</div>'+
+    '<div class="pg">หน้า 2/2</div><div class="stamp">'+(isDraft?'ฉบับร่าง':'ยืนยันข้อความ PDPA ออนไลน์<br>'+esc(a.at))+'</div></div>';
+  return p1+p2;
+}
+function printDoc(a){var pa=$('#print-area');pa.innerHTML=docHtml(a);setTimeout(function(){window.print()},150)}
+
+/* ═════════════════ APPLICANT ═════════════════ */
+var CFG=null;
+var CO={name:'บริษัท พุช มีเดีย จำกัด',addr1:'2427 ชั้น 3 ถนนลาดพร้าว แขวงสะพานสอง',addr2:'เขตวังทองหลาง กรุงเทพฯ 10310',phone:'02-438-8425',fax:'02-438-8423'};
+function setCO(x){if(x&&x.name)CO=x}
+var S={view:'apply',step:0,form:null,files:{},draftId:'',sent:null,err:''};
+function emptyForm(){var r5=function(n){var a=[];for(var i=0;i<n;i++)a.push(['','','','','']);return a};
+  return {source:'',pos:'',start:'',salary:'',title:'',first:'',last:'',nick:'',age:'',birth:'',nation:'ไทย',race:'ไทย',religion:'',height:'',weight:'',addr:'',subdistrict:'',district:'',province:'',zip:'',mobile:'',home:'',work:'',email:'',status:'',marital:'',
+    sib:'',order:'',sib1:'',sib1s:'',father:'',fage:'',falive:'',fjob:'',mother:'',mage:'',malive:'',mjob:'',emer:'',emerTel:'',emerRel:'',military:'',ordain:'',jail:'',
+    carDrive:'',carLic:'',carLicType:'ส่วนบุคคล (5 ปี)',carLicNo:'',carOwn:'',carNo:'',motoDrive:'',motoLic:'',motoLicType:'ส่วนบุคคล (5 ปี)',motoLicNo:'',motoOwn:'',motoNo:'',skillTags:[],
+    edu:r5(5),workRows:r5(4),ref:'',refTel:'',refPos:'',eng:['','','',''],skills:'',typeTh:'',typeEn:'',prog:'',extra:{},consent:false}}
+var saveT;
+function saveDraft(){clearTimeout(saveT);saveT=setTimeout(function(){var f={};Object.keys(S.files).forEach(function(k){var x=S.files[k];if(x.fileId)f[k]={name:x.name,type:x.type,sizeKB:x.sizeKB,fileId:x.fileId,url:x.type==='img'&&x.url&&x.url.length<300000?x.url:''}});store('pmc_draft',{t:Date.now(),form:S.form,files:f,draftId:S.draftId,step:S.step})},400)}
+function pos(id){return (CFG&&CFG.positions||[]).filter(function(p){return p.id===id})[0]||{name:id||'',dept:'ฝากประวัติ (ไม่ระบุแผนก)',desc:''}}
+
+function startApply(){
+  MAIN.innerHTML=loadingHtml('กำลังโหลดแบบฟอร์ม...');
+  call('getPublicConfig').then(function(c){
+    CFG=c;setCO(c.company);buildFD(c.fields);
+    var d=store('pmc_draft');
+    if(d&&d.form&&Date.now()-d.t<7*86400000){S.form=Object.assign(emptyForm(),d.form);S.files=d.files||{};S.draftId=d.draftId;S.step=Math.min(d.step||0,5)}
+    else{S.form=emptyForm();S.draftId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+    renderApply();
+  }).catch(function(e){MAIN.innerHTML='<div class="card track-card"><div class="err-box">โหลดแบบฟอร์มไม่สำเร็จ: '+esc(em(e))+'</div><button class="btn" onclick="location.reload()">ลองใหม่</button></div>'});
+}
+function renderApply(){
+  if(S.view==='status')return renderStatus();
+  if(S.sent){MAIN.innerHTML=doneHtml();bindDone();return}
+  S.seen=S.seen||{};S.seen[S.step]=1;
+  MAIN.innerHTML='<div class="apply"><nav class="card steps" aria-label="ขั้นตอน">'+STEPS.map(function(t,i){
+      var miss=i<5?missingStep(i).length:0,seen=S.seen[i]&&i!==S.step,st=seen?(miss?'warn':'done'):'';
+      return '<button type="button" data-step="'+i+'" class="'+st+'"'+(i===S.step?' aria-current="step"':'')+' title="'+(st==='warn'?'ยังกรอกไม่ครบ '+miss+' ช่อง':'')+'"><span class="n">'+(st==='done'?'✓':st==='warn'?'!':i+1)+'</span>'+t+(st==='warn'?' <span class="miss-n">'+miss+'</span>':'')+'</button>'}).join('')+
+    '<div class="save">ระบบบันทึกฉบับร่างในเครื่องนี้อัตโนมัติ กลับมากรอกต่อได้ภายใน 7 วัน</div></nav>'+
+    '<div class="card panel" id="step-panel">'+(S.err?'<div class="err-box" role="alert">'+esc(S.err)+'</div>':'')+stepHtml(S.step)+'</div></div>';
+  $$('.steps button').forEach(function(b){b.addEventListener('click',function(){S.err='';S.step=+b.dataset.step;saveDraft();renderApply();window.scrollTo(0,0)})});
+  bindStep();
+}
+function on(k){return !FD[k]||FD[k].on}
+function lbl(id,label,req){var d=FD[id];if(d){label=d.label;req=d.req}return esc(label)+(req?' <span class="req">*</span>':'')}
+function inp(id,label,span,req,ph,type){
+  var d=FD[id];if(d&&!d.on)return '';
+  return '<div class="f '+(span||'')+'" data-fw="'+id+'"><label for="f-'+id+'">'+lbl(id,label,req)+'</label><input class="inp" id="f-'+id+'" data-k="'+id+'" type="'+(type||'text')+'" value="'+esc(S.form[id])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>'+(d&&d.help?'<span class="muted" style="font-size:12px">'+esc(d.help)+'</span>':'')+'</div>';
+}
+/* ───── ที่อยู่ไทย: ค้นหา ตำบล/อำเภอ/จังหวัด/รหัสไปรษณีย์ ───── */
+var TH_ADDR_URL='https://itsupport2-pixel.github.io/wtm-liff/careers-th-address.json',TA=null,TA_P=null;
+function loadTA(){if(TA)return Promise.resolve(TA);if(!TA_P)TA_P=fetch(TH_ADDR_URL).then(function(r){return r.json()}).then(function(d){TA=d;return d}).catch(function(e){TA_P=null;throw e});return TA_P}
+var ADDR_KEYS=['subdistrict','district','province','zip'];
+function addrInp(id,label,ph){var d=FD[id];if(d&&!d.on)return '';
+  return '<div class="f s3 ac-wrap" data-fw="'+id+'"><label for="f-'+id+'">'+lbl(id,label)+'</label><input class="inp" id="f-'+id+'" data-k="'+id+'" data-addr="'+id+'" autocomplete="off" '+(id==='zip'?'inputmode="numeric" maxlength="5" ':'')+'value="'+esc(S.form[id])+'" placeholder="'+esc(ph)+'"><div class="ac-list" hidden role="listbox"></div></div>'}
+function fullAddr(F){if(!F)return '';var t=[F.addr,F.subdistrict&&((F.province==='กรุงเทพมหานคร'?'แขวง':'ต.')+F.subdistrict),F.district&&((F.province==='กรุงเทพมหานคร'?'เขต':'อ.')+F.district),F.province&&(F.province==='กรุงเทพมหานคร'?F.province:'จ.'+F.province),F.zip].filter(Boolean).join(' ');return t}
+function bindAddr(p){
+  $$('[data-addr]',p).forEach(function(el){
+    var box=el.parentNode.querySelector('.ac-list'),idx={subdistrict:0,district:1,province:2,zip:3}[el.dataset.addr],act=-1,hits=[];
+    var close=function(){box.hidden=true;act=-1};
+    var pick=function(r){var vals=[r[0],r[1],r[2],r[3]];ADDR_KEYS.forEach(function(k,i){S.form[k]=vals[i];var e=$('#f-'+k);if(e)e.value=vals[i];var w=$('[data-fw="'+k+'"]');if(w)w.classList.remove('bad')});saveDraft();close()};
+    var draw=function(){
+      var q=el.value.trim();if(q.length<(idx===3?3:2)){close();return}
+      loadTA().then(function(T){
+        if(el.value.trim()!==q)return;
+        var pre=[],mid=[];
+        for(var i=0;i<T.length&&pre.length<12;i++){var v=T[i][idx];if(v.indexOf(q)===0)pre.push(T[i]);else if(mid.length<12&&v.indexOf(q)>0)mid.push(T[i])}
+        hits=pre.concat(mid).slice(0,10);
+        if(!hits.length){box.innerHTML='<div class="ac-empty">ไม่พบ “'+esc(q)+'” · กรอกเองได้</div>';box.hidden=false;return}
+        box.innerHTML=hits.map(function(r,j){return '<button type="button" class="ac-opt" data-j="'+j+'"><b>'+esc(r[0])+'</b> » '+esc(r[1])+' » '+esc(r[2])+' <span>'+esc(r[3])+'</span></button>'}).join('');
+        box.hidden=false;act=-1;
+        $$('.ac-opt',box).forEach(function(b){b.addEventListener('mousedown',function(e){e.preventDefault()});b.addEventListener('click',function(){pick(hits[+b.dataset.j])})});
+      }).catch(function(){box.innerHTML='<div class="ac-empty">โหลดข้อมูลที่อยู่ไม่สำเร็จ · กรอกเองได้</div>';box.hidden=false});
+    };
+    el.addEventListener('input',draw);el.addEventListener('focus',function(){loadTA().catch(function(){})});
+    el.addEventListener('blur',function(){setTimeout(close,150)});
+    el.addEventListener('keydown',function(e){var o=$$('.ac-opt',box);if(box.hidden||!o.length)return;
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();act=(act+(e.key==='ArrowDown'?1:-1)+o.length)%o.length;o.forEach(function(x,j){x.classList.toggle('act',j===act)});o[act].scrollIntoView({block:'nearest'})}
+      else if(e.key==='Enter'){e.preventDefault();pick(hits[act>=0?act:0])}else if(e.key==='Escape')close()});
+  });
+}
+/* ───── dropdown: วันเกิด / เชื้อชาติ / สัญชาติ / ศาสนา ───── */
+var TH_MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+var NATIONS=['ไทย','ลาว','เมียนมา','กัมพูชา','เวียดนาม','มาเลเซีย','จีน','ญี่ปุ่น','อินเดีย','ฟิลิปปินส์'];
+var RELIGIONS=['พุทธ','คริสต์','อิสลาม','ฮินดู','ซิกข์','ไม่นับถือศาสนา'];
+function selInp(id,label,opts,span){var d=FD[id];if(d&&!d.on)return '';var v=S.form[id]||'',other=v&&opts.indexOf(v)<0;
+  return '<div class="f '+(span||'')+'" data-fw="'+id+'"><label for="f-'+id+'">'+lbl(id,label)+'</label><select class="inp" id="f-'+id+'" data-sel="'+id+'"><option value="">— เลือก —</option>'+opts.map(function(o){return '<option'+(v===o?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'<option value="__o"'+(other?' selected':'')+'>อื่น ๆ (ระบุ)</option></select>'+
+    '<input class="inp" id="f-'+id+'-o" data-selo="'+id+'" placeholder="ระบุ'+esc(label)+'" value="'+esc(other?v:'')+'"'+(other?'':' hidden')+' style="margin-top:6px"></div>'}
+function birthParts(){var m=/^(\d{1,2}) (\S+) (\d{4})$/.exec(S.form.birth||'');return m?{d:m[1],m:m[2],y:m[3]}:{d:'',m:'',y:''}}
+var TH_MON_F=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+function birthInp(){var d=FD.birth;if(d&&!d.on)return '';var b=birthParts(),txt=b.d?b.d+' '+TH_MON_F[TH_MON.indexOf(b.m)]+' '+b.y:'';
+  return '<div class="f s2 dp-wrap" data-fw="birth"><label for="f-birth">'+lbl('birth','วัน/เดือน/ปีเกิด')+'</label><button type="button" class="inp dp-btn" id="f-birth" aria-haspopup="dialog"><span class="'+(txt?'':'ph')+'">'+(txt||'เลือกวัน เดือน ปีเกิด')+'</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></button><div class="dp-pop" hidden role="dialog" aria-label="เลือกวันเกิด"></div></div>'}
+function setBirth(d,mi,y,p){
+  S.form.birth=d+' '+TH_MON[mi]+' '+y;
+  var dt=new Date(y-543,mi,d),n=new Date(),age=n.getFullYear()-dt.getFullYear()-((n.getMonth()<dt.getMonth()||(n.getMonth()===dt.getMonth()&&n.getDate()<dt.getDate()))?1:0);
+  S.form.age=String(age);var a=$('#f-age',p);if(a)a.value=age;
+  var t=$('#f-birth span',p);t.textContent=d+' '+TH_MON_F[mi]+' '+y;t.className='';var w=$('[data-fw="birth"]',p);if(w)w.classList.remove('bad');saveDraft();
+}
+function bindBirth(p){
+  var btn=$('#f-birth',p);if(!btn)return;var pop=$('.dp-pop',p),yNow=new Date().getFullYear()+543,b=birthParts();
+  var st={y:+b.y||yNow-25,m:b.m?TH_MON.indexOf(b.m):0};
+  var draw=function(){var ys=[];for(var y=yNow-15;y>=yNow-70;y--)ys.push(y);
+    var first=new Date(st.y-543,st.m,1).getDay(),nd=new Date(st.y-543,st.m+1,0).getDate(),cur=birthParts(),cells='';
+    for(var i=0;i<first;i++)cells+='<span></span>';
+    for(var d=1;d<=nd;d++){var on=cur.d==d&&cur.m===TH_MON[st.m]&&+cur.y===st.y;cells+='<button type="button" class="dp-d'+(on?' on':'')+'" data-d="'+d+'">'+d+'</button>'}
+    pop.innerHTML='<div class="dp-h"><button type="button" class="ib" data-mv="-1" aria-label="เดือนก่อน">‹</button><select class="inp" data-dm aria-label="เดือน">'+TH_MON_F.map(function(m,i){return '<option value="'+i+'"'+(i===st.m?' selected':'')+'>'+m+'</option>'}).join('')+'</select><select class="inp" data-dy aria-label="ปี พ.ศ.">'+ys.map(function(y){return '<option'+(y===st.y?' selected':'')+'>'+y+'</option>'}).join('')+'</select><button type="button" class="ib" data-mv="1" aria-label="เดือนถัดไป">›</button></div>'+
+      '<div class="dp-g">'+['อา','จ','อ','พ','พฤ','ศ','ส'].map(function(x){return '<b>'+x+'</b>'}).join('')+cells+'</div>';
+    $('[data-dm]',pop).addEventListener('change',function(e){st.m=+e.target.value;draw()});
+    $('[data-dy]',pop).addEventListener('change',function(e){st.y=+e.target.value;draw()});
+    $$('[data-mv]',pop).forEach(function(x){x.addEventListener('click',function(){st.m+=+x.dataset.mv;if(st.m<0){st.m=11;st.y--}if(st.m>11){st.m=0;st.y++}st.y=Math.max(yNow-70,Math.min(yNow-15,st.y));draw()})});
+    $$('[data-d]',pop).forEach(function(x){x.addEventListener('click',function(){setBirth(+x.dataset.d,st.m,st.y,p);close();btn.focus()})});
+  };
+  var close=function(){pop.hidden=true;document.removeEventListener('mousedown',outside)};
+  var outside=function(e){if(!pop.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))close()};
+  btn.addEventListener('click',function(){if(!pop.hidden){close();return}draw();pop.hidden=false;document.addEventListener('mousedown',outside)});
+  pop.addEventListener('keydown',function(e){if(e.key==='Escape'){close();btn.focus()}});
+}
+function bindSelects(p){
+  $$('[data-sel]',p).forEach(function(el){el.addEventListener('change',function(){var k=el.dataset.sel,o=$('[data-selo="'+k+'"]',p);if(el.value==='__o'){o.hidden=false;o.focus();S.form[k]=o.value.trim()}else{o.hidden=true;S.form[k]=el.value}saveDraft()})});
+  $$('[data-selo]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.selo]=el.value.trim();saveDraft()})});
+}
+function idOk(v){var d=String(v||'').replace(/\D/g,'');if(d.length!==13)return false;var s=0;for(var i=0;i<12;i++)s+=+d[i]*(13-i);return (11-s%11)%10===+d[12]}
+function idFmt(v){var d=String(v||'').replace(/\D/g,'').slice(0,13),p=[1,4,5,2,1],o=[],i=0;p.forEach(function(n){if(i<d.length){o.push(d.substr(i,n));i+=n}});return o.join('-')}
+function idInp(){var d=FD.idcard;if(d&&!d.on)return '';return '<div class="f s2" data-fw="idcard"><label for="f-idcard">'+lbl('idcard','เลขบัตรประชาชน')+'</label><input class="inp" id="f-idcard" data-idc inputmode="numeric" maxlength="17" placeholder="x-xxxx-xxxxx-xx-x" value="'+esc(idFmt(S.form.idcard))+'"><span class="muted" style="font-size:12px">ใช้ติดตามสถานะใบสมัคร</span></div>'}
+function chipSet(key,opts){return '<div class="seg" role="group">'+opts.map(function(o){return '<button type="button" class="chip" data-seg="'+key+'" data-v="'+esc(o)+'" aria-pressed="'+(S.form[key]===o)+'">'+esc(o)+'</button>'}).join('')+'</div>'}
+function seg(id,label,opts,span){var d=FD[id];if(d&&!d.on)return '';return '<div class="f '+(span||'')+'" data-fw="'+id+'"><span class="lbl">'+lbl(id,label)+'</span>'+chipSet(id,opts)+'</div>'}
+function blk(ic,title,sub,body){return '<section class="blk"><h3 class="blk-h"><span class="ico">'+(ICONS[ic]||'')+'</span>'+title+'</h3>'+(sub?'<p class="blk-sub">'+sub+'</p>':'<div style="height:10px"></div>')+body+'</section>'}
+function famRow(who,nameK,ageK,stK,stOpts,jobK){
+  var F=S.form,fi=function(k,l,t){return '<div class="f'+(k===nameK?' fname':'')+'"><label for="f-'+k+'">'+l+'</label><input class="inp" id="f-'+k+'" data-k="'+k+'" type="'+(t||'text')+'" value="'+esc(F[k]||'')+'"></div>'};
+  return '<div class="fam"><span class="who-l">'+who+'</span>'+fi(nameK,'ชื่อ–สกุล')+(ageK?fi(ageK,'อายุ','number'):'<span></span>')+'<div class="f"><span class="lbl">สถานะ</span>'+chipSet(stK,stOpts)+'</div>'+(jobK?fi(jobK,'อาชีพ'):'<span></span>')+'</div>';
+}
+function ynRow(k,opts){if(!on(k))return '';return '<div class="yn" data-fw="'+k+'"><span class="q">'+lbl(k)+'หรือไม่</span>'+chipSet(k,opts)+'</div>'}
+function vehCard(k,name,svg){
+  var F=S.form,d=F[k+'Drive']==='ได้',lic=F[k+'Lic']==='มี',own=F[k+'Own']==='มี';
+  var fi=function(key,l,ph){return '<div class="f"><label for="f-'+key+'">'+l+'</label><input class="inp" id="f-'+key+'" data-k="'+key+'" value="'+esc(F[key]||'')+'"'+(ph?' placeholder="'+ph+'"':'')+'></div>'};
+  return '<div class="veh'+(d?' on':'')+'" data-fw="'+k+'Drive"><div class="veh-top">'+svg+'<b>'+lbl(k+'Drive')+'</b>'+chipSet(k+'Drive',['ได้','ไม่ได้'])+'</div>'+
+    (d?'<div class="sub"><div class="f"><span class="lbl">มีใบขับขี่</span>'+chipSet(k+'Lic',['มี','ไม่มี'])+'</div>'+
+      (lic?'<div class="f"><label for="f-'+k+'LicType">ประเภทใบขับขี่</label><select class="inp" id="f-'+k+'LicType" data-k="'+k+'LicType">'+['ชั่วคราว (2 ปี)','ส่วนบุคคล (5 ปี)','ตลอดชีพ','สาธารณะ','ประเภท 2 (รถบรรทุก)'].map(function(o){return '<option'+(F[k+'LicType']===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div>'+fi(k+'LicNo','เลขที่ใบขับขี่'):'<span class="off-note" style="align-self:end;padding-bottom:10px">ขับได้แต่ยังไม่มีใบขับขี่</span>')+
+      '<div class="f"><span class="lbl">มี'+name+'ส่วนตัวใช้ทำงาน</span>'+chipSet(k+'Own',['มี','ไม่มี'])+'</div>'+(own?fi(k+'No','ทะเบียนรถ','กท 1234'):'')+'</div>':'<span class="off-note">ถ้าขับได้ กด "ได้" เพื่อกรอกใบขับขี่และทะเบียนรถ</span>')+'</div>';
+}
+function skillsPicker(){
+  var sel=S.form.skillTags=S.form.skillTags||[],all={};
+  var html=(CFG.skills||[]).map(function(g){return '<div class="sk-grp"><div class="gt">'+esc(g.g)+'</div><div class="sk">'+g.items.map(function(t){all[t]=1;return '<button type="button" class="chip" data-skill="'+esc(t)+'" aria-pressed="'+(sel.indexOf(t)>=0)+'">'+esc(t)+'</button>'}).join('')+'</div></div>'}).join('');
+  var own=sel.filter(function(t){return !all[t]});
+  if(own.length)html+='<div class="sk-grp"><div class="gt">ทักษะที่เพิ่มเอง</div><div class="sk">'+own.map(function(t){return '<button type="button" class="chip" data-skill="'+esc(t)+'" aria-pressed="true">'+esc(t)+'</button>'}).join('')+'</div></div>';
+  return html+'<div class="sk-add"><input class="inp" id="sk-in" placeholder="ทักษะอื่น เช่น ขับรถยก (Forklift), ภาษาจีน" aria-label="เพิ่มทักษะ"><button type="button" class="btn btn-sm" id="sk-btn">+ เพิ่มทักษะ</button><span class="sk-count" id="sk-count">เลือกแล้ว '+sel.length+' ทักษะ</span></div>';
+}
+function extraHtml(step){
+  var xs=(CFG.extra||[]).filter(function(x){return x.step===step&&x.on});if(!xs.length)return '';
+  var E=S.form.extra||{};
+  return '<div class="grid" style="margin-top:14px"><div class="sec">ข้อมูลเพิ่มเติม</div>'+xs.map(function(x){
+    var lab='<label for="x-'+x.id+'">'+esc(x.label)+(x.req?' <span class="req">*</span>':'')+'</label>',help=x.help?'<span class="muted" style="font-size:12px">'+esc(x.help)+'</span>':'',val=esc(E[x.id]||'');
+    if(x.type==='choice')return '<div class="f s6" data-fw="x:'+x.id+'"><span class="lbl">'+esc(x.label)+(x.req?' <span style="color:var(--bad)">*</span>':'')+'</span><div class="seg">'+String(x.opts||'').split(',').map(function(o){o=o.trim();return '<button type="button" class="chip" data-xseg="'+x.id+'" data-v="'+esc(o)+'" aria-pressed="'+(E[x.id]===o)+'">'+esc(o)+'</button>'}).join('')+'</div>'+help+'</div>';
+    if(x.type==='long')return '<div class="f s6" data-fw="x:'+x.id+'">'+lab+'<textarea class="inp" id="x-'+x.id+'" data-x="'+x.id+'">'+val+'</textarea>'+help+'</div>';
+    return '<div class="f s3" data-fw="x:'+x.id+'">'+lab+'<input class="inp" id="x-'+x.id+'" data-x="'+x.id+'" type="'+({number:'number',date:'date'}[x.type]||'text')+'" value="'+val+'">'+help+'</div>'}).join('')+'</div>';
+}
+function stepHtml(i){
+  var F=S.form,h='';
+  if(i===0){
+    var p=pos(F.pos);
+    h='<p class="eyebrow">ขั้นที่ 1 จาก 6</p><h2>เลือกตำแหน่งที่ต้องการสมัคร</h2><p class="lead">พิมพ์ค้นหาชื่อตำแหน่งหรือแผนก · ไม่พบตำแหน่งที่ต้องการ พิมพ์ชื่อตำแหน่งเพื่อฝากประวัติไว้ได้</p>'+
+      '<div class="grid"><div class="f s6 combo" data-fw="pos"><label for="posq">ตำแหน่ง <span class="req">*</span></label>'+
+        '<input class="inp" id="posq" type="text" role="combobox" aria-expanded="true" aria-controls="cb-list" aria-autocomplete="list" autocomplete="off" placeholder="พิมพ์ค้นหาตำแหน่ง หรือแผนก เช่น ช่าง, LED, บัญชี" value="'+esc(F.pos?p.name:'')+'">'+
+        '<button type="button" class="clr" id="posclr" aria-label="ล้างคำค้นหา">✕</button>'+
+        '<div class="cb-list" id="cb-list" role="listbox" aria-label="ตำแหน่งที่เปิดรับ"></div>'+
+        (F.pos&&p.desc?'<div class="pos-desc"><b>รายละเอียดงาน:</b> '+esc(p.desc)+'</div>':'')+
+        '<span class="muted" style="font-size:12.5px">เปิดรับ '+CFG.positions.length+' ตำแหน่ง</span></div>'+
+      inp('start','วันที่สามารถเริ่มงานได้','s2',1,'เช่น 1 พ.ย. 2569 หรือ ทันที')+inp('salary','เงินเดือนที่ต้องการ (บาท)','s2',1)+
+      (on('source')?'<div class="f s2" data-fw="source"><label for="f-source">'+lbl('source')+'</label><select class="inp" id="f-source" data-k="source"><option value="">— เลือก —</option>'+['Facebook Push Media','JobThai','JobsDB','พนักงานแนะนำ','เว็บไซต์บริษัท','อื่น ๆ'].map(function(o){return '<option'+(F.source===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div>':'')+'</div>';
+  }
+  if(i===1){
+    h='<p class="eyebrow">ขั้นที่ 2 จาก 6</p><h2>ข้อมูลส่วนตัว</h2><p class="lead">ช่องที่มี <span style="color:var(--bad)">*</span> ต้องกรอก · ข้อมูลนี้ใช้เฉพาะการพิจารณารับสมัครงานตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล</p><div class="grid">'+
+      seg('title','คำนำหน้า',['นาย','นาง','นางสาว'],'s2')+inp('first','ชื่อ','s2')+inp('last','นามสกุล','s2')+idInp()+
+      inp('nick','ชื่อเล่น','s2')+birthInp()+inp('age','อายุ (ปี)','s2','','คำนวณจากวันเกิด','number')+
+      selInp('race','เชื้อชาติ',NATIONS,'s2')+selInp('nation','สัญชาติ',NATIONS,'s2')+selInp('religion','ศาสนา',RELIGIONS,'s2')+
+      inp('height','ส่วนสูง (ซม.)','s2','','','number')+inp('weight','น้ำหนัก (กก.)','s2','','','number')+inp('email','อีเมล','s2','','','email')+
+      '<div class="sec">ที่อยู่ที่ติดต่อได้ <span class="muted" style="font-weight:400;font-size:13px">· พิมพ์ตำบล อำเภอ จังหวัด หรือรหัสไปรษณีย์ แล้วเลือกจากรายการ ระบบเติมช่องที่เหลือให้</span></div>'+
+      inp('addr','บ้านเลขที่ / หมู่ / อาคาร / ซอย / ถนน','s6','','เช่น 99/9 หมู่ 2 ซ.ลาดพร้าว 101 ถ.ลาดพร้าว')+
+      addrInp('subdistrict','แขวง / ตำบล','เช่น คลองจั่น')+addrInp('district','เขต / อำเภอ','เช่น บางกะปิ')+
+      addrInp('province','จังหวัด','เช่น กรุงเทพมหานคร')+addrInp('zip','รหัสไปรษณีย์','เช่น 10240')+
+      inp('mobile','โทรศัพท์มือถือ','s2','','0xx-xxx-xxxx','tel')+inp('home','โทรศัพท์บ้าน','s2','','','tel')+
+      seg('status','สถานภาพปัจจุบัน',['กำลังศึกษา','ทำงานประจำ','ว่างงาน','อื่น ๆ'])+seg('marital','สถานภาพครอบครัว',['โสด','สมรส','หย่า','อื่น ๆ'])+'</div>';
+  }
+  if(i===2){
+    h='<p class="eyebrow">ขั้นที่ 3 จาก 6</p><h2>ครอบครัว การขับขี่ และทักษะ</h2><p class="lead">การขับขี่และทักษะช่วยให้ฝ่ายบุคคลพิจารณาตำแหน่งที่เหมาะกับท่านได้เร็วขึ้น</p>'+
+      blk('family','ครอบครัว','','<div class="grid" style="margin-bottom:14px">'+inp('sib','จำนวนพี่น้อง (คน)','s2','','','number')+inp('order','ท่านเป็นคนที่','s2','','','number')+'</div>'+
+        famRow('พี่น้องคนที่ 1','sib1','','sib1s',['กำลังศึกษา','ทำงาน'],'')+famRow('บิดา','father','fage','falive',['มีชีวิตอยู่','ถึงแก่กรรม'],'fjob')+famRow('มารดา','mother','mage','malive',['มีชีวิตอยู่','ถึงแก่กรรม'],'mjob'))+
+      blk('phone','ผู้ติดต่อกรณีฉุกเฉิน','','<div class="grid">'+inp('emer','ชื่อ–สกุล','s2')+inp('emerTel','โทรศัพท์','s2','','0xx-xxx-xxxx','tel')+inp('emerRel','ความสัมพันธ์','s2','','เช่น บิดา, คู่สมรส')+'</div>')+
+      ((on('carDrive')||on('motoDrive'))?blk('car','การขับขี่','หลายตำแหน่งต้องเดินทางไปหน้างาน (เช่น ช่างติดตั้ง)','<div class="veh-grid">'+(on('carDrive')?vehCard('car','รถยนต์',VEH_CAR):'')+(on('motoDrive')?vehCard('moto','รถจักรยานยนต์',VEH_MOTO):'')+'</div>'):'')+
+      (on('skillTags')?blk('spark','ทักษะและความสามารถ','เลือกทุกข้อที่ทำได้ หรือพิมพ์เพิ่มเอง',skillsPicker()):'')+
+      blk('list','ประวัติอื่น','',ynRow('military',['เคย','ไม่เคย','ได้รับการยกเว้น'])+ynRow('ordain',['เคย','ไม่เคย'])+ynRow('jail',['เคย','ไม่เคย']));
+  }
+  if(i===3){
+    var lv=['มัธยมปลาย / ปวช.','อนุปริญญา / ปวส.','ปริญญาตรี','สูงกว่าปริญญาตรี','ปัจจุบันกำลังศึกษา'];
+    h='<p class="eyebrow">ขั้นที่ 4 จาก 6</p><h2>การศึกษาและประสบการณ์ทำงาน</h2><p class="lead">กรอกเฉพาะระดับที่มี · ประสบการณ์เรียงจากงานล่าสุด</p><div class="grid">'+
+      '<div class="tbl-wrap"><table class="edu"><thead><tr><th>ระดับการศึกษา</th><th>สถาบัน</th><th>สาขาวิชาเอก</th><th>ปีที่เข้า</th><th>ปีที่จบ</th><th>เกรดเฉลี่ย</th></tr></thead><tbody>'+
+      lv.map(function(t,r){return '<tr><td>'+t+'</td>'+F.edu[r].map(function(c,ci){return '<td><input aria-label="'+t+' คอลัมน์ '+(ci+1)+'" data-tbl="edu" data-r="'+r+'" data-c="'+ci+'" value="'+esc(c)+'"></td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>'+
+      '<div class="tbl-wrap"><table class="edu"><thead><tr><th>สถานประกอบการ</th><th>ระยะเวลา</th><th>เงินเดือน</th><th>หน้าที่รับผิดชอบ</th><th>สาเหตุที่ออก</th></tr></thead><tbody>'+
+      F.workRows.map(function(row,r){return '<tr>'+row.map(function(c,ci){return '<td><input aria-label="งานที่ '+(r+1)+' คอลัมน์ '+(ci+1)+'" data-tbl="workRows" data-r="'+r+'" data-c="'+ci+'" value="'+esc(c)+'"></td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>'+
+      inp('ref','บุคคลอ้างอิง (หัวหน้าเก่า)','s2')+inp('refTel','โทรศัพท์','s2','','','tel')+inp('refPos','ตำแหน่ง / บริษัท','s2')+
+      '<div class="sec">ภาษาอังกฤษ</div>'+['การพูด','การอ่าน','การเขียน','การเข้าใจ'].map(function(t,k){return '<div class="f" style="grid-column:span 3"><span class="lbl">'+t+'</span><div class="seg">'+['ดีมาก','ดี','พอใช้'].map(function(o){return '<button type="button" class="chip" data-eng="'+k+'" data-v="'+o+'" aria-pressed="'+(F.eng[k]===o)+'">'+o+'</button>'}).join('')+'</div></div>'}).join('')+
+      (on('skills')?'<div class="f s6" data-fw="skills"><label for="f-skills">'+lbl('skills')+'</label><textarea class="inp" id="f-skills" data-k="skills" placeholder="เช่น ใบรับรอง, ผลงานที่ภูมิใจ">'+esc(F.skills)+'</textarea></div>':'')+
+      inp('typeTh','พิมพ์ไทย (คำ/นาที)','s2','','','number')+inp('typeEn','พิมพ์อังกฤษ (คำ/นาที)','s2','','','number')+inp('prog','โปรแกรมคอมพิวเตอร์ที่ถนัด','s2')+'</div>';
+  }
+  if(i===4){
+    var ph=S.files.photo;
+    h='<p class="eyebrow">ขั้นที่ 5 จาก 6</p><h2>รูปถ่ายและเอกสารแนบ</h2><p class="lead">รองรับ JPG, PNG, PDF ไฟล์ละไม่เกิน '+CFG.maxMB+' MB · ถ่ายจากมือถือได้เลย · ไฟล์เก็บใน Google Drive ของบริษัท ไม่เปิดเผยต่อสาธารณะ</p>'+
+      '<div class="up-grid"><div class="photo-box"><span class="lbl">รูปถ่ายหน้าตรง <span style="color:var(--bad)">*</span></span>'+
+      '<div class="photo'+(ph?' has':'')+'" id="photo" style="'+(ph&&ph.url?'background-image:url(&quot;'+ph.url+'&quot;)':'')+'" role="img" aria-label="รูปถ่ายผู้สมัคร">'+(ph?(ph.uploading?'<span class="up-busy"><span class="spin"></span>กำลังอัปโหลด</span>':(ph.url?'':'อัปโหลดแล้ว')):'ยังไม่มีรูป')+'</div>'+
+      '<label class="btn btn-sm" for="photo-in" style="cursor:pointer">'+(ph?'เปลี่ยนรูป':'เลือกรูป')+'</label><input id="photo-in" type="file" accept="image/*" hidden><span class="muted" style="font-size:12.5px">ครอปเป็นแนวตั้ง 3:4 อัตโนมัติ</span></div>'+
+      '<div><div class="drop" id="drop"><strong>ลากไฟล์มาวาง หรือ <label for="file-in" style="color:var(--accent);cursor:pointer;text-decoration:underline">เลือกไฟล์</label></strong><span class="muted" style="font-size:13px">ไฟล์ที่วางจะแนบเข้าช่องเอกสารที่ยังว่างช่องแรก</span><input id="file-in" type="file" accept="image/*,.pdf" multiple hidden></div>'+
+      '<div class="req-list">'+CFG.docs.map(function(d){var f=S.files[d.k];
+        return '<div class="req-item"><div class="ic'+(f&&f.type==='pdf'?' pdf':'')+'" style="'+(f&&f.type==='img'&&f.url?'background-image:url(&quot;'+f.url+'&quot;)':'')+'">'+(f?(f.type==='pdf'?'PDF':(f.url?'':'IMG')):'—')+'</div>'+
+          '<div class="meta"><b>'+esc(d.t)+(d.req?' <span style="color:var(--bad)">*</span>':' <span class="muted" style="font-weight:400">(ถ้ามี)</span>')+'</b><span>'+(f?esc(f.name)+' · '+f.sizeKB+' KB':(d.help?esc(d.help):'ยังไม่ได้แนบ'))+'</span></div>'+
+          (f?(f.uploading?'<span class="up-busy"><span class="spin"></span>กำลังอัปโหลด</span>':(f.url?'<button type="button" class="btn btn-sm" data-prev="'+d.k+'">พรีวิว</button>':'')+'<button type="button" class="btn btn-sm" data-del="'+d.k+'">ลบ</button>'):'<label class="btn btn-sm" style="cursor:pointer" for="fi-'+d.k+'">แนบไฟล์</label><input id="fi-'+d.k+'" data-slot="'+d.k+'" type="file" accept="'+(d.ext==='PDF เท่านั้น'?'.pdf':d.ext==='รูปภาพเท่านั้น'?'image/*':'image/*,.pdf')+'" hidden>')+
+          '<span class="st '+(f&&!f.uploading?'ok':(d.req?'miss':''))+'">'+(f&&!f.uploading?'✓ แนบแล้ว':(d.req&&!f?'ต้องแนบ':''))+'</span></div>'}).join('')+'</div></div></div>';
+  }
+  if(i===5){
+    var miss=missingAll();
+    h='<p class="eyebrow">ขั้นที่ 6 จาก 6</p><h2>ตรวจทานใบสมัคร</h2><p class="lead">ใบสมัครจัดหน้าตามแบบฟอร์มของบริษัท (A4 2 หน้า) · ตรวจความถูกต้องก่อนกดส่ง</p>'+
+      missBox(miss)+
+      '<div class="doc-stage">'+docHtml(draftDoc())+'</div>'+
+      '<label class="consent"><input type="checkbox" id="consent"'+(S.form.consent?' checked':'')+'><span>ข้าพเจ้าขอรับรองว่าข้อความในใบสมัครนี้เป็นความจริงทุกประการ และยินยอมให้บริษัท พุช มีเดีย จำกัด เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการพิจารณารับสมัครงาน ตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (เก็บไว้ไม่เกิน 1 ปี หากไม่ได้รับการคัดเลือก)</span></label>';
+  }
+  h+=(i<4?extraHtml(i):'');
+  h+='<div class="navrow">'+(i>0?'<button type="button" class="btn" id="prev">← ย้อนกลับ</button>':'<span></span>')+
+    (i<5?'<button type="button" class="btn btn-p" id="next">ถัดไป: '+STEPS[i+1]+' →</button>':'<button type="button" class="btn btn-p" id="submit">ส่งใบสมัคร</button>')+'</div>';
+  return h;
+}
+function missBox(miss){
+  if(!miss.length)return '<div class="ok-box">กรอกข้อมูลครบทุกช่องที่จำเป็นแล้ว ตรวจทานแล้วกดส่งได้เลย</div>';
+  var by={};miss.forEach(function(m){(by[m[0]]=by[m[0]]||[]).push(m[1])});
+  return '<div class="err-box" role="alert" id="miss-box"><b>ยังกรอกไม่ครบ '+miss.length+' ช่อง</b> · กดชื่อขั้นเพื่อไปกรอก<ul class="miss-list">'+Object.keys(by).map(function(k){return '<li><a href="#" data-goto="'+k+'">ขั้นที่ '+(+k+1)+' '+esc(STEPS[k])+'</a>: '+by[k].map(esc).join(', ')+'</li>'}).join('')+'</ul></div>';
+}
+function draftDoc(){var F=S.form,f2=Object.assign({},F,{work:F.workRows,workPhone:F.work});return {isDraft:true,no:'',at:'',posName:pos(F.pos).name,form:f2,photo:S.files.photo&&S.files.photo.url,slots:Object.keys(S.files),extraRows:extraRows(F)}}
+function extraRows(F){return (CFG.extra||[]).filter(function(x){return x.on&&(F.extra||{})[x.id]}).map(function(x){return [x.label,F.extra[x.id]]})}
+/* ตรวจช่องบังคับของแต่ละขั้น → [[step,label,key]] */
+function missingStep(i){
+  var F=S.form,out=[];
+  if(i===0&&!F.pos)out.push([0,'ตำแหน่งที่สมัคร','pos']);
+  Object.keys(FD).forEach(function(k){var d=FD[k];if(d.step!==i||!d.on||!d.req)return;var v=F[k];if(Array.isArray(v)?!v.length:!String(v==null?'':v).trim())out.push([i,d.label,k])});
+  if(i===1&&F.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.email))out.push([1,'อีเมล (รูปแบบไม่ถูกต้อง)','email']);
+  if(i===1&&F.idcard&&!idOk(F.idcard)&&(!FD.idcard||FD.idcard.on))out.push([1,'เลขบัตรประชาชน (ไม่ถูกต้อง)','idcard']);
+  (CFG.extra||[]).forEach(function(x){if(x.step===i&&x.on&&x.req&&!String((F.extra||{})[x.id]||'').trim())out.push([i,x.label,'x:'+x.id])});
+  if(i===4){if(!S.files.photo)out.push([4,'รูปถ่ายหน้าตรง','photo']);CFG.docs.forEach(function(d){if(d.req&&!S.files[d.k])out.push([4,d.t,d.k])});
+    Object.keys(S.files).forEach(function(k){if(S.files[k].uploading)out.push([4,'รอไฟล์ '+S.files[k].name+' อัปโหลดเสร็จ',k])})}
+  return out;
+}
+function missingAll(){var o=[];for(var i=0;i<5;i++)o=o.concat(missingStep(i));return o}
+function validate(i){
+  var m=missingStep(i);
+  $$('.f.bad,.yn.bad,.veh.bad').forEach(function(x){x.classList.remove('bad')});
+  if(!m.length){S.err='';return true}
+  S.err='กรุณากรอก: '+m.map(function(x){return x[1]}).join(', ');
+  var box=$('#step-panel .err-box');if(box)box.textContent=S.err;else $('#step-panel').insertAdjacentHTML('afterbegin','<div class="err-box" role="alert">'+esc(S.err)+'</div>');
+  m.forEach(function(x){var w=$('[data-fw="'+x[2]+'"]');if(w)w.classList.add('bad')});
+  var first=$('[data-fw="'+m[0][2]+'"]');if(first)first.scrollIntoView({block:'center'});else window.scrollTo(0,0);
+  return false;
+}
+function bindStep(){
+  var p=$('#step-panel');
+  $$('[data-k]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.k]=el.value;saveDraft()});el.addEventListener('change',function(){S.form[el.dataset.k]=el.value;saveDraft()})});
+  $$('[data-seg]',p).forEach(function(b){b.addEventListener('click',function(){S.form[b.dataset.seg]=b.dataset.v;saveDraft();
+    if(/^(car|moto)(Drive|Lic|Own)$/.test(b.dataset.seg)){var y=window.scrollY;renderApply();window.scrollTo(0,y);return}
+    $$('[data-seg="'+b.dataset.seg+'"]',p).forEach(function(x){x.setAttribute('aria-pressed',String(x===b))})})});
+  $$('[data-eng]',p).forEach(function(b){b.addEventListener('click',function(){S.form.eng[+b.dataset.eng]=b.dataset.v;saveDraft();$$('[data-eng="'+b.dataset.eng+'"]',p).forEach(function(x){x.setAttribute('aria-pressed',String(x===b))})})});
+  $$('[data-tbl]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.tbl][+el.dataset.r][+el.dataset.c]=el.value;saveDraft()})});
+  $$('[data-x]',p).forEach(function(el){el.addEventListener('input',function(){S.form.extra[el.dataset.x]=el.value;saveDraft()})});
+  $$('[data-xseg]',p).forEach(function(b){b.addEventListener('click',function(){S.form.extra[b.dataset.xseg]=b.dataset.v;saveDraft();$$('[data-xseg="'+b.dataset.xseg+'"]',p).forEach(function(x){x.setAttribute('aria-pressed',String(x===b))})})});
+  $$('[data-skill]',p).forEach(function(b){b.addEventListener('click',function(){var t=b.dataset.skill,a=S.form.skillTags,ix=a.indexOf(t);if(ix>=0)a.splice(ix,1);else a.push(t);b.setAttribute('aria-pressed',String(ix<0));$('#sk-count').textContent='เลือกแล้ว '+a.length+' ทักษะ';saveDraft()})});
+  var ski=$('#sk-in',p);if(ski){var addSk=function(){var t=ski.value.trim().slice(0,60);if(!t)return;if(S.form.skillTags.indexOf(t)<0)S.form.skillTags.push(t);saveDraft();var y=window.scrollY;renderApply();window.scrollTo(0,y);var n=$('#sk-in');if(n)n.focus()};
+    $('#sk-btn',p).addEventListener('click',addSk);ski.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addSk()}})}
+  if($('#posq',p))bindCombo(p);
+  bindAddr(p);bindSelects(p);bindBirth(p);
+  var idc=$('[data-idc]',p);if(idc)idc.addEventListener('input',function(){var f=idFmt(idc.value);if(f!==idc.value)idc.value=f;S.form.idcard=f;saveDraft();var w=$('[data-fw="idcard"]',p);if(w)w.classList.toggle('bad',f.replace(/\D/g,'').length===13&&!idOk(f))});
+  var nx=$('#next',p),pv=$('#prev',p),sb=$('#submit',p);
+  if(nx)nx.addEventListener('click',function(){S.step++;S.err='';saveDraft();renderApply();window.scrollTo(0,0)});
+  if(pv)pv.addEventListener('click',function(){S.step--;S.err='';renderApply();window.scrollTo(0,0)});
+  $$('[data-goto]',p).forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();var k=+a.dataset.goto;S.step=k;S.err='';renderApply();var m=missingStep(k);window.scrollTo(0,0);setTimeout(function(){m.forEach(function(x){var w=$('[data-fw="'+x[2]+'"]');if(w)w.classList.add('bad')});var f=m[0]&&$('[data-fw="'+m[0][2]+'"]');if(f)f.scrollIntoView({block:'center'})},50)})});
+  var cs=$('#consent',p);if(cs)cs.addEventListener('change',function(){S.form.consent=cs.checked;saveDraft()});
+  if(sb)sb.addEventListener('click',submitApp);
+  var pin=$('#photo-in',p);if(pin)pin.addEventListener('change',function(){var f=pin.files[0];if(f)uploadFile(f,'photo')});
+  $$('input[data-slot]',p).forEach(function(el){el.addEventListener('change',function(){if(el.files[0])uploadFile(el.files[0],el.dataset.slot)})});
+  var fi=$('#file-in',p);if(fi)fi.addEventListener('change',function(){Array.prototype.forEach.call(fi.files,function(f){uploadFile(f,firstEmpty())})});
+  var dr=$('#drop',p);
+  if(dr){['dragenter','dragover'].forEach(function(ev){dr.addEventListener(ev,function(e){e.preventDefault();dr.classList.add('over')})});
+    ['dragleave','drop'].forEach(function(ev){dr.addEventListener(ev,function(e){e.preventDefault();dr.classList.remove('over')})});
+    dr.addEventListener('drop',function(e){Array.prototype.forEach.call(e.dataTransfer.files||[],function(f){uploadFile(f,firstEmpty())})})}
+  $$('[data-prev]',p).forEach(function(b){b.addEventListener('click',function(){var f=S.files[b.dataset.prev];openViewer({name:f.name,type:f.type,url:f.url},f.name)})});
+  $$('[data-del]',p).forEach(function(b){b.addEventListener('click',function(){delete S.files[b.dataset.del];saveDraft();renderApply()})});
+}
+function firstEmpty(){for(var i=0;i<CFG.docs.length;i++){if(!S.files[CFG.docs[i].k])return CFG.docs[i].k}return null}
+function fileToB64(blobOrDataUrl){return new Promise(function(res,rej){if(typeof blobOrDataUrl==='string')return res(blobOrDataUrl.split(',')[1]);var rd=new FileReader();rd.onload=function(){res(String(rd.result).split(',')[1])};rd.onerror=rej;rd.readAsDataURL(blobOrDataUrl)})}
+function imgResize(file,W,H,crop){return new Promise(function(res,rej){var rd=new FileReader();rd.onload=function(){var img=new Image();img.onload=function(){
+  var cv=document.createElement('canvas'),cx;
+  if(crop){var r=Math.max(W/img.width,H/img.height),w=img.width*r,h=img.height*r;cv.width=W;cv.height=H;cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,W,H);cx.drawImage(img,(W-w)/2,Math.min(0,(H-h)/4),w,h)}
+  else{var s=Math.min(1,W/Math.max(img.width,img.height));cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(img,0,0,cv.width,cv.height)}
+  res(cv.toDataURL('image/jpeg',.86))};img.onerror=function(){rej(new Error('เปิดรูปนี้ไม่ได้ ลองบันทึกเป็น JPG แล้วแนบใหม่'))};img.src=rd.result};rd.onerror=rej;rd.readAsDataURL(file)})}
+function uploadFile(file,slot){
+  if(!slot){toast('แนบเอกสารครบทุกช่องแล้ว ลบไฟล์เดิมก่อนถ้าต้องการเปลี่ยน',true);return}
+  var isPdf=/pdf/i.test(file.type)||/\.pdf$/i.test(file.name),isImg=/^image\//.test(file.type);
+  if(!isPdf&&!isImg){toast('รองรับเฉพาะรูปภาพหรือ PDF',true);return}
+  if(slot==='photo'&&!isImg){toast('รูปถ่ายต้องเป็นไฟล์รูปภาพ',true);return}
+  if(file.size>CFG.maxMB*1048576){toast('ไฟล์ '+file.name+' ใหญ่เกิน '+CFG.maxMB+' MB',true);return}
+  var prep=isPdf?Promise.resolve(null):imgResize(file,slot==='photo'?600:1800,slot==='photo'?800:1800,slot==='photo');
+  prep.then(function(dataUrl){
+    var name=isPdf?file.name:file.name.replace(/\.[^.]+$/,'')+'.jpg',mime=isPdf?'application/pdf':'image/jpeg';
+    var url=dataUrl||'';var sizeKB=Math.max(1,Math.round((dataUrl?dataUrl.length*.75:file.size)/1024));
+    S.files[slot]={name:name,type:isPdf?'pdf':'img',sizeKB:sizeKB,url:url,uploading:true};
+    if(S.step===4)renderApply();
+    return fileToB64(dataUrl||file).then(function(b64){return call('uploadPending',S.draftId,{name:name,mime:mime,slot:slot},b64)}).then(function(r){
+      var cur=S.files[slot];if(!cur||cur.name!==name)return;cur.fileId=r.fileId;cur.uploading=false;cur.sizeKB=r.sizeKB;saveDraft();if(S.step===4)renderApply()});
+  }).catch(function(e){delete S.files[slot];if(S.step===4)renderApply();toast('อัปโหลด '+file.name+' ไม่สำเร็จ: '+em(e),true)});
+}
+var submitting=false;
+function submitApp(){
+  if(submitting)return;
+  var m=missingAll();if(m.length){S.err='';renderApply();var mb=$('#miss-box');if(mb){mb.scrollIntoView({block:'center'});mb.animate&&mb.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:300})}toast('ยังกรอกไม่ครบ '+m.length+' ช่อง · ดูรายการด้านบน',true);return}
+  if(!S.form.consent){toast('กรุณาติ๊กยืนยันข้อความรับรองก่อนส่ง',true);var c=$('#consent');if(c)c.focus();return}
+  confirmBox('ส่งใบสมัคร?','ตรวจทานข้อมูลเรียบร้อยแล้ว · ส่งแล้วแก้ไขเองไม่ได้ ต้องติดต่อฝ่ายบุคคล','ส่งใบสมัคร').then(function(ok){if(ok)doSubmit()});
+}
+function doSubmit(){
+  submitting=true;var b=$('#submit');b.disabled=true;b.textContent='กำลังส่งใบสมัคร...';
+  var F=Object.assign({},S.form,{work:S.form.workRows,workPhone:S.form.work});delete F.workRows;
+  call('submitApplication',{draftId:S.draftId,form:F,files:Object.keys(S.files).map(function(k){return {slot:k,fileId:S.files[k].fileId}})}).then(function(r){
+    submitting=false;S.sent=r.no;store('pmc_draft',null);renderApply();window.scrollTo(0,0);
+  }).catch(function(e){submitting=false;b.disabled=false;b.textContent='ส่งใบสมัคร';S.err='ส่งใบสมัครไม่สำเร็จ: '+em(e);renderApply();window.scrollTo(0,0)});
+}
+function doneHtml(){
+  return '<div class="card done"><div class="big">เลขที่ใบสมัคร '+esc(S.sent)+'</div><h2>ส่งใบสมัครเรียบร้อย ขอบคุณที่สนใจร่วมงานกับ Push Media</h2>'+
+    '<p class="muted" style="max-width:56ch;margin:0 auto">ระบบส่งอีเมลยืนยันไปที่ <b>'+esc(S.form.email)+'</b> · ติดตามสถานะได้ที่เมนู "ติดตามสถานะ" ด้วยเลขบัตรประชาชนหรือเบอร์โทร · ฝ่ายบุคคลจะติดต่อกลับภายใน 5 วันทำการ</p>'+
+    '<div class="track">'+['ส่งใบสมัคร','HR คัดกรอง','นัดสัมภาษณ์','แจ้งผล'].map(function(t,i){return '<div class="'+(i===0?'on':'')+'">'+t+'</div>'}).join('')+'</div>'+
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px"><button type="button" class="btn" id="again">กรอกใบสมัครใหม่</button></div></div>';
+}
+function bindDone(){$('#again').addEventListener('click',function(){S.sent=null;S.step=0;S.files={};S.form=emptyForm();S.draftId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);renderApply()})}
+function thDateTime(t){var m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/.exec(t||'');if(!m)return t||'';var d=new Date(+m[1],+m[2]-1,+m[3]);
+  return 'วัน'+['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'][d.getDay()]+'ที่ '+(+m[3])+' '+TH_MON_F[+m[2]-1]+' '+(+m[1]+543)+(m[4]?' เวลา '+m[4]+':'+m[5]+' น.':'')}
+function thDate(t){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(t||'');return m?(+m[3])+' '+TH_MON[+m[2]-1]+' '+(+m[1]+543):t}
+var ST_ICON={search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  cal:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  doc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  phone:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>'};
+function renderStatus(){
+  MAIN.innerHTML='<section class="stx"><div class="stx-hero"><span class="stx-badge">'+ST_ICON.doc+'</span><h1>ติดตามสถานะใบสมัคร</h1><p>กรอกเลขบัตรประชาชน หรือเบอร์โทรศัพท์ที่ใช้สมัครงาน</p></div>'+
+    '<form id="stf" class="stx-search" novalidate><label for="st-q" class="sr">เลขบัตรประชาชน หรือ เบอร์โทรศัพท์</label><span class="stx-ic">'+ST_ICON.search+'</span><input id="st-q" inputmode="numeric" autocomplete="off" placeholder="เลขบัตรประชาชน 13 หลัก หรือเบอร์โทรศัพท์"><button class="btn btn-p" type="submit">ตรวจสอบ</button></form>'+
+    '<div id="st-out"></div>'+
+    '<div class="stx-foot"><a href="#" id="back-apply">← กลับไปหน้าสมัครงาน</a><span>สอบถามเพิ่มเติม ฝ่ายบุคคล '+ST_ICON.phone+' '+esc(CO.phone)+'</span></div></section>';
+  $('#back-apply').addEventListener('click',function(e){e.preventDefault();S.view='apply';renderApply()});
+  $('#st-q').focus();
+  $('#stf').addEventListener('submit',function(e){e.preventDefault();var o=$('#st-out'),q=$('#st-q').value,b=$('#stf button');if(!q.trim()){$('#st-q').focus();return}
+    b.disabled=true;b.textContent='กำลังค้นหา...';o.innerHTML='';
+    call('getStatus',q).then(function(r){b.disabled=false;b.textContent='ตรวจสอบ';
+      if(!r.ok){o.innerHTML='<div class="stx-empty"><b>ไม่พบใบสมัคร</b><span>'+esc(r.msg)+'</span></div>';return}
+      o.innerHTML='<p class="stx-count">พบ '+r.items.length+' ใบสมัคร</p>'+r.items.map(function(x){
+        var rej=x.stage==='reject',idx={new:0,screen:1,interview:2,offer:3,hired:3,reject:3}[x.stage];if(idx==null)idx=0;
+        var steps=['ส่งใบสมัคร','ฝ่ายบุคคลคัดกรอง','นัดสัมภาษณ์',rej?'ไม่ผ่านการคัดเลือก':x.stage==='hired'?'รับเข้าทำงาน':x.stage==='offer'?'เสนองาน':'แจ้งผล'];
+        if(rej&&!x.interview)steps[2]='สัมภาษณ์';
+        var tone=x.stage==='hired'||x.stage==='offer'?'ok':rej?'bad':x.stage==='interview'?'vio':x.stage==='screen'?'warn':'new';
+        var pct=Math.round(idx/3*100);
+        return '<article class="stx-card t-'+tone+'"><header><div><span class="stx-no">'+esc(x.no)+'</span><h2>'+esc(x.position)+'</h2><p>'+esc(x.name)+' · ส่งเมื่อ '+esc(thDate(x.submitted))+'</p></div><span class="stx-pill">'+esc(x.stageText)+'</span></header>'+
+          '<ol class="stx-steps" style="--pct:'+(idx/3)+'">'+steps.map(function(t,i){var st=i<idx?'done':i===idx?(rej&&i===3?'fail':'cur'):'todo';return '<li class="is-'+st+'"><span class="dot">'+(st==='done'||(st==='cur'&&i===3&&!rej)?ST_ICON.check:st==='fail'?ST_ICON.x:(i+1))+'</span><span class="lb">'+t+'</span></li>'}).join('')+'</ol>'+
+          (x.interview?'<div class="stx-note n-vio"><span>'+ST_ICON.cal+'</span><div><b>นัดสัมภาษณ์</b>'+esc(thDateTime(x.interview))+'<small>ฝ่ายบุคคลจะติดต่อยืนยันสถานที่และเอกสารที่ต้องนำมา</small></div></div>':'')+
+          (rej?'<div class="stx-note n-mute"><div>ขอบคุณที่สนใจร่วมงานกับบริษัท พุช มีเดีย จำกัด บริษัทจะเก็บประวัติของท่านไว้พิจารณาในตำแหน่งที่เหมาะสมต่อไป</div></div>':'')+
+          (x.stage==='new'?'<div class="stx-note n-mute"><div>ฝ่ายบุคคลได้รับใบสมัครแล้ว จะติดต่อกลับภายใน 5 วันทำการ</div></div>':'')+'</article>'}).join('');
+    }).catch(function(e){b.disabled=false;b.textContent='ตรวจสอบ';o.innerHTML='<div class="stx-empty"><b>ตรวจสอบไม่สำเร็จ</b><span>'+esc(em(e))+'</span></div>'})});
+}
+/* combobox */
+function bindCombo(p){
+  var q=$('#posq',p),box=$('#cb-list',p),act=-1,typed=false;
+  function norm(x){return String(x||'').toLowerCase().replace(/\s+/g,' ').trim()}
+  function hi(t,k){if(!k)return esc(t);var i=norm(t).indexOf(k);return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+k.length))+'</mark>'+esc(t.slice(i+k.length))}
+  function draw(){
+    var k=typed?norm(q.value):'',words=k.split(' ').filter(Boolean);
+    var hit=CFG.positions.filter(function(x){var h=norm(x.name+' '+x.dept);return words.every(function(w){return h.indexOf(w)>=0})});
+    var groups={},order=[];hit.forEach(function(x){if(!groups[x.dept]){groups[x.dept]=[];order.push(x.dept)}groups[x.dept].push(x)});
+    var html='';
+    order.forEach(function(g){html+='<div class="cb-grp">'+esc(g)+'</div>'+groups[g].map(function(x){return '<button type="button" class="cb-opt" role="option" data-id="'+esc(x.id)+'" aria-selected="'+(S.form.pos===x.id)+'"><span>'+hi(x.name,words[0]||'')+'</span><span class="o">'+x.open+' อัตรา</span></button>'}).join('')});
+    var exact=hit.some(function(x){return norm(x.name)===k});
+    if(!hit.length&&k)html='<div class="cb-empty">ไม่พบตำแหน่งที่ตรงกับ “'+esc(q.value.trim())+'”</div>';
+    if(!hit.length&&!k)html='<div class="cb-empty">ขณะนี้ยังไม่มีตำแหน่งที่เปิดรับ · พิมพ์ชื่อตำแหน่งเพื่อฝากประวัติได้</div>';
+    if(k&&!exact)html+='<button type="button" class="cb-opt cb-custom" role="option" data-custom="1"><span>ฝากประวัติตำแหน่ง “<b>'+esc(q.value.trim())+'</b>”</span><span class="o">พิจารณาเมื่อมีตำแหน่งว่าง</span></button>';
+    box.innerHTML=html;act=-1;
+    $$('.cb-opt',box).forEach(function(b){b.addEventListener('mousedown',function(e){e.preventDefault()});b.addEventListener('click',function(){pick(b)})});
+  }
+  function pick(b){S.form.pos=b.dataset.custom?q.value.trim().slice(0,120):b.dataset.id;saveDraft();var y=window.scrollY;renderApply();window.scrollTo(0,y)}
+  function move(d){var o=$$('.cb-opt',box);if(!o.length)return;act=(act+d+o.length)%o.length;o.forEach(function(x,j){x.classList.toggle('act',j===act)});o[act].scrollIntoView({block:'nearest'})}
+  q.addEventListener('input',function(){typed=true;draw()});
+  q.addEventListener('keydown',function(e){if(e.key==='ArrowDown'){e.preventDefault();move(1)}else if(e.key==='ArrowUp'){e.preventDefault();move(-1)}else if(e.key==='Enter'){var o=$$('.cb-opt',box);if(o.length){e.preventDefault();pick(o[act>=0?act:0])}}else if(e.key==='Escape'){q.value=S.form.pos?pos(S.form.pos).name:'';typed=false;draw()}});
+  $('#posclr',p).addEventListener('click',function(){q.value='';typed=true;draw();q.focus()});
+  draw();
+}
+
+/* ═════════════════ VIEWER ═════════════════ */
+function openViewer(f,title){
+  var w=document.createElement('div');w.className='viewer';w.setAttribute('role','dialog');w.setAttribute('aria-label','พรีวิว '+title);
+  var body=f.loading?loadingHtml('กำลังโหลดไฟล์...').replace('class="loading"','class="loading" style="color:#fff"'):
+    (f.type==='img'?'<div class="img" style="background-image:url(&quot;'+f.url+'&quot;)"></div>':(f.url?'<iframe src="'+f.url+'" title="'+esc(title)+'" style="width:min(900px,100%);height:78vh;border:0;border-radius:6px;background:#fff"></iframe>':'<div class="img" style="display:grid;place-items:center;max-width:520px;color:#B42318;font-weight:600">PDF</div>'));
+  w.innerHTML='<div class="bar"><b>'+esc(title)+'</b>'+(f.driveUrl?'<a class="btn btn-sm" href="'+esc(f.driveUrl)+'" target="_blank" rel="noopener">เปิดใน Google Drive</a>':'')+'<button type="button" class="btn btn-sm" id="vx">✕ ปิด</button></div>'+body;
+  w.addEventListener('click',function(e){if(e.target===w)w.remove()});
+  document.body.appendChild(w);$('#vx',w).focus();$('#vx',w).addEventListener('click',function(){w.remove()});w.addEventListener('keydown',function(e){if(e.key==='Escape')w.remove()});
+  return w;
+}
+
+/* ═════════════════ ADMIN ═════════════════ */
+var A={thumbs:{},token:store('pmc_tok'),user:null,d:null,q:'',fPos:'',fStage:'',admTab:'apps',setSec:'pos',fStep:1,open:null,dTab:'profile'};
+var ROLE_T={hr:'HR',mgr:'หัวหน้าแผนก',exec:'ผู้บริหาร',system:'System Developer'};
+function aCall(){var args=arguments;return call.apply(null,[args[0],A.token].concat(Array.prototype.slice.call(args,1))).catch(function(e){if(em(e)==='SESSION_EXPIRED'){store('pmc_tok',null);A.token=null;toast('หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่',true);renderLogin();throw new Error('หมดเวลาการใช้งาน')}throw e})}
+function startAdmin(){
+  setTop();
+  if(!A.token)return renderLogin();
+  /* แสดงข้อมูลชุดล่าสุดในแท็บนี้ทันที (sessionStorage · ปิดแท็บแล้วหาย) แล้วโหลดของใหม่เบื้องหลังมาวาดทับ */
+  var snap=null;try{snap=JSON.parse(sessionStorage.getItem('pmc_boot')||'null')}catch(e){}
+  if(snap&&snap.tok===A.token&&snap.d){A.d=snap.d;setCO(A.d.company);A.user=snap.d.user;buildFD(A.d.fields);setTop();renderAdmin()}
+  else MAIN.innerHTML=loadingHtml('กำลังโหลดข้อมูล...');
+  aCall('adminBootstrap').then(function(d){A.d=d;setCO(d.company);A.user=d.user;buildFD(d.fields);setTop();try{sessionStorage.setItem('pmc_boot',JSON.stringify({tok:A.token,d:d}))}catch(e){}
+    if($('.drawer')||$('.md-wrap'))return;var y=window.scrollY;renderAdmin();window.scrollTo(0,y)}).catch(function(e){if(A.token)MAIN.innerHTML='<div class="card track-card"><div class="err-box">'+esc(em(e))+'</div><button class="btn" onclick="location.reload()">ลองใหม่</button></div>'});
+}
+function setTop(){
+  var n=$('#topnav');
+  if(BOOTV.mode!=='admin'){n.innerHTML='<a href="#" id="tn-status">ติดตามสถานะ</a>';$('#tn-status').addEventListener('click',function(e){e.preventDefault();S.view=S.view==='status'?'apply':'status';renderApply()});return}
+  n.innerHTML=A.user?'<span class="me">'+esc(A.user.name)+' · '+(A.user.label||ROLE_T[A.user.role])+(A.user.role==='mgr'&&A.user.scope!=='ทุกแผนก'?' '+esc(A.user.scope):'')+'</span><button type="button" id="tn-ref">รีเฟรช</button><button type="button" id="tn-pw">เปลี่ยนรหัสผ่าน</button><button type="button" id="tn-out">ออกจากระบบ</button>':'<a href="'+esc(BOOTV.url)+'" target="_top">หน้าสมัครงาน</a>';
+  if(A.user){$('#tn-out').addEventListener('click',function(){try{sessionStorage.removeItem('pmc_boot')}catch(e){}call('logout',A.token);store('pmc_tok',null);A.token=null;A.user=null;A.d=null;setTop();renderLogin()});$('#tn-ref').addEventListener('click',startAdmin);
+    $('#tn-pw').addEventListener('click',function(){modal({title:'เปลี่ยนรหัสผ่าน',ok:'เปลี่ยนรหัสผ่าน',body:'<div class="grid"><div class="f s6"><label for="m-op">รหัสผ่านเดิม</label><input class="inp" id="m-op" name="op" type="password" autocomplete="current-password"></div><div class="f s6"><label for="m-np">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input class="inp" id="m-np" name="np" type="password" autocomplete="new-password"></div><div class="f s6"><label for="m-np2">ยืนยันรหัสผ่านใหม่</label><input class="inp" id="m-np2" name="np2" type="password" autocomplete="new-password"></div></div>',
+      onSave:function(fm){var a=fv(fm,'op'),b=fv(fm,'np');if(!a||!b)return 'กรุณากรอกให้ครบ';if(b.length<6)return 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';if(b!==fv(fm,'np2'))return 'ยืนยันรหัสผ่านไม่ตรงกัน';return aCall('changePassword',a,b).then(function(){toast('เปลี่ยนรหัสผ่านแล้ว')})}})})}
+}
+function renderLogin(){
+  MAIN.innerHTML='<form class="card login" id="lf" novalidate><h1>เข้าสู่ระบบผู้ดูแล</h1><p>สำหรับ HR หัวหน้าแผนก และผู้บริหาร · ใช้รหัสผู้ใช้และรหัสผ่านที่ HR ตั้งให้ในระบบนี้</p><div id="lerr"></div>'+
+    '<div class="f"><label for="l-code">รหัสผู้ใช้ (รหัสพนักงาน)</label><input class="inp" id="l-code" autocomplete="username" maxlength="30"></div><div class="f"><label for="l-pw">รหัสผ่าน</label><input class="inp" id="l-pw" type="password" autocomplete="current-password"></div>'+
+    '<button class="btn btn-p" type="submit" style="width:100%">เข้าสู่ระบบ</button></form>';
+  $('#l-code').focus();
+  $('#lf').addEventListener('submit',function(e){e.preventDefault();var b=$('#lf button[type=submit]');b.disabled=true;b.textContent='กำลังตรวจสอบ...';
+    call('login',$('#l-code').value,$('#l-pw').value).then(function(r){if(!r.ok){$('#lerr').innerHTML='<div class="err-box">'+esc(r.msg)+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ';return}
+      A.token=r.token;A.user=r.user;store('pmc_tok',r.token);startAdmin()}).catch(function(e){$('#lerr').innerHTML='<div class="err-box">'+esc(em(e))+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ'})});
+}
+function stg(){return A.d.stages}
+function ST(k){return stg().filter(function(s){return s.k===k})[0]||{k:k,t:k}}
+var STAGE_CLS={new:'s-new',screen:'s-screen',interview:'s-interview',offer:'s-offer',hired:'s-hired',reject:'s-reject'};
+var STAGE_COL={new:'var(--accent)',screen:'var(--warn)',interview:'var(--vio)',offer:'#0B6A8C',hired:'var(--ok)',reject:'var(--bad)'};
+function pill(k){return '<span class="pill '+(STAGE_CLS[k]||'s-new')+'">'+esc(ST(k).t)+'</span>'}
+function canSet(){return A.user.role!=='mgr'}
+function renderAdmin(){
+  if(!canSet()&&A.admTab==='set')A.admTab='apps';
+  MAIN.innerHTML='<div class="adm-tabs" role="tablist">'+[['apps','ใบสมัคร'],['set','จัดการข้อมูลระบบ']].map(function(t){return '<button type="button" role="tab" data-at="'+t[0]+'" aria-selected="'+(A.admTab===t[0])+'"'+(t[0]==='set'&&!canSet()?' disabled title="เฉพาะ HR และผู้บริหาร"':'')+'>'+t[1]+'</button>'}).join('')+'</div><div id="adm-body"></div>';
+  $$('[data-at]').forEach(function(b){b.addEventListener('click',function(){A.admTab=b.dataset.at;renderAdmin()})});
+  if(A.admTab==='set')renderSettings();else renderApps();
+}
+function visible(){
+  return A.d.apps.filter(function(a){
+    if(A.fPos&&a.pos!==A.fPos)return false;
+    if(A.fStage&&a.stage!==A.fStage)return false;
+    if(A.q){var q=A.q.toLowerCase();if((a.first+' '+a.last+' '+a.nick+' '+a.no+' '+a.posName+' '+a.phone+' '+(a.skills||[]).join(' ')).toLowerCase().indexOf(q)<0)return false}
+    return true});
+}
+function renderApps(){
+  var v=$('#adm-body'),base=A.d.apps,cnt={};stg().forEach(function(s){cnt[s.k]=0});base.forEach(function(a){cnt[a.stage]=(cnt[a.stage]||0)+1});
+  var total=base.length||1,list=visible(),today=new Date().toISOString().slice(0,10);
+  var upcoming=base.filter(function(a){return a.interview&&a.interview.slice(0,10)>=today}).sort(function(x,y){return x.interview<y.interview?-1:1}).slice(0,8);
+  var applyUrl=BOOTV.url;
+  v.innerHTML='<div class="kpis">'+[['ทั้งหมด',base.length,'ใบสมัครที่เห็นได้'],['ใบสมัครใหม่',cnt['new']||0,'รอเปิดดู'],['คัดกรอง',cnt.screen||0,''],['นัดสัมภาษณ์',cnt.interview||0,upcoming.length+' นัดที่จะถึง'],['รับเข้าทำงาน',cnt.hired||0,'']].map(function(k,i){
+      return '<div class="card kpi"><div class="k">'+k[0]+'</div><div class="n">'+k[1]+'</div><div class="d">'+k[2]+'</div>'+(i===0&&base.length?'<div class="pipe">'+stg().map(function(s){return cnt[s.k]?'<span title="'+esc(s.t)+' '+cnt[s.k]+'" style="width:'+(cnt[s.k]/total*100)+'%;background:'+(STAGE_COL[s.k]||'var(--ink-3)')+'"></span>':''}).join('')+'</div>':'')+'</div>'}).join('')+'</div>'+
+    '<div class="adm-grid"><div class="card"><div class="filters"><input class="inp" id="q" type="search" placeholder="ค้นหาชื่อ เลขที่ใบสมัคร เบอร์โทร ทักษะ" value="'+esc(A.q)+'" aria-label="ค้นหา">'+
+      '<select class="inp" id="fpos" aria-label="ตำแหน่ง"><option value="">ทุกตำแหน่ง</option>'+A.d.positions.map(function(p){return '<option value="'+esc(p.id)+'"'+(A.fPos===p.id?' selected':'')+'>'+esc(p.name)+'</option>'}).join('')+'</select>'+
+      '<select class="inp" id="fst" aria-label="สถานะ"><option value="">ทุกสถานะ</option>'+stg().map(function(s){return '<option value="'+s.k+'"'+(A.fStage===s.k?' selected':'')+'>'+esc(s.t)+' ('+(cnt[s.k]||0)+')</option>'}).join('')+'</select></div>'+
+      '<div class="list-wrap"><table class="list"><thead><tr><th>ผู้สมัคร</th><th>ตำแหน่ง</th><th>สถานะ</th><th>ไฟล์</th><th>'+(A.user.role==='mgr'?'คะแนน':'เงินเดือนที่ขอ')+'</th><th>ส่งเมื่อ</th></tr></thead><tbody>'+
+      (list.length?list.map(function(a){var reqN=A.d.docs.filter(function(d){return d.req}).length,okN=A.d.docs.filter(function(d){return d.req&&a.slots.indexOf(d.k)>=0}).length;
+        return '<tr class="row" tabindex="0" data-open="'+esc(a.no)+'"><td><div class="who"><span class="av ph-av" data-thumb="'+esc(a.no)+'"'+(A.thumbs[a.no]?' style="background-image:url(&quot;'+A.thumbs[a.no]+'&quot;)"':'')+'>'+(A.thumbs[a.no]?'':esc(String(a.nick||a.first||'?').slice(0,2)))+'</span><div><b>'+esc(a.first+' '+a.last)+(a.nick?' ('+esc(a.nick)+')':'')+'</b><span class="mono">'+esc(a.no)+'</span>'+(a.carLic==='มี'?' <span class="tag">ขับรถยนต์</span>':'')+'</div></div></td>'+
+        '<td>'+esc(a.posName)+'<div class="muted" style="font-size:12.5px">'+esc(a.dept)+'</div></td><td>'+pill(a.stage)+'</td>'+
+        '<td style="white-space:nowrap"><span class="dots" title="เอกสารบังคับ '+okN+'/'+reqN+'">'+A.d.docs.filter(function(d){return d.req}).map(function(d){return '<i class="'+(a.slots.indexOf(d.k)>=0?'on':'')+'"></i>'}).join('')+'</span> <span class="muted" style="font-size:12.5px">'+a.files+'</span></td>'+
+        '<td style="font-variant-numeric:tabular-nums">'+(A.user.role==='mgr'?(a.rating?'★ '+a.rating+'/5':'<span class="muted">—</span>'):esc(a.salary||'—'))+'</td><td class="muted" style="font-size:13px;white-space:nowrap">'+esc(a.at)+'</td></tr>'}).join(''):
+        '<tr><td colspan="6" class="muted" style="text-align:center;padding:30px">'+(base.length?'ไม่พบใบสมัครตามเงื่อนไข':'ยังไม่มีใบสมัคร · ส่งลิงก์หน้าสมัครงานให้ผู้สมัครได้จากแถบขวา')+'</td></tr>')+
+      '</tbody></table></div></div>'+
+      '<aside class="side"><div class="card share"><div class="share-h"><span class="share-ic">'+ICONS.link+'</span><div><h3>ลิงก์รับสมัครงาน</h3><p>ส่งลิงก์ หรือพิมพ์ QR code ติดประกาศรับสมัคร</p></div></div>'+
+        '<div class="share-qr"><div id="qrbox" class="qr" aria-label="QR code หน้าสมัครงาน"></div><div class="share-qr-t"><b>สแกนเพื่อสมัครงาน</b><span>เปิดได้ทั้งมือถือและคอมพิวเตอร์ ไม่ต้องล็อกอิน</span></div></div>'+
+        '<div class="share-url"><input class="inp" id="aurl" readonly value="'+esc(applyUrl)+'" aria-label="ลิงก์หน้าสมัครงาน"></div>'+
+        '<div class="share-acts"><button type="button" class="btn btn-sm btn-p" id="copyurl">'+ICONS.copy+'คัดลอกลิงก์</button><a class="btn btn-sm" href="'+esc(applyUrl)+'" target="_blank" rel="noopener">'+ICONS.ext+'เปิดหน้าสมัคร</a><button type="button" class="btn btn-sm" id="qrsave">'+ICONS.dl+'บันทึก QR</button></div>'+
+        (A.d.folderUrl?'<a class="share-drive" href="'+esc(A.d.folderUrl)+'" target="_blank" rel="noopener"><span>'+ICONS.folder+'</span><div><b>โฟลเดอร์ไฟล์ผู้สมัคร</b><small>Google Drive · รูปและเอกสารแนบทั้งหมด</small></div><i>›</i></a>':'')+'</div>'+
+      '<div class="card"><h3>นัดสัมภาษณ์ที่จะถึง</h3>'+(upcoming.length?'<ul class="sched">'+upcoming.map(function(a){var d=a.interview.split(' ');return '<li><span class="dt">'+(+d[0].slice(8,10))+'<small>'+['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+d[0].slice(5,7)-1]+'</small></span><div><b style="font-weight:600">'+esc(a.first+' '+a.last)+'</b><div class="muted" style="font-size:12.5px">'+esc(d[1]||'')+' น. · '+esc(a.posName)+'</div></div></li>'}).join('')+'</ul>':'<p class="muted" style="margin:0">ยังไม่มีนัด</p>')+'</div></aside></div>';
+  var q=$('#q',v);q.addEventListener('input',function(){A.q=q.value;var c=q.selectionStart;renderApps();var n=$('#q');n.focus();n.setSelectionRange(c,c)});
+  $('#fpos',v).addEventListener('change',function(e){A.fPos=e.target.value;renderApps()});
+  $('#fst',v).addEventListener('change',function(e){A.fStage=e.target.value;renderApps()});
+  $('#copyurl',v).addEventListener('click',function(){var i=$('#aurl');var ok=function(){toast('คัดลอกลิงก์แล้ว')};try{navigator.clipboard.writeText(i.value).then(ok,function(){i.select();document.execCommand('copy');ok()})}catch(e){i.select();document.execCommand('copy');ok()}});
+  drawQR(applyUrl);
+  $('#qrsave',v).addEventListener('click',function(){var url=qrPng(applyUrl);if(!url)return;var a=document.createElement('a');a.href=url;a.download='QR-สมัครงาน-PushMedia.png';document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){var w=openViewer({type:'img',url:url},'QR code หน้าสมัครงาน · คลิกขวาที่รูปเพื่อบันทึก')},300)});
+  loadThumbs(list);
+  $$('tr.row',v).forEach(function(tr){tr.addEventListener('click',function(){openApp(tr.dataset.open)});tr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openApp(tr.dataset.open)}})});
+}
+
+/* รูปย่อในรายการ — โหลดเบื้องหลังเฉพาะที่ยังไม่มี */
+var thumbBusy=false;
+function loadThumbs(list){
+  var need=list.filter(function(a){return a.hasPhoto&&!(a.no in A.thumbs)}).map(function(a){return a.no}).slice(0,60);
+  if(!need.length||thumbBusy)return;thumbBusy=true;
+  need.forEach(function(n){A.thumbs[n]=''});
+  aCall('getThumbs',need).then(function(m){thumbBusy=false;Object.keys(m).forEach(function(n){A.thumbs[n]=m[n];var el=$('[data-thumb="'+n+'"]');if(el){el.style.backgroundImage='url("'+m[n]+'")';el.textContent=''}})}).catch(function(){thumbBusy=false});
+}
+/* drawer */
+function openApp(no){A.open={no:no,loading:true};A.dTab='profile';renderDrawer();aCall('getApplication',no).then(function(a){A.open=a;renderDrawer()}).catch(function(e){closeDrawer();toast(em(e),true)})}
+/* ป๊อปอัปยืนยันก่อนบันทึก (ทุกการบันทึก) → Promise<boolean> */
+function confirmBox(title,msg,okText,danger){return new Promise(function(res){
+  var w=document.createElement('div');w.className='md-wrap cf-wrap';
+  w.innerHTML='<div class="md" role="alertdialog" aria-modal="true" aria-label="'+esc(title)+'" style="width:min(420px,100%)"><div class="md-b" style="padding:22px 22px 10px"><h3 style="font-size:17px;margin-bottom:6px">'+esc(title)+'</h3>'+(msg?'<p class="muted" style="margin:0;font-size:14px">'+msg+'</p>':'')+'</div><div class="md-f"><button type="button" class="btn" data-cf="0">ยกเลิก</button><button type="button" class="btn btn-p" data-cf="1"'+(danger?' style="background:var(--bad);border-color:var(--bad)"':'')+'>'+esc(okText||'ยืนยัน')+'</button></div></div>';
+  document.body.appendChild(w);var done=function(v){w.remove();res(v)};
+  $$('[data-cf]',w).forEach(function(b){b.addEventListener('click',function(){done(b.dataset.cf==='1')})});
+  w.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();done(false)}});
+  w.addEventListener('mousedown',function(e){if(e.target===w)done(false)});
+  $('[data-cf="1"]',w).focus();
+})}
+function askClose(){
+  if($('.md-wrap'))return;
+  var w=document.createElement('div');w.className='md-wrap';
+  w.innerHTML='<div class="md" role="alertdialog" aria-modal="true" aria-label="ปิดหน้าข้อมูลผู้สมัคร" style="width:min(400px,100%)"><div class="md-b" style="padding:22px 22px 8px"><h3 style="font-size:17px;margin-bottom:6px">ปิดหน้าข้อมูลผู้สมัครไหม?</h3><p class="muted" style="margin:0;font-size:14px">ข้อมูลที่บันทึกแล้วไม่หาย · ความเห็นที่พิมพ์ค้างไว้แต่ยังไม่กดส่งจะหายไป</p></div><div class="md-f"><button type="button" class="btn" id="ac-no">อยู่หน้านี้ต่อ</button><button type="button" class="btn btn-p" id="ac-yes">ปิด</button></div></div>';
+  document.body.appendChild(w);var no=$('#ac-no',w);no.focus();
+  no.addEventListener('click',function(){w.remove()});$('#ac-yes',w).addEventListener('click',function(){w.remove();closeDrawer()});
+  w.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();w.remove()}});
+}
+function closeDrawer(){A.open=null;var d=$('.drawer'),s=$('.scrim');if(d)d.remove();if(s)s.remove();document.body.style.overflow=''}
+function syncRow(a){var r=A.d.apps.filter(function(x){return x.no===a.no})[0];if(r){r.stage=a.stage;r.rating=a.rating;r.interview=a.interview;r.first=a.form.first;r.last=a.form.last;r.nick=a.form.nick;r.posName=a.posName;r.dept=a.dept;r.pos=a.pos;r.files=a.files.length;r.slots=a.files.map(function(f){return f.slot})}}
+/* บันทึกแบบไม่ต้องรอ: ยืนยัน → อัปเดตหน้าจอทันที → ส่งเบื้องหลัง → ไม่สำเร็จ = คืนค่าเดิม */
+function busy(on){var d=$('.drawer');if(d)d.classList.toggle('busy',!!on)}
+function act(conf,local,call,msg){
+  return confirmBox(conf[0],conf[1]||'',conf[2]||'บันทึก',conf[3]).then(function(ok){if(!ok)return;
+    var a=A.open,snap=JSON.stringify(a),photo=a.photo;
+    if(local){local(a);syncRow(a);renderDrawer();if(A.admTab==='apps')renderApps()}
+    busy(true);toast('กำลังบันทึก...');
+    return call().then(function(x){busy(false);if(A.open&&A.open.no===x.no){x.photo=photo;A.open=x;syncRow(x);renderDrawer()}if(A.admTab==='apps')renderApps();toast(msg||'บันทึกแล้ว')})
+      .catch(function(e){busy(false);if(A.open&&A.open.no===a.no){A.open=JSON.parse(snap);syncRow(A.open);renderDrawer();if(A.admTab==='apps')renderApps()}toast('บันทึกไม่สำเร็จ: '+em(e),true)});
+  });
+}
+function renderDrawer(){
+  var a=A.open;if(!a)return;
+  var old=$('.drawer'),sc=$('.scrim');if(old)old.remove();if(!sc){sc=document.createElement('div');sc.className='scrim';sc.addEventListener('click',askClose);document.body.appendChild(sc)}
+  var d=document.createElement('div');d.className='drawer';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label','ใบสมัคร '+a.no);
+  if(a.loading){d.innerHTML='<div class="dr-head"><h2>'+esc(a.no)+'</h2><button type="button" class="btn btn-sm x" id="dclose">✕ ปิด</button></div>'+loadingHtml('กำลังโหลดใบสมัคร...');document.body.appendChild(d);document.body.style.overflow='hidden';$('#dclose').addEventListener('click',closeDrawer);return}
+  var F=a.form,role=A.user.role,canStage=role!=='mgr';
+  d.innerHTML='<div class="dr-head"><span class="av" style="'+(a.photo?'background-image:url(&quot;'+a.photo+'&quot;)':'')+'">'+(a.photo?'':esc(String(F.nick||F.first||'?').slice(0,2)))+'</span><div><h2>'+esc((F.title||'')+F.first+' '+F.last)+(F.nick?' <span class="muted" style="font-weight:400">('+esc(F.nick)+')</span>':'')+'</h2><div class="muted" style="font-size:13px"><span class="mono">'+esc(a.no)+'</span> · '+esc(a.posName)+' · ส่ง '+esc(a.at)+'</div></div>'+pill(a.stage)+
+    '<button type="button" class="btn btn-sm x" id="dclose" aria-label="ปิด">✕ ปิด</button></div>'+
+    '<div class="dr-body"><div><div class="tabs" role="tablist">'+[['profile','ข้อมูลผู้สมัคร'],['doc','ใบสมัคร (A4)'],['files','ไฟล์แนบ ('+a.files.length+')'],['log','ประวัติ ('+a.comments.length+')']].map(function(t){return '<button type="button" role="tab" data-tab="'+t[0]+'" aria-selected="'+(A.dTab===t[0])+'">'+t[1]+'</button>'}).join('')+'</div><div id="dtab">'+dTab(a)+'</div></div>'+
+    '<div class="act"><div class="card"><h3 style="font-size:15px;margin-bottom:10px">สถานะใบสมัคร</h3><div class="stage-btns">'+stg().map(function(s){var ok=canStage||['screen','interview','reject'].indexOf(s.k)>=0;return '<button type="button" class="btn btn-sm" data-stage="'+s.k+'" aria-pressed="'+(a.stage===s.k)+'"'+(ok?'':' disabled')+'>'+esc(s.t)+'</button>'}).join('')+'</div>'+
+      '<p class="muted" style="font-size:12.5px;margin:10px 0 0">'+(role==='mgr'?'หัวหน้าแผนกเปลี่ยนได้เฉพาะ คัดกรอง / นัดสัมภาษณ์ / ไม่ผ่าน':'เปลี่ยนสถานะแล้วระบบส่งอีเมลแจ้งผู้สมัคร (ถ้าสถานะนั้นตั้งข้อความไว้)')+'</p></div>'+
+      '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">นัดสัมภาษณ์</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="ivd" type="datetime-local" value="'+esc(a.interview?a.interview.replace(' ','T'):'')+'" style="flex:1;min-width:180px" aria-label="วันเวลาสัมภาษณ์"><button type="button" class="btn btn-sm btn-p" id="ivset">บันทึกนัด</button></div>'+(a.interview?'<p class="muted" style="font-size:12.5px;margin:8px 0 0">นัดไว้ '+esc(a.interview)+' · <a href="#" id="ivclr">ยกเลิกนัด</a></p>':'')+'</div>'+
+      '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">คะแนนและความเห็น</h3><div class="rating" role="group" aria-label="คะแนน">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-rate="'+n+'" aria-pressed="'+(a.rating>=n)+'" aria-label="'+n+' ดาว">'+n+'</button>'}).join('')+'</div>'+
+      '<div style="display:flex;gap:8px;margin-top:12px"><input class="inp" id="cmt" placeholder="เขียนความเห็นถึงทีม" style="flex:1" aria-label="ความเห็น"><button type="button" class="btn btn-sm" id="cmtadd">ส่ง</button></div>'+
+      '<ul class="cm" style="margin-top:12px">'+(a.comments.filter(function(c){return !/^(เปลี่ยนสถานะ|ให้คะแนน|แนบไฟล์|นัดสัมภาษณ์|ยกเลิกนัด|แก้ไขข้อมูล)/.test(c.t)}).slice(-4).reverse().map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')||'<li class="muted">ยังไม่มีความเห็น</li>')+'</ul></div></div></div>';
+  document.body.appendChild(d);document.body.style.overflow='hidden';
+  $('#dclose').addEventListener('click',closeDrawer);
+  d.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('.md-wrap')&&!$('.viewer'))askClose()});
+  $$('[data-tab]',d).forEach(function(b){b.addEventListener('click',function(){A.dTab=b.dataset.tab;renderDrawer()})});
+  $$('[data-stage]',d).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.stage===a.stage)return;var k=b.dataset.stage;act(['เปลี่ยนสถานะเป็น "'+ST(k).t+'"?',ST(k).msg&&k!=='screen'?'ระบบจะส่งอีเมลแจ้งผู้สมัครด้วย':'','เปลี่ยนสถานะ',k==='reject'],function(x){x.stage=k},function(){return aCall('updateStage',a.no,k)},'เปลี่ยนสถานะเป็น "'+ST(k).t+'" แล้ว')})});
+  $$('[data-rate]',d).forEach(function(b){b.addEventListener('click',function(){var n=+b.dataset.rate;act(['ให้คะแนน '+n+'/5?','','บันทึกคะแนน'],function(x){x.rating=n},function(){return aCall('rateApplication',a.no,n)},'บันทึกคะแนนแล้ว')})});
+  $('#ivset').addEventListener('click',function(){var val=$('#ivd').value;if(!val){toast('เลือกวันเวลาก่อน',true);return}act(['บันทึกนัดสัมภาษณ์?',esc(val.replace('T',' '))+' น.','บันทึกนัด'],function(x){x.interview=val.replace('T',' ');if(x.stage==='new'||x.stage==='screen')x.stage='interview'},function(){return aCall('setInterview',a.no,val)},'บันทึกนัดสัมภาษณ์แล้ว')});
+  var ic=$('#ivclr');if(ic)ic.addEventListener('click',function(e){e.preventDefault();act(['ยกเลิกนัดสัมภาษณ์?','','ยกเลิกนัด',true],function(x){x.interview=''},function(){return aCall('setInterview',a.no,'')},'ยกเลิกนัดแล้ว')});
+  var addC=function(){var t=$('#cmt').value.trim();if(!t)return;act(['ส่งความเห็นนี้?','“'+esc(t)+'”','ส่งความเห็น'],function(x){x.comments.push({by:A.user.name,role:ROLE_T[A.user.role],at:'กำลังบันทึก…',t:t})},function(){return aCall('addComment',a.no,t)},'ส่งความเห็นแล้ว')};
+  $('#cmtadd').addEventListener('click',addC);$('#cmt').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addC()}});
+  bindTab(a);
+}
+function driveTxt(F){
+  var c=F.carDrive==='ได้'?'ขับได้'+(F.carLic==='มี'?' · มีใบขับขี่'+(F.carLicType?' ('+F.carLicType+')':''):' · ไม่มีใบขับขี่')+(F.carOwn==='มี'?' · มีรถ '+(F.carNo||''):''):(F.carDrive?'ขับไม่ได้':'—');
+  var m=F.motoDrive==='ได้'?'ขับได้'+(F.motoLic==='มี'?' · มีใบขับขี่':' · ไม่มีใบขับขี่'):(F.motoDrive?'ขับไม่ได้':'—');
+  return 'รถยนต์: '+c+' / จักรยานยนต์: '+m;
+}
+function skillsOut(F){var t=F.skillTags||[];return t.length?'<span class="skills-out">'+t.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</span>':'—'}
+function docObj(a){return {no:a.no,at:a.at,posName:a.posName,interview:a.interview,form:a.form,photo:a.photo,slots:a.files.map(function(f){return f.slot}),extraRows:(A.d.extra||[]).filter(function(x){return (a.form.extra||{})[x.id]}).map(function(x){return [x.label,a.form.extra[x.id]]})}}
+function dTab(a){
+  var F=a.form,canEd=A.user.role==='hr';
+  if(A.dTab==='profile'){
+    var edu=(F.edu||[]).map(function(r,i){return r&&r[0]?['มัธยมปลาย/ปวช.','อนุปริญญา/ปวส.','ปริญญาตรี','สูงกว่าปริญญาตรี','กำลังศึกษา'][i]+' · '+r[0]+(r[1]?' ('+r[1]+')':''):''}).filter(Boolean);
+    var work=(F.work||[]).filter(function(r){return r&&r[0]}).map(function(r){return r[0]+(r[1]?' · '+r[1]:'')+(r[3]?' · '+r[3]:'')});
+    var secs=[['pos','ตำแหน่งและเงื่อนไข',[['ตำแหน่งที่สมัคร',a.posName+' · '+a.dept],['เงินเดือนที่ต้องการ',F.salary==null?'<span class="lock">เห็นเฉพาะ HR และผู้บริหาร</span>':(F.salary||'—')],['เริ่มงานได้',F.start||'—'],['ทราบข่าวจาก',F.source||'—']]],
+      ['contact','ข้อมูลส่วนตัวและการติดต่อ',[['ชื่อ–สกุล',(F.title||'')+F.first+' '+F.last+(F.nick?' ('+F.nick+')':'')],['เลขบัตรประชาชน',F.idcard||'—'],['อายุ',F.age?F.age+' ปี':'—'],['โทรศัพท์',F.mobile||'—'],['อีเมล',F.email||'—'],['ที่อยู่',fullAddr(F)||'—'],['ผู้ติดต่อฉุกเฉิน',(F.emer||'—')+(F.emerTel?' · '+F.emerTel:'')+(F.emerRel?' ('+F.emerRel+')':'')]]],
+      ['skills','การขับขี่และทักษะ',[['การขับขี่',driveTxt(F)],['ทักษะ','__SK__'],['รายละเอียดเพิ่มเติม',F.skills||'—']]],
+      ['edu','การศึกษาและประสบการณ์',[['การศึกษา',edu.join(' / ')||'—'],['ประสบการณ์',work.join(' / ')||'—'],['บุคคลอ้างอิง',(F.ref||'—')+(F.refTel?' · '+F.refTel:'')]]]];
+    var xs=(A.d.extra||[]).filter(function(x){return x.on});if(xs.length)secs.push(['extra','ข้อมูลเพิ่มเติม',xs.map(function(x){return [x.label,(F.extra||{})[x.id]||'—']})]);
+    return secs.map(function(sc){return '<div class="card ed-sec" style="padding:16px 18px"><h4>'+sc[1]+(canEd?'<button type="button" class="btn btn-sm" data-edsec="'+sc[0]+'">แก้ไข</button>':'')+'</h4><dl class="kv">'+sc[2].map(function(r){return '<dt>'+r[0]+'</dt><dd>'+(r[1]==='__SK__'?skillsOut(F):String(r[1]).indexOf('<span')===0?r[1]:esc(r[1]))+'</dd>'}).join('')+'</dl></div>'}).join('');
+  }
+  if(A.dTab==='doc')return '<div class="sheet-tools"><button type="button" class="btn btn-sm btn-p" id="pv-print">พิมพ์ / บันทึกเป็น PDF</button><span class="muted" style="font-size:12.5px">ในหน้าต่างพิมพ์ เลือก "บันทึกเป็น PDF" เพื่อเก็บเป็นไฟล์</span></div><div class="doc-stage">'+docHtml(docObj(a))+'</div>';
+  if(A.dTab==='files'){
+    var label=function(s){if(s==='photo')return 'รูปถ่าย';if(s==='hr')return 'ไฟล์จาก HR';var d=A.d.docs.filter(function(x){return x.k===s})[0];return d?d.t:s};
+    return (A.user.role!=='mgr'?'<div class="sheet-tools"><label class="btn btn-sm" for="hr-file" style="cursor:pointer">+ แนบไฟล์เพิ่ม (เช่น ผลสัมภาษณ์)</label><input id="hr-file" type="file" accept="image/*,.pdf" hidden>'+(a.folderUrl?'<a class="btn btn-sm" href="'+esc(a.folderUrl)+'" target="_blank" rel="noopener">เปิดโฟลเดอร์ใน Drive</a>':'')+'</div>':'')+
+      '<div class="att-grid">'+a.files.map(function(f,i){var pdf=/pdf/.test(f.mime),t=(A.fthumbs||{})[f.fileId];return '<button type="button" class="att" data-file="'+i+'"><div class="th'+(pdf?' pdf':'')+(t?' has':'')+'" data-fth="'+esc(f.fileId)+'" style="'+(t?'background-image:url(&quot;'+t+'&quot;)':'')+'">'+(pdf?'<span class="badge">PDF</span>':(t?'':'<span class="spin"></span>'))+'</div><div class="cap"><b>'+esc(label(f.slot))+'</b><span class="muted">'+esc(f.name)+' · '+f.sizeKB+' KB</span></div></button>'}).join('')+
+      A.d.docs.filter(function(dd){return dd.req&&!a.files.some(function(f){return f.slot===dd.k})}).map(function(dd){return '<div class="att" style="cursor:default;border-style:dashed"><div class="th" style="color:var(--bad)">ขาด</div><div class="cap"><b>'+esc(dd.t)+'</b><span class="muted">ยังไม่ได้แนบ</span></div></div>'}).join('')+'</div>';
+  }
+  return '<div class="card" style="padding:18px"><ul class="cm">'+[{by:'ระบบ',role:'',at:a.at,t:'รับใบสมัครออนไลน์ · ส่งอีเมลยืนยันถึงผู้สมัคร'}].concat(a.comments).map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')+'</ul></div>';
+}
+function loadFileThumbs(a){
+  A.fthumbs=A.fthumbs||{};if(!a.files.some(function(f){return !(f.fileId in A.fthumbs)}))return;
+  a.files.forEach(function(f){if(!(f.fileId in A.fthumbs))A.fthumbs[f.fileId]=''});
+  aCall('getFileThumbs',a.no).then(function(m){Object.keys(m).forEach(function(id){A.fthumbs[id]=m[id];var el=$('[data-fth="'+id+'"]');if(el){el.style.backgroundImage='url("'+m[id]+'")';el.classList.add('has');var sp=el.querySelector('.spin');if(sp)sp.remove()}});
+    $$('[data-fth]').forEach(function(el){if(!el.classList.contains('has')){var sp=el.querySelector('.spin');if(sp)sp.outerHTML='<span class="badge">ไฟล์</span>'}})}).catch(function(){});
+}
+function bindTab(a){
+  if(A.dTab==='files')loadFileThumbs(a);
+  $$('[data-edsec]').forEach(function(b){b.addEventListener('click',function(){editApplicant(a,b.dataset.edsec)})});
+  var pp=$('#pv-print');if(pp)pp.addEventListener('click',function(){printDoc(docObj(a))});
+  $$('[data-file]').forEach(function(b){b.addEventListener('click',function(){var f=a.files[+b.dataset.file];var w=openViewer({loading:true},f.name);
+    aCall('getFileData',a.no,f.fileId).then(function(r){w.remove();if(r.tooBig){openViewer({type:'pdf',url:'',driveUrl:r.url},f.name);return}
+      var img=/^image\//.test(r.mime),url;if(img)url='data:'+r.mime+';base64,'+r.b64;else{var bin=atob(r.b64),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);url=URL.createObjectURL(new Blob([arr],{type:r.mime}))}
+      openViewer({type:img?'img':'pdf',url:url,driveUrl:r.url},f.name)}).catch(function(e){w.remove();toast('เปิดไฟล์ไม่สำเร็จ: '+em(e),true)})})});
+  var hf=$('#hr-file');if(hf)hf.addEventListener('change',function(){var f=hf.files[0];if(!f)return;if(f.size>10485760){toast('ไฟล์ใหญ่เกิน 10 MB',true);return}
+    fileToB64(f).then(function(b64){return act(['แนบไฟล์ '+f.name+'?','','อัปโหลด'],null,function(){return aCall('addAdminFile',a.no,{name:f.name,mime:f.type||'application/octet-stream'},b64)},'แนบไฟล์ '+f.name+' แล้ว')})});
+}
+
+/* ───────── modal + edit applicant ───────── */
+function modal(o){
+  var w=document.createElement('div');w.className='md-wrap';
+  w.innerHTML='<form class="md" role="dialog" aria-modal="true" aria-label="'+esc(o.title)+'" novalidate><div class="md-h"><h3>'+esc(o.title)+'</h3><button type="button" class="ib" data-mx aria-label="ปิด">✕</button></div><div class="md-b">'+o.body+'<div class="md-err" id="md-err" role="alert"></div></div><div class="md-f">'+(o.danger?'<button type="button" class="btn" data-mdel style="margin-right:auto;color:var(--bad)">'+esc(o.danger)+'</button>':'')+'<button type="button" class="btn" data-mx>ยกเลิก</button><button type="submit" class="btn btn-p">'+esc(o.ok||'บันทึก')+'</button></div></form>';
+  document.body.appendChild(w);
+  var fm=$('form',w),close=function(){w.remove()};
+  $$('[data-mx]',w).forEach(function(b){b.addEventListener('click',close)});
+  w.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();close()}});
+  w.addEventListener('mousedown',function(e){if(e.target===w)close()});
+  var md=$('[data-mdel]',w);if(md)md.addEventListener('click',function(){if(md.dataset.sure){Promise.resolve(o.onDelete()).then(close,function(e){$('#md-err',w).textContent=em(e)})}else{md.dataset.sure=1;md.textContent='กดอีกครั้งเพื่อยืนยันการลบ'}});
+  fm.addEventListener('submit',function(e){e.preventDefault();var sb=$('button[type=submit]',fm);var r=o.onSave(fm);
+    if(typeof r==='string'){$('#md-err',w).textContent=r;return}
+    if(r&&r.then){sb.disabled=true;sb.textContent='กำลังบันทึก...';r.then(close,function(err){sb.disabled=false;sb.textContent=o.ok||'บันทึก';if(em(err)!=='ยกเลิกแล้ว')$('#md-err',w).textContent=em(err)})}else close()});
+  if(o.onOpen)o.onOpen(fm);
+  var first=$('input:not([type=hidden]),select,textarea',fm);if(first)first.focus();
+}
+function fv(fm,n){var el=fm.elements[n];return el?(el.type==='checkbox'?el.checked:String(el.value).trim()):''}
+function swHtml(name,on,lbl,dis,attr){return '<label class="sw" title="'+esc(lbl||'')+'"><input type="checkbox" '+(name?'name="'+name+'" ':'')+(attr||'')+' '+(on?'checked ':'')+(dis?'disabled ':'')+'aria-label="'+esc(lbl||'')+'"><span></span></label>'}
+function editApplicant(a,sec){
+  var F=a.form,f=function(n,l,val,t,sp){return '<div class="f '+(sp||'s3')+'"><label for="ea-'+n+'">'+l+'</label><input class="inp" id="ea-'+n+'" name="'+n+'" type="'+(t||'text')+'" value="'+esc(val==null?'':val)+'"></div>'};
+  var body={
+    pos:'<div class="grid"><div class="f s6"><label for="ea-pos">ตำแหน่งที่สมัคร</label><select class="inp" id="ea-pos" name="pos">'+(A.d.positions.some(function(p){return p.id===a.pos})?'':'<option value="">'+esc(a.posName)+' (ฝากประวัติ)</option>')+A.d.positions.map(function(p){return '<option value="'+esc(p.id)+'"'+(a.pos===p.id?' selected':'')+'>'+esc(p.name)+' · '+esc(p.dept)+(p.on?'':' (ปิดรับ)')+'</option>'}).join('')+'</select></div>'+f('salary','เงินเดือนที่ต้องการ',F.salary)+f('start','เริ่มงานได้',F.start)+f('source','ทราบข่าวจาก',F.source,'','s6')+'</div>',
+    contact:'<div class="grid">'+f('title','คำนำหน้า',F.title,'','s2')+f('first','ชื่อ',F.first,'','s2')+f('last','นามสกุล',F.last,'','s2')+f('nick','ชื่อเล่น',F.nick,'','s2')+f('age','อายุ',F.age,'number','s2')+f('mobile','โทรศัพท์',F.mobile,'tel','s2')+f('email','อีเมล',F.email,'email','s6')+'<div class="f s6"><label for="ea-addr">บ้านเลขที่ / หมู่ / ซอย / ถนน</label><input class="inp" id="ea-addr" name="addr" value="'+esc(F.addr||'')+'"></div>'+f('subdistrict','แขวง / ตำบล',F.subdistrict,'','s3')+f('district','เขต / อำเภอ',F.district,'','s3')+f('province','จังหวัด',F.province,'','s3')+f('zip','รหัสไปรษณีย์',F.zip,'','s3')+f('emer','ผู้ติดต่อฉุกเฉิน',F.emer,'','s2')+f('emerTel','โทรศัพท์ฉุกเฉิน',F.emerTel,'tel','s2')+f('emerRel','ความสัมพันธ์',F.emerRel,'','s2')+'</div>',
+    skills:'<div class="grid"><div class="f s6"><label for="ea-sk">ทักษะ (คั่นด้วย ,)</label><textarea class="inp" id="ea-sk" name="skillTags">'+esc((F.skillTags||[]).join(', '))+'</textarea></div>'+f('carDrive','ขับรถยนต์ (ได้/ไม่ได้)',F.carDrive,'','s2')+f('carLic','ใบขับขี่รถยนต์ (มี/ไม่มี)',F.carLic,'','s2')+f('carNo','ทะเบียนรถ',F.carNo,'','s2')+'<div class="f s6"><label for="ea-skd">รายละเอียดเพิ่มเติม</label><textarea class="inp" id="ea-skd" name="skills">'+esc(F.skills)+'</textarea></div></div>',
+    edu:'<div class="grid">'+(F.edu||[]).map(function(r,i){return f('edu_'+i,['มัธยมปลาย/ปวช.','อนุปริญญา/ปวส.','ปริญญาตรี','สูงกว่าปริญญาตรี','กำลังศึกษา'][i]+' — สถาบัน',(r||[])[0],'','s3')+f('edum_'+i,'สาขา',(r||[])[1],'','s3')}).join('')+f('ref','บุคคลอ้างอิง',F.ref,'','s2')+f('refTel','โทร',F.refTel,'tel','s2')+f('refPos','ตำแหน่ง/บริษัท',F.refPos,'','s2')+'</div>',
+    extra:'<div class="grid">'+(A.d.extra||[]).filter(function(x){return x.on}).map(function(x){return f('x_'+x.id,x.label,(F.extra||{})[x.id],'','s6')}).join('')+'</div>'
+  }[sec];
+  var title={pos:'ตำแหน่งและเงื่อนไข',contact:'ข้อมูลส่วนตัวและการติดต่อ',skills:'การขับขี่และทักษะ',edu:'การศึกษาและประสบการณ์',extra:'ข้อมูลเพิ่มเติม'}[sec];
+  modal({title:'แก้ไข · '+title,body:body+'<p class="muted" style="font-size:12.5px;margin:12px 0 0">ทุกการแก้ไขบันทึกในแท็บ "ประวัติ"</p>',
+    onSave:function(fm){
+      var patch={};
+      Array.prototype.forEach.call(fm.elements,function(el){if(!el.name)return;var val=String(el.value).trim(),n=el.name;
+        if(n==='skillTags'){patch.skillTags=val.split(',').map(function(x){return x.trim()}).filter(Boolean);return}
+        if(n.indexOf('x_')===0){patch.extra=patch.extra||Object.assign({},F.extra||{});patch.extra[n.slice(2)]=val;return}
+        var m=/^(edu|edum)_(\d)$/.exec(n);if(m){patch.edu=patch.edu||JSON.parse(JSON.stringify(F.edu||[]));var r=patch.edu[+m[2]]=patch.edu[+m[2]]||['','','','',''];r[m[1]==='edu'?0:1]=val;return}
+        patch[n]=val});
+      if(patch.first===''||(sec==='contact'&&!patch.first))return 'ชื่อห้ามว่าง';
+      return confirmBox('บันทึกการแก้ไข "'+title+'"?','','บันทึก').then(function(ok){if(!ok)throw new Error('ยกเลิกแล้ว');
+        var snap=JSON.stringify(a);Object.keys(patch).forEach(function(k){if(k!=='pos')a.form[k]=patch[k]});syncRow(a);renderDrawer();renderApps();toast('กำลังบันทึก...');
+        aCall('editApplication',a.no,patch).then(function(x){x.photo=a.photo;A.open=x;syncRow(x);renderDrawer();renderApps();toast('บันทึกการแก้ไขแล้ว')}).catch(function(e){A.open=JSON.parse(snap);syncRow(A.open);renderDrawer();renderApps();toast('บันทึกไม่สำเร็จ: '+em(e),true)});
+      });
+    }});
+}
+
+/* ═════════ SETTINGS ═════════ */
+var SET_SECS=[['pos','ตำแหน่งงานที่เปิดรับ','เพิ่ม / แก้ / ปิดรับ'],['form','ฟอร์มใบสมัคร','ช่องในแต่ละขั้น'],['docs','เอกสารแนบ','ประเภทเอกสารที่ขอ'],['skills','รายการทักษะ','ตัวเลือกทักษะให้ผู้สมัคร'],['stage','สถานะใบสมัคร','ข้อความแจ้งผู้สมัคร'],['noti','การแจ้งเตือน & ข้อมูลบริษัท','อีเมล HR · ที่อยู่บริษัท'],['users','ผู้ใช้และสิทธิ์','HR หัวหน้าแผนก ผู้บริหาร']];
+function keepBoot(){try{sessionStorage.setItem('pmc_boot',JSON.stringify({tok:A.token,d:A.d}))}catch(e){}}
+function save(key,value,msg){var T={positions:'ตำแหน่งงาน',fields:'ฟอร์มใบสมัคร',extra:'ช่องเพิ่มเติม',docs:'เอกสารแนบ',skills:'รายการทักษะ',stages:'สถานะใบสมัคร',notify:'การแจ้งเตือน',company:'ข้อมูลบริษัท',users:'ผู้ใช้และสิทธิ์'};
+  return confirmBox('บันทึกการเปลี่ยนแปลง '+(T[key]||key)+'?','มีผลกับระบบทันที','บันทึก').then(function(ok){if(!ok){renderSettings();throw new Error('ยกเลิกแล้ว')}toast('กำลังบันทึก...');return aCall('saveConfig',key,value)}).then(function(d){var apps=A.d.apps;A.d=d;if(!d.apps)A.d.apps=apps;buildFD(d.fields);renderSettings();toast(msg||'บันทึกแล้ว')})}
+function renderSettings(){
+  var secs=SET_SECS.filter(function(x){return A.user.role==='hr'||(x[0]!=='users'&&x[0]!=='noti')});
+  if(!secs.some(function(x){return x[0]===A.setSec}))A.setSec='pos';
+  $('#adm-body').innerHTML='<div class="set"><nav class="card set-nav" aria-label="หมวดข้อมูล">'+secs.map(function(x){return '<button type="button" data-ss="'+x[0]+'"'+(A.setSec===x[0]?' aria-current="page"':'')+'>'+x[1]+'<small>'+x[2]+'</small></button>'}).join('')+'</nav><div class="card set-main" id="set-main"></div></div>';
+  $$('[data-ss]').forEach(function(b){b.addEventListener('click',function(){A.setSec=b.dataset.ss;renderSettings()})});
+  ({pos:setPos,form:setForm,docs:setDocs,skills:setSkills,stage:setStage,noti:setNoti,users:setUsers})[A.setSec]($('#set-main'));
+}
+function head(t,d,btn){return '<div class="set-head"><div><h2>'+t+'</h2><p>'+d+'</p></div>'+(btn?'<button type="button" class="btn btn-p" id="add">'+btn+'</button>':'')+'</div>'}
+function depts(){var d={};A.d.positions.forEach(function(p){if(p.dept)d[p.dept]=1});['LED','Digital Signage & Retail','Business Development','Financial account','Human Resource'].forEach(function(x){d[x]=1});return Object.keys(d)}
+function clone(x){return JSON.parse(JSON.stringify(x))}
+
+function setPos(m){
+  var cnt={};A.d.apps.forEach(function(a){cnt[a.pos]=(cnt[a.pos]||0)+1});
+  m.innerHTML=head('ตำแหน่งงานที่เปิดรับ','ตำแหน่งที่เปิดอยู่จะขึ้นให้ผู้สมัครค้นหาในขั้นที่ 1 · ปิดรับแล้วใบสมัครเดิมยังอยู่ครบ · แก้ในชีต Positions โดยตรงได้เช่นกัน','+ เพิ่มตำแหน่ง')+
+    '<div class="list-wrap"><table class="mg"><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>อัตรา</th><th>ใบสมัคร</th><th>เปิดรับ</th><th></th></tr></thead><tbody>'+
+    (A.d.positions.length?A.d.positions.map(function(x,i){return '<tr class="'+(x.on?'':'off')+'"><td><b style="font-weight:600">'+esc(x.name)+'</b>'+(x.close?'<div class="muted" style="font-size:12px">ปิดรับ '+esc(x.close)+'</div>':'')+'</td><td>'+esc(x.dept)+'</td><td>'+x.open+'</td><td>'+(cnt[x.id]||0)+'</td><td>'+swHtml('',x.on,'เปิดรับ '+x.name,false,'data-pon="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ped="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่มีตำแหน่ง</td></tr>')+'</tbody></table></div>';
+  $('#add',m).addEventListener('click',function(){editPos(-1)});
+  $$('[data-ped]',m).forEach(function(b){b.addEventListener('click',function(){editPos(+b.dataset.ped)})});
+  $$('[data-pon]',m).forEach(function(c){c.addEventListener('change',function(){var arr=clone(A.d.positions);arr[+c.dataset.pon].on=c.checked;save('positions',arr,(c.checked?'เปิดรับ ':'ปิดรับ ')+arr[+c.dataset.pon].name+' แล้ว').catch(function(e){toast(em(e),true);renderSettings()})})});
+}
+function editPos(i){
+  var x=i>=0?A.d.positions[i]:{name:'',dept:'LED',open:1,on:true,desc:'',close:''},used=i>=0&&A.d.apps.some(function(a){return a.pos===x.id});
+  modal({title:i>=0?'แก้ไขตำแหน่ง':'เพิ่มตำแหน่งใหม่',danger:i>=0&&!used?'ลบตำแหน่ง':'',
+    body:'<div class="grid"><div class="f s6"><label for="m-name">ชื่อตำแหน่ง <span class="req">*</span></label><input class="inp" id="m-name" name="name" value="'+esc(x.name)+'"></div>'+
+      '<div class="f s4"><label for="m-dept">แผนก</label><input class="inp" id="m-dept" name="dept" list="m-dl" value="'+esc(x.dept)+'"><datalist id="m-dl">'+depts().map(function(d){return '<option value="'+esc(d)+'">'}).join('')+'</datalist></div>'+
+      '<div class="f s2"><label for="m-open">จำนวนอัตรา</label><input class="inp" id="m-open" name="open" type="number" min="0" value="'+x.open+'"></div>'+
+      '<div class="f s6"><label for="m-desc">รายละเอียดงาน / คุณสมบัติ (ผู้สมัครเห็น)</label><textarea class="inp" id="m-desc" name="desc">'+esc(x.desc||'')+'</textarea></div>'+
+      '<div class="f s3"><label for="m-close">ปิดรับอัตโนมัติวันที่ (ไม่บังคับ)</label><input class="inp" id="m-close" name="close" type="date" value="'+esc(x.close||'')+'"></div>'+
+      '<div class="f s3"><span class="lbl">สถานะ</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',x.on!==false,'เปิดรับ')+' เปิดรับสมัคร</label></div></div>'+
+      (used?'<p class="muted" style="font-size:12.5px;margin:12px 0 0">ตำแหน่งนี้มีใบสมัครแล้ว ลบไม่ได้ · ใช้ "ปิดรับ" แทน</p>':''),
+    onSave:function(fm){var n=fv(fm,'name');if(!n)return 'กรุณากรอกชื่อตำแหน่ง';
+      var arr=clone(A.d.positions),y={id:i>=0?x.id:'p'+Date.now().toString(36),name:n,dept:fv(fm,'dept')||'ไม่ระบุแผนก',open:Math.max(0,+fv(fm,'open')||0),desc:fv(fm,'desc'),close:fv(fm,'close'),on:fv(fm,'on')};
+      if(i>=0)arr[i]=y;else arr.push(y);return save('positions',arr,'บันทึกตำแหน่ง '+n+' แล้ว')},
+    onDelete:function(){var arr=clone(A.d.positions);arr.splice(i,1);return save('positions',arr,'ลบตำแหน่งแล้ว')}});
+}
+var TYPE_T={builtin:'ช่องมาตรฐาน',text:'ข้อความสั้น',long:'ข้อความยาว',number:'ตัวเลข',date:'วันที่',choice:'ตัวเลือก'};
+function stepFields(si){return Object.keys(FD).map(function(k){return FD[k]}).filter(function(f){return f.step===si}).sort(function(x,y){return x.ord-y.ord}).concat((A.d.extra||[]).filter(function(x){return x.step===si}))}
+function fieldsOverride(){var o={};Object.keys(FD).forEach(function(k){var d=FD[k];if(d.label!==d.def||d.req!==d.defReq||!d.on||d.help)o[k]={label:d.label,req:d.req,on:d.on,help:d.help}});return o}
+function setForm(m){
+  var list=stepFields(A.fStep);
+  m.innerHTML=head('ฟอร์มใบสมัคร','เปลี่ยนชื่อช่อง ตั้งบังคับกรอก ซ่อนช่องที่ไม่ใช้ หรือเพิ่มช่องใหม่ · มีผลกับหน้าสมัครงานทันที · ช่อง 🔒 เป็นช่องหลัก ซ่อนไม่ได้','+ เพิ่มช่องในขั้นนี้')+
+    '<div class="step-chips" role="group">'+STEPS.slice(0,4).map(function(t,i){return '<button type="button" class="chip" data-fs="'+i+'" aria-pressed="'+(A.fStep===i)+'">'+(i+1)+'. '+t+'</button>'}).join('')+'</div>'+
+    '<div class="fl-row hd"><span></span><span>ชื่อช่อง</span><span class="c-type">ชนิด</span><span class="c-req">บังคับ</span><span class="c-on">แสดง</span><span></span></div>'+
+    list.map(function(f,i){var cu=f.type!=='builtin';return '<div class="fl-row'+(f.on?'':' off')+'"><div class="mv">'+(cu?'<button type="button" class="ib" data-up="'+f.id+'" aria-label="เลื่อนขึ้น">▲</button><button type="button" class="ib" data-dn="'+f.id+'" aria-label="เลื่อนลง">▼</button>':'<span style="width:26px"></span>')+'</div>'+
+      '<div class="nm"><b>'+esc(f.label)+'</b>'+(f.lock?' 🔒':'')+(f.help?'<small>'+esc(f.help)+'</small>':'')+'</div><span class="c-type"><span class="tag'+(cu?' cu':'')+'">'+TYPE_T[f.type]+'</span></span>'+
+      '<span class="c-req">'+swHtml('',f.req,'บังคับกรอก '+f.label,f.lock,'data-freq="'+f.id+'"')+'</span><span class="c-on">'+swHtml('',f.on,'แสดง '+f.label,f.lock,'data-fon="'+f.id+'"')+'</span>'+
+      '<div class="acts"><button type="button" class="ib" data-fed="'+f.id+'">แก้ไข</button></div></div>'}).join('')+
+    '<p class="muted" style="font-size:12.5px;margin-top:12px">ขั้นที่ 5 ตั้งค่าที่หมวด "เอกสารแนบ" · ตารางการศึกษาและประสบการณ์ในขั้นที่ 4 เป็นแบบตายตัวตามใบสมัครกระดาษ</p>';
+  $('#add',m).addEventListener('click',function(){editField(null)});
+  $$('[data-fs]',m).forEach(function(b){b.addEventListener('click',function(){A.fStep=+b.dataset.fs;renderSettings()})});
+  var isX=function(id){return !FD[id]};
+  var flip=function(id,key,val){if(isX(id)){var ex=clone(A.d.extra);ex.forEach(function(x){if(x.id===id)x[key]=val});return save('extra',ex)}FD[id][key]=val;return save('fields',fieldsOverride())};
+  $$('[data-freq]',m).forEach(function(c){c.addEventListener('change',function(){flip(c.dataset.freq,'req',c.checked).catch(function(e){toast(em(e),true)})})});
+  $$('[data-fon]',m).forEach(function(c){c.addEventListener('change',function(){flip(c.dataset.fon,'on',c.checked).catch(function(e){toast(em(e),true)})})});
+  $$('[data-fed]',m).forEach(function(b){b.addEventListener('click',function(){var id=b.dataset.fed;editField(FD[id]||A.d.extra.filter(function(x){return x.id===id})[0])})});
+  var mv=function(id,d){var ex=clone(A.d.extra),arr=ex.filter(function(x){return x.step===A.fStep}),i=arr.map(function(x){return x.id}).indexOf(id),j=i+d;if(j<0||j>=arr.length)return;var a=ex.indexOf(arr[i]),b=ex.indexOf(arr[j]),t=ex[a];ex[a]=ex[b];ex[b]=t;save('extra',ex)};
+  $$('[data-up]',m).forEach(function(b){b.addEventListener('click',function(){mv(b.dataset.up,-1)})});
+  $$('[data-dn]',m).forEach(function(b){b.addEventListener('click',function(){mv(b.dataset.dn,1)})});
+}
+function editField(f){
+  var isNew=!f,cu=isNew||f.type!=='builtin';f=f||{label:'',type:'text',req:false,on:true,help:'',opts:''};
+  modal({title:isNew?'เพิ่มช่องใหม่ · ขั้นที่ '+(A.fStep+1):'แก้ไขช่อง "'+f.label+'"',danger:(!isNew&&cu)?'ลบช่องนี้':'',
+    body:'<div class="grid"><div class="f s6"><label for="m-lbl">ชื่อช่อง (ที่ผู้สมัครเห็น) <span class="req">*</span></label><input class="inp" id="m-lbl" name="label" value="'+esc(f.label)+'"></div>'+
+      (cu?'<div class="f s3"><label for="m-type">ชนิดข้อมูล</label><select class="inp" id="m-type" name="type">'+['text','long','number','date','choice'].map(function(t){return '<option value="'+t+'"'+(f.type===t?' selected':'')+'>'+TYPE_T[t]+'</option>'}).join('')+'</select></div><div class="f s3" id="m-optw"><label for="m-opts">ตัวเลือก (คั่นด้วย ,)</label><input class="inp" id="m-opts" name="opts" value="'+esc(f.opts||'')+'"></div>':
+        (f.label!==f.def?'<p class="muted s6" style="grid-column:span 6;font-size:12.5px;margin:0">ชื่อเดิม: '+esc(f.def)+'</p>':''))+
+      '<div class="f s6"><label for="m-help">คำอธิบายใต้ช่อง (ไม่บังคับ)</label><input class="inp" id="m-help" name="help" value="'+esc(f.help||'')+'"></div>'+
+      '<div class="f s3"><span class="lbl">บังคับกรอก</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('req',f.req,'บังคับกรอก',f.lock)+' ผู้สมัครต้องกรอก</label></div>'+
+      '<div class="f s3"><span class="lbl">แสดงในฟอร์ม</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',f.on,'แสดง',f.lock)+' แสดง</label></div></div>',
+    onOpen:function(fm){var t=fm.elements.type,w=$('#m-optw');if(!t)return;var u=function(){w.hidden=t.value!=='choice'};t.addEventListener('change',u);u()},
+    onSave:function(fm){var l=fv(fm,'label');if(!l)return 'กรุณากรอกชื่อช่อง';
+      if(fm.elements.type&&fv(fm,'type')==='choice'&&!fv(fm,'opts'))return 'ช่องแบบตัวเลือกต้องมีอย่างน้อย 1 ตัวเลือก';
+      if(!cu){f.label=l;f.help=fv(fm,'help');if(!f.lock){f.req=fv(fm,'req');f.on=fv(fm,'on')}return save('fields',fieldsOverride(),'บันทึกช่อง "'+l+'" แล้ว')}
+      var ex=clone(A.d.extra),y={label:l,help:fv(fm,'help'),req:fv(fm,'req'),on:fv(fm,'on'),type:fv(fm,'type'),opts:fv(fm,'opts')};
+      if(isNew){y.id='x'+Date.now().toString(36);y.step=A.fStep;ex.push(y)}else ex.forEach(function(x){if(x.id===f.id)Object.assign(x,y)});
+      return save('extra',ex,'บันทึกช่อง "'+l+'" แล้ว')},
+    onDelete:function(){return save('extra',A.d.extra.filter(function(x){return x.id!==f.id}),'ลบช่องแล้ว')}});
+}
+function setDocs(m){
+  m.innerHTML=head('เอกสารแนบ','ประเภทเอกสารที่ขอในขั้นที่ 5 · เอกสารบังคับต้องแนบครบก่อนส่งใบสมัคร · รูปถ่ายหน้าตรงบังคับเสมอ','+ เพิ่มประเภทเอกสาร')+
+    '<div class="list-wrap"><table class="mg"><thead><tr><th>เอกสาร</th><th>ชนิดไฟล์</th><th>บังคับ</th><th></th></tr></thead><tbody>'+
+    A.d.docs.map(function(d,i){return '<tr><td><b style="font-weight:600">'+esc(d.t)+'</b>'+(d.help?'<div class="muted" style="font-size:12px">'+esc(d.help)+'</div>':'')+'</td><td>'+esc(d.ext||'JPG, PNG, PDF')+'</td><td>'+swHtml('',d.req,'บังคับ '+d.t,false,'data-dreq="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ded="'+i+'">แก้ไข</button></div></td></tr>'}).join('')+'</tbody></table></div>';
+  $('#add',m).addEventListener('click',function(){editDoc(-1)});
+  $$('[data-ded]',m).forEach(function(b){b.addEventListener('click',function(){editDoc(+b.dataset.ded)})});
+  $$('[data-dreq]',m).forEach(function(c){c.addEventListener('change',function(){var arr=clone(A.d.docs);arr[+c.dataset.dreq].req=c.checked;save('docs',arr)})});
+}
+function editDoc(i){
+  var d=i>=0?A.d.docs[i]:{t:'',req:false,ext:'JPG, PNG, PDF',help:''};
+  modal({title:i>=0?'แก้ไขเอกสาร':'เพิ่มประเภทเอกสาร',danger:i>=0?'ลบประเภทเอกสาร':'',
+    body:'<div class="grid"><div class="f s6"><label for="m-dt">ชื่อเอกสาร <span class="req">*</span></label><input class="inp" id="m-dt" name="t" value="'+esc(d.t)+'"></div>'+
+      '<div class="f s3"><label for="m-ext">ชนิดไฟล์ที่รับ</label><select class="inp" id="m-ext" name="ext">'+['JPG, PNG, PDF','PDF เท่านั้น','รูปภาพเท่านั้น'].map(function(o){return '<option'+(d.ext===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div>'+
+      '<div class="f s3"><label for="m-dh">คำแนะนำ</label><input class="inp" id="m-dh" name="help" value="'+esc(d.help||'')+'"></div>'+
+      '<div class="f s6"><label style="display:flex;gap:10px;align-items:center">'+swHtml('req',d.req,'บังคับ')+' บังคับแนบก่อนส่งใบสมัคร</label></div></div>',
+    onSave:function(fm){var t=fv(fm,'t');if(!t)return 'กรุณากรอกชื่อเอกสาร';var arr=clone(A.d.docs),y={t:t,ext:fv(fm,'ext'),help:fv(fm,'help'),req:fv(fm,'req'),max:10};
+      if(i>=0)arr[i]=Object.assign(arr[i],y);else{y.k='d'+Date.now().toString(36);arr.push(y)}return save('docs',arr,'บันทึกเอกสาร "'+t+'" แล้ว')},
+    onDelete:function(){var arr=clone(A.d.docs);arr.splice(i,1);return save('docs',arr,'ลบแล้ว · ไฟล์ที่ผู้สมัครแนบไว้แล้วยังอยู่')}});
+}
+function setSkills(m){
+  var used={};A.d.apps.forEach(function(a){(a.skills||[]).forEach(function(t){used[t]=(used[t]||0)+1})});
+  m.innerHTML=head('รายการทักษะ','ตัวเลือกทักษะที่ผู้สมัครกดเลือกในขั้นที่ 3 · ตัวเลขคือจำนวนผู้สมัครที่เลือก','+ เพิ่มกลุ่มทักษะ')+
+    '<div class="sk-admin">'+A.d.skills.map(function(g,gi){return '<div class="sk-row"><b>'+esc(g.g)+'<br><button type="button" class="ib" data-gren="'+gi+'" style="margin-top:6px">แก้ชื่อกลุ่ม</button></b><div class="sk">'+g.items.map(function(t,ti){return '<span class="tg">'+esc(t)+(used[t]?' <span class="muted" style="font-size:11.5px">'+used[t]+'</span>':'')+'<button type="button" data-sdel="'+gi+'-'+ti+'" aria-label="ลบ '+esc(t)+'">✕</button></span>'}).join('')+
+      '<span style="display:inline-flex;gap:4px"><input class="inp" data-sin="'+gi+'" placeholder="เพิ่มทักษะ" style="min-height:30px;padding:4px 10px;width:160px" aria-label="เพิ่มทักษะในกลุ่ม '+esc(g.g)+'"><button type="button" class="ib" data-sadd="'+gi+'">เพิ่ม</button></span></div></div>'}).join('')+'</div>';
+  $('#add',m).addEventListener('click',function(){modal({title:'เพิ่มกลุ่มทักษะ',body:'<div class="grid"><div class="f s6"><label for="m-g">ชื่อกลุ่ม</label><input class="inp" id="m-g" name="g"></div></div>',onSave:function(fm){var g=fv(fm,'g');if(!g)return 'กรุณากรอกชื่อกลุ่ม';var s=clone(A.d.skills);s.push({g:g,items:[]});return save('skills',s)}})});
+  $$('[data-gren]',m).forEach(function(b){b.addEventListener('click',function(){var gi=+b.dataset.gren,g=A.d.skills[gi];modal({title:'แก้ชื่อกลุ่มทักษะ',danger:g.items.length?'':'ลบกลุ่ม',body:'<div class="grid"><div class="f s6"><label for="m-g">ชื่อกลุ่ม</label><input class="inp" id="m-g" name="g" value="'+esc(g.g)+'"></div></div>',
+    onSave:function(fm){var n=fv(fm,'g');if(!n)return 'กรุณากรอกชื่อกลุ่ม';var s=clone(A.d.skills);s[gi].g=n;return save('skills',s)},onDelete:function(){var s=clone(A.d.skills);s.splice(gi,1);return save('skills',s)}})})});
+  var addTo=function(gi){var el=$('[data-sin="'+gi+'"]',m),t=el.value.trim();if(!t)return;var s=clone(A.d.skills);if(s[gi].items.indexOf(t)<0)s[gi].items.push(t);save('skills',s,'เพิ่ม "'+t+'" แล้ว')};
+  $$('[data-sadd]',m).forEach(function(b){b.addEventListener('click',function(){addTo(+b.dataset.sadd)})});
+  $$('[data-sin]',m).forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addTo(+el.dataset.sin)}})});
+  $$('[data-sdel]',m).forEach(function(b){b.addEventListener('click',function(){var k=b.dataset.sdel.split('-'),s=clone(A.d.skills);s[+k[0]].items.splice(+k[1],1);save('skills',s,'ลบแล้ว · ผู้สมัครที่เลือกไว้แล้วยังเห็นเหมือนเดิม')})});
+}
+function setStage(m){
+  var cnt={};A.d.apps.forEach(function(a){cnt[a.stage]=(cnt[a.stage]||0)+1});
+  m.innerHTML=head('สถานะใบสมัคร','เปลี่ยนชื่อสถานะ หรือข้อความอีเมลที่ส่งถึงผู้สมัครเมื่อเปลี่ยนเป็นสถานะนั้น (เว้นว่าง = ไม่ส่ง) · "ใบสมัครใหม่" ใช้เป็นข้อความในอีเมลยืนยันรับใบสมัคร','')+
+    '<div class="list-wrap"><table class="mg"><thead><tr><th>สถานะ</th><th>ตอนนี้</th><th>ข้อความถึงผู้สมัคร</th><th></th></tr></thead><tbody>'+
+    stg().map(function(x,i){return '<tr><td>'+pill(x.k)+'</td><td>'+(cnt[x.k]||0)+'</td><td class="muted" style="font-size:13px;max-width:380px">'+(x.msg?esc(x.msg):'<i>ไม่ส่งอีเมล</i>')+'</td><td><div class="acts"><button type="button" class="ib" data-sed="'+i+'">แก้ไข</button></div></td></tr>'}).join('')+'</tbody></table></div>';
+  $$('[data-sed]',m).forEach(function(b){b.addEventListener('click',function(){var i=+b.dataset.sed,x=stg()[i];
+    modal({title:'แก้ไขสถานะ "'+x.t+'"',body:'<div class="grid"><div class="f s6"><label for="m-st">ชื่อสถานะ</label><input class="inp" id="m-st" name="t" value="'+esc(x.t)+'"></div><div class="f s6"><label for="m-sm">ข้อความอีเมลถึงผู้สมัคร</label><textarea class="inp" id="m-sm" name="msg" style="min-height:120px">'+esc(x.msg||'')+'</textarea></div></div>',
+      onSave:function(fm){var t=fv(fm,'t');if(!t)return 'กรุณากรอกชื่อสถานะ';var s=clone(stg());s[i].t=t;s[i].msg=fv(fm,'msg');return save('stages',s,'บันทึกสถานะแล้ว')}})})});
+}
+function setNoti(m){
+  var n=A.d.notify||{};
+  m.innerHTML=head('การแจ้งเตือนทางอีเมล','LINE ยังไม่ได้เชื่อม (ระยะถัดไป) · อีเมลส่งจากบัญชีที่ติดตั้งระบบ','')+
+    '<div class="grid"><div class="f s6"><label for="n-mail">อีเมล HR ที่รับแจ้งใบสมัครใหม่ (หลายอีเมลคั่นด้วย ,)</label><input class="inp" id="n-mail" value="'+esc(n.hrMail||'')+'" placeholder="hr@push.co.th"></div></div>'+
+    '<div style="margin-top:14px">'+[['newApp','แจ้ง HR เมื่อมีใบสมัครใหม่'],['applicantMail','ส่งอีเมลยืนยันรับใบสมัครถึงผู้สมัคร'],['stageMail','ส่งอีเมลถึงผู้สมัครเมื่อเปลี่ยนสถานะ (ตามข้อความในหมวด "สถานะใบสมัคร")']].map(function(r){return '<div class="yn"><span class="q">'+r[1]+'</span>'+swHtml('',n[r[0]]!==false,r[1],false,'data-nk="'+r[0]+'"')+'</div>'}).join('')+'</div>'+
+    '<div style="margin-top:16px"><button type="button" class="btn btn-p" id="n-save">บันทึกการตั้งค่า</button></div>'+
+    '<div style="margin-top:34px">'+head('ข้อมูลบริษัท','แสดงท้ายอีเมลทุกฉบับ หัวใบสมัครตอนพิมพ์ และเบอร์ติดต่อในหน้าติดตามสถานะ','')+'</div>'+
+    '<div class="grid">'+[['name','ชื่อบริษัท','s6'],['addr1','ที่อยู่ บรรทัดที่ 1','s6'],['addr2','ที่อยู่ บรรทัดที่ 2','s6'],['phone','โทรศัพท์ (ฝ่ายบุคคล)','s3'],['fax','แฟกซ์ (เว้นว่างได้)','s3']].map(function(r){var co=A.d.company||CO;return '<div class="f '+r[2]+'"><label for="co-'+r[0]+'">'+r[1]+'</label><input class="inp" id="co-'+r[0]+'" data-co="'+r[0]+'" value="'+esc(co[r[0]]||'')+'"></div>'}).join('')+'</div>'+
+    '<div style="margin-top:16px"><button type="button" class="btn btn-p" id="co-save">บันทึกข้อมูลบริษัท</button></div>';
+  $('#co-save',m).addEventListener('click',function(){var o={};$$('[data-co]',m).forEach(function(x){o[x.dataset.co]=x.value.trim()});
+    if(!o.name){toast('กรุณากรอกชื่อบริษัท',true);return}save('company',o,'บันทึกข้อมูลบริษัทแล้ว').catch(function(e){toast(em(e),true)})});
+  $('#n-save',m).addEventListener('click',function(){var o={hrMail:$('#n-mail').value.trim()};$$('[data-nk]',m).forEach(function(c){o[c.dataset.nk]=c.checked});
+    if(o.hrMail&&!o.hrMail.split(',').every(function(x){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(x.trim())})){toast('รูปแบบอีเมลไม่ถูกต้อง',true);return}save('notify',o,'บันทึกการตั้งค่าการแจ้งเตือนแล้ว').catch(function(e){toast(em(e),true)})});
+}
+function setUsers(m){
+  var us=A.d.users||[];
+  m.innerHTML=head('ผู้ใช้และสิทธิ์','คนที่เข้าโหมดผู้ดูแลได้ · ข้อมูลอยู่ในชีต Users ของไฟล์นี้ (พิมพ์รหัสผ่านลงชีตตรง ๆ ได้ ระบบจะเข้ารหัสให้ตอนล็อกอินครั้งแรก)','+ เพิ่มผู้ใช้')+
+    '<div class="list-wrap"><table class="mg"><thead><tr><th>รหัส</th><th>ชื่อ</th><th>บทบาท</th><th>แผนกที่เห็น</th><th>รหัสผ่าน</th><th></th></tr></thead><tbody>'+
+    (us.length?us.map(function(u,i){return '<tr><td class="mono">'+esc(u.code)+'</td><td>'+esc(u.name)+'</td><td><span class="tag">'+(ROLE_T[u.role]||u.role)+'</span></td><td>'+esc(u.scope)+'</td><td>'+(u.hasPw?'<span style="color:var(--ok)">ตั้งแล้ว</span>':'<span style="color:var(--bad)">ยังไม่ตั้ง</span>')+'</td><td><div class="acts"><button type="button" class="ib" data-ued="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่ได้เพิ่มผู้ใช้</td></tr>')+'</tbody></table></div>'+
+    '<p class="muted" style="font-size:12.5px;margin-top:12px">HR: เห็นทุกอย่าง แก้ข้อมูลและตั้งค่าระบบ (ต้องมี HR อย่างน้อย 1 คน) · หัวหน้าแผนก: เห็นเฉพาะแผนกที่กำหนด ไม่เห็นเงินเดือน · ผู้บริหาร: เห็นทุกแผนก ตั้งค่าตำแหน่ง/ฟอร์มได้</p>';
+  $('#add',m).addEventListener('click',function(){editUser(-1)});
+  $$('[data-ued]',m).forEach(function(b){b.addEventListener('click',function(){editUser(+b.dataset.ued)})});
+}
+function editUser(i){
+  var us=A.d.users||[],u=i>=0?us[i]:{code:'',name:'',role:'mgr',scope:'LED'};
+  modal({title:i>=0?'แก้ไขผู้ใช้':'เพิ่มผู้ใช้',danger:i>=0?'ลบสิทธิ์ผู้ใช้':'',
+    body:'<div class="grid"><div class="f s2"><label for="m-uc">รหัสผู้ใช้ <span class="req">*</span></label><input class="inp" id="m-uc" name="code" value="'+esc(u.code)+'" maxlength="30"></div><div class="f s4"><label for="m-un">ชื่อที่แสดง</label><input class="inp" id="m-un" name="name" value="'+esc(u.name)+'"></div>'+
+      '<div class="f s3"><label for="m-ur">บทบาท</label><select class="inp" id="m-ur" name="role">'+Object.keys(ROLE_T).map(function(k){return '<option value="'+k+'"'+(u.role===k?' selected':'')+'>'+ROLE_T[k]+'</option>'}).join('')+'</select></div>'+
+      '<div class="f s3"><label for="m-us">แผนกที่เห็น (หัวหน้าแผนก)</label><select class="inp" id="m-us" name="scope">'+['ทุกแผนก'].concat(depts()).map(function(d){return '<option'+(u.scope===d?' selected':'')+'>'+esc(d)+'</option>'}).join('')+'</select></div>'+
+      '<div class="f s6"><label for="m-upw">'+(i>=0?'ตั้งรหัสผ่านใหม่ (เว้นว่าง = ไม่เปลี่ยน)':'รหัสผ่าน <span class="req">*</span>')+'</label><input class="inp" id="m-upw" name="pw" type="password" autocomplete="new-password" placeholder="อย่างน้อย 6 ตัวอักษร"></div></div>',
+    onSave:function(fm){var c=fv(fm,'code');if(/^\d{1,4}$/.test(c))c=('0000'+c).slice(-4);if(!c)return 'กรุณากรอกรหัสผู้ใช้';var pw=fv(fm,'pw');if(i<0&&!pw)return 'กรุณาตั้งรหัสผ่าน';if(pw&&pw.length<6)return 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+      if(us.some(function(x,j){return x.code===c&&j!==i}))return 'รหัส '+c+' มีอยู่แล้ว';
+      var arr=clone(us),y={code:c,name:fv(fm,'name')||c,role:fv(fm,'role'),scope:fv(fm,'role')==='mgr'?fv(fm,'scope'):'ทุกแผนก',newPassword:pw};if(i>=0)arr[i]=y;else arr.push(y);return save('users',arr,'บันทึกสิทธิ์ '+y.name+' แล้ว')},
+    onDelete:function(){var arr=clone(us);arr.splice(i,1);return save('users',arr,'ลบสิทธิ์แล้ว')}});
+}
+
+/* ═════════ boot ═════════ */
+$('#brand-sub').textContent=BOOTV.mode==='admin'?'ระบบรับสมัครงาน · ผู้ดูแล':'ใบสมัครงานออนไลน์';
+if(BOOTV.mode==='admin')startAdmin();else{setTop();startApply()}
+})();
+</script>
+</body>
+</html>
