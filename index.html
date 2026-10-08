@@ -581,6 +581,32 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .att .th:not(.pdf) .badge{background:var(--ink-2)}
 .att .th .spin{width:18px;height:18px}
 .att:hover .th.has{filter:brightness(.96)}
+
+/* AI วิเคราะห์คุณสมบัติ */
+.ai-card .ai-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.ai-card h3{font-size:15px;margin:0}
+.ai-tag{font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--vio-soft);color:var(--vio);font-weight:600}
+.ai-note{font-size:12.5px;margin:0;line-height:1.6}
+.ai-busy{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2);padding:8px 0}
+.ai-busy .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--vio);border-radius:50%;animation:aispin .8s linear infinite;flex:none}
+@keyframes aispin{to{transform:rotate(360deg)}}
+.ai-fit{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px}
+.ai-fit .ai-lbl{display:block;font-size:11.5px;color:var(--ink-2)}
+.ai-fit b{font-size:17px}
+.ai-fit.ai-ok{background:var(--ok-soft)}.ai-fit.ai-warn{background:var(--warn-soft)}.ai-fit.ai-bad{background:var(--bad-soft)}
+.ai-score{text-align:right;font-variant-numeric:tabular-nums}.ai-score b{font-size:22px}.ai-score span{font-size:12px;color:var(--ink-2)}
+.ai-bar{height:6px;border-radius:3px;background:var(--sunk);margin:8px 0 10px;overflow:hidden}
+.ai-bar i{display:block;height:100%;border-radius:3px}
+.ai-bar i.ai-ok{background:var(--ok)}.ai-bar i.ai-warn{background:var(--warn)}.ai-bar i.ai-bad{background:var(--bad)}
+.ai-sum{font-size:13.5px;line-height:1.65;margin:0 0 4px}
+.ai-sec{font-size:12px;font-weight:700;color:var(--ink-2);margin:12px 0 4px;letter-spacing:.02em}
+.ai-p{font-size:13px;line-height:1.6;margin:0}
+.ai-ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.ai-ul li{font-size:13px;line-height:1.55;padding-left:18px;position:relative}
+.ai-ul li::before{position:absolute;left:0;top:0;font-weight:700}
+.ai-ul.ok li::before{content:'✓';color:var(--ok)}.ai-ul.warn li::before{content:'!';color:var(--warn);left:4px}
+.ai-ol{margin:0;padding-left:20px;display:grid;gap:4px}.ai-ol li{font-size:13px;line-height:1.55}
+.ai-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);line-height:1.5}
 </style>
 </head>
 <body>
@@ -1276,6 +1302,33 @@ function act(conf,local,call,msg){
       .catch(function(e){busy(false);if(A.open&&A.open.no===a.no){A.open=JSON.parse(snap);syncRow(A.open);renderDrawer();if(A.admTab==='apps')renderApps()}toast('บันทึกไม่สำเร็จ: '+em(e),true)});
   });
 }
+/* ───── AI วิเคราะห์คุณสมบัติ (HR / ผู้บริหาร) ───── */
+var AI_RUN={};
+function aiCard(a){
+  if(!A.user||A.user.role==='mgr'||a.loading)return '';
+  var x=a.ai,busy=AI_RUN[a.no],h='<div class="card ai-card"><div class="ai-h"><h3>AI วิเคราะห์คุณสมบัติ</h3><span class="ai-tag">Claude</span></div>';
+  if(busy)return h+'<div class="ai-busy"><span class="spin"></span>กำลังวิเคราะห์ใบสมัคร… ใช้เวลาประมาณ 15–40 วินาที</div></div>';
+  if(!x){
+    if(!a.aiOn)return h+'<p class="muted ai-note">ยังไม่ได้ตั้งค่า API key'+(A.user.role==='hr'?' · <a href="#" id="ai-set">ไปที่ตั้งค่า</a>':' · ติดต่อ HR')+'</p></div>';
+    return h+'<p class="muted ai-note">ให้ AI สรุปความเหมาะสมกับตำแหน่ง จุดเด่น ข้อควรพิจารณา และคำถามสัมภาษณ์ · ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะ (ไม่ส่งชื่อ เลขบัตร เบอร์โทร ที่อยู่ รูป)</p><button type="button" class="btn btn-sm btn-p" id="ai-run" style="width:100%;margin-top:10px">วิเคราะห์ด้วย AI</button></div>';
+  }
+  var r=x.r||{},tone=r.fit==='สูง'?'ok':r.fit==='ต่ำ'?'bad':'warn',li=function(arr,cls){return (arr||[]).length?'<ul class="ai-ul '+cls+'">'+arr.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>':''};
+  return h+'<div class="ai-fit ai-'+tone+'"><div><span class="ai-lbl">ความเหมาะสมกับตำแหน่ง</span><b>'+esc(r.fit||'-')+'</b></div><div class="ai-score"><b>'+(r.score|0)+'</b><span>/100</span></div></div>'+
+    '<div class="ai-bar"><i class="ai-'+tone+'" style="width:'+Math.max(2,Math.min(100,r.score|0))+'%"></i></div>'+
+    '<p class="ai-sum">'+esc(r.summary||'')+'</p>'+
+    ((r.strengths||[]).length?'<div class="ai-sec">จุดเด่น</div>'+li(r.strengths,'ok'):'')+
+    ((r.concerns||[]).length?'<div class="ai-sec">ข้อควรพิจารณา</div>'+li(r.concerns,'warn'):'')+
+    (r.salary?'<div class="ai-sec">เงินเดือนที่ขอ</div><p class="ai-p">'+esc(r.salary)+'</p>':'')+
+    ((r.questions||[]).length?'<div class="ai-sec">คำถามแนะนำสำหรับสัมภาษณ์</div><ol class="ai-ol">'+r.questions.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol>':'')+
+    '<div class="ai-foot"><span>วิเคราะห์ '+esc(x.at)+' · '+esc(x.by)+'<br>ผลจาก AI ใช้ประกอบการตัดสินใจเท่านั้น</span>'+(a.aiOn?'<button type="button" class="btn btn-sm" id="ai-run">วิเคราะห์ใหม่</button>':'')+'</div></div>';
+}
+function runAi(a){
+  confirmBox(a.ai?'วิเคราะห์ใบสมัครนี้ใหม่?':'ให้ AI วิเคราะห์ใบสมัครนี้?','ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะไปที่ Claude (Anthropic) · มีค่าใช้จ่ายตามการใช้งาน','วิเคราะห์').then(function(ok){
+    if(!ok)return;AI_RUN[a.no]=1;if(A.open&&A.open.no===a.no)renderDrawer();
+    aCall('aiAnalyze',a.no).then(function(res){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no){A.open.ai=res;renderDrawer()}toast('AI วิเคราะห์เสร็จแล้ว')})
+      .catch(function(e){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no)renderDrawer();toast(em(e),true)});
+  });
+}
 function renderDrawer(){
   var a=A.open;if(!a)return;
   var old=$('.drawer'),sc=$('.scrim');if(old)old.remove();if(!sc){sc=document.createElement('div');sc.className='scrim';sc.addEventListener('click',askClose);document.body.appendChild(sc)}
@@ -1290,12 +1343,14 @@ function renderDrawer(){
       '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">นัดสัมภาษณ์</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="ivd" type="datetime-local" value="'+esc(a.interview?a.interview.replace(' ','T'):'')+'" style="flex:1;min-width:180px" aria-label="วันเวลาสัมภาษณ์"><button type="button" class="btn btn-sm btn-p" id="ivset">บันทึกนัด</button></div>'+(a.interview?'<p class="muted" style="font-size:12.5px;margin:8px 0 0">นัดไว้ '+esc(a.interview)+' · <a href="#" id="ivclr">ยกเลิกนัด</a></p>':'')+'</div>'+
       '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">คะแนนและความเห็น</h3><div class="rating" role="group" aria-label="คะแนน">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-rate="'+n+'" aria-pressed="'+(a.rating>=n)+'" aria-label="'+n+' ดาว">'+n+'</button>'}).join('')+'</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px"><input class="inp" id="cmt" placeholder="เขียนความเห็นถึงทีม" style="flex:1" aria-label="ความเห็น"><button type="button" class="btn btn-sm" id="cmtadd">ส่ง</button></div>'+
-      '<ul class="cm" style="margin-top:12px">'+(a.comments.filter(function(c){return !/^(เปลี่ยนสถานะ|ให้คะแนน|แนบไฟล์|นัดสัมภาษณ์|ยกเลิกนัด|แก้ไขข้อมูล)/.test(c.t)}).slice(-4).reverse().map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')||'<li class="muted">ยังไม่มีความเห็น</li>')+'</ul></div></div></div>';
+      '<ul class="cm" style="margin-top:12px">'+(a.comments.filter(function(c){return !/^(เปลี่ยนสถานะ|ให้คะแนน|แนบไฟล์|นัดสัมภาษณ์|ยกเลิกนัด|แก้ไขข้อมูล)/.test(c.t)}).slice(-4).reverse().map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')||'<li class="muted">ยังไม่มีความเห็น</li>')+'</ul></div>'+aiCard(a)+'</div></div>';
   document.body.appendChild(d);document.body.style.overflow='hidden';
   $('#dclose').addEventListener('click',closeDrawer);
   d.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('.md-wrap')&&!$('.viewer'))askClose()});
   $$('[data-tab]',d).forEach(function(b){b.addEventListener('click',function(){A.dTab=b.dataset.tab;renderDrawer()})});
   $$('[data-stage]',d).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.stage===a.stage)return;var k=b.dataset.stage;act(['เปลี่ยนสถานะเป็น "'+ST(k).t+'"?',ST(k).msg&&k!=='screen'?'ระบบจะส่งอีเมลแจ้งผู้สมัครด้วย':'','เปลี่ยนสถานะ',k==='reject'],function(x){x.stage=k},function(){return aCall('updateStage',a.no,k)},'เปลี่ยนสถานะเป็น "'+ST(k).t+'" แล้ว')})});
+  var aib=$('#ai-run',d);if(aib)aib.addEventListener('click',function(){runAi(a)});
+  var ais=$('#ai-set',d);if(ais)ais.addEventListener('click',function(e){e.preventDefault();closeDrawer();A.admTab='set';A.setSec='noti';renderAdmin()});
   $$('[data-rate]',d).forEach(function(b){b.addEventListener('click',function(){var n=+b.dataset.rate;act(['ให้คะแนน '+n+'/5?','','บันทึกคะแนน'],function(x){x.rating=n},function(){return aCall('rateApplication',a.no,n)},'บันทึกคะแนนแล้ว')})});
   $('#ivset').addEventListener('click',function(){var val=$('#ivd').value;if(!val){toast('เลือกวันเวลาก่อน',true);return}act(['บันทึกนัดสัมภาษณ์?',esc(val.replace('T',' '))+' น.','บันทึกนัด'],function(x){x.interview=val.replace('T',' ');if(x.stage==='new'||x.stage==='screen')x.stage='interview'},function(){return aCall('setInterview',a.no,val)},'บันทึกนัดสัมภาษณ์แล้ว')});
   var ic=$('#ivclr');if(ic)ic.addEventListener('click',function(e){e.preventDefault();act(['ยกเลิกนัดสัมภาษณ์?','','ยกเลิกนัด',true],function(x){x.interview=''},function(){return aCall('setInterview',a.no,'')},'ยกเลิกนัดแล้ว')});
@@ -1395,7 +1450,7 @@ function editApplicant(a,sec){
 
 /* ═════════ SETTINGS ═════════ */
 var SET_SECS=[['pos','ตำแหน่งงานที่เปิดรับ','เพิ่ม / แก้ / ปิดรับ'],['form','ฟอร์มใบสมัคร','ช่องในแต่ละขั้น'],['docs','เอกสารแนบ','ประเภทเอกสารที่ขอ'],['skills','รายการทักษะ','ตัวเลือกทักษะให้ผู้สมัคร'],['stage','สถานะใบสมัคร','ข้อความแจ้งผู้สมัคร'],['noti','การแจ้งเตือน & ข้อมูลบริษัท','อีเมล HR · ที่อยู่บริษัท'],['users','ผู้ใช้และสิทธิ์','HR หัวหน้าแผนก ผู้บริหาร']];
-function save(key,value,msg){var T={positions:'ตำแหน่งงาน',fields:'ฟอร์มใบสมัคร',extra:'ช่องเพิ่มเติม',docs:'เอกสารแนบ',skills:'รายการทักษะ',stages:'สถานะใบสมัคร',notify:'การแจ้งเตือน',company:'ข้อมูลบริษัท',users:'ผู้ใช้และสิทธิ์'};
+function save(key,value,msg){var T={positions:'ตำแหน่งงาน',fields:'ฟอร์มใบสมัคร',extra:'ช่องเพิ่มเติม',docs:'เอกสารแนบ',skills:'รายการทักษะ',stages:'สถานะใบสมัคร',notify:'การแจ้งเตือน',company:'ข้อมูลบริษัท',aiKey:'API key ของ AI',users:'ผู้ใช้และสิทธิ์'};
   return confirmBox('บันทึกการเปลี่ยนแปลง '+(T[key]||key)+'?','มีผลกับระบบทันที','บันทึก').then(function(ok){if(!ok){renderSettings();throw new Error('ยกเลิกแล้ว')}toast('กำลังบันทึก...');return aCall('saveConfig',key,value)}).then(function(d){var apps=A.d.apps;A.d=d;if(!d.apps)A.d.apps=apps;buildFD(d.fields);renderSettings();toast(msg||'บันทึกแล้ว')})}
 function renderSettings(){
   var secs=SET_SECS.filter(function(x){return A.user.role==='hr'||(x[0]!=='users'&&x[0]!=='noti')});
@@ -1523,7 +1578,13 @@ function setNoti(m){
     '<div style="margin-top:16px"><button type="button" class="btn btn-p" id="n-save">บันทึกการตั้งค่า</button></div>'+
     '<div style="margin-top:34px">'+head('ข้อมูลบริษัท','แสดงท้ายอีเมลทุกฉบับ หัวใบสมัครตอนพิมพ์ และเบอร์ติดต่อในหน้าติดตามสถานะ','')+'</div>'+
     '<div class="grid">'+[['name','ชื่อบริษัท','s6'],['addr1','ที่อยู่ บรรทัดที่ 1','s6'],['addr2','ที่อยู่ บรรทัดที่ 2','s6'],['phone','โทรศัพท์ (ฝ่ายบุคคล)','s3'],['fax','แฟกซ์ (เว้นว่างได้)','s3']].map(function(r){var co=A.d.company||CO;return '<div class="f '+r[2]+'"><label for="co-'+r[0]+'">'+r[1]+'</label><input class="inp" id="co-'+r[0]+'" data-co="'+r[0]+'" value="'+esc(co[r[0]]||'')+'"></div>'}).join('')+'</div>'+
-    '<div style="margin-top:16px"><button type="button" class="btn btn-p" id="co-save">บันทึกข้อมูลบริษัท</button></div>';
+    '<div style="margin-top:16px"><button type="button" class="btn btn-p" id="co-save">บันทึกข้อมูลบริษัท</button></div>'+
+    '<div style="margin-top:34px">'+head('AI วิเคราะห์ผู้สมัคร','ใช้ Claude API (Anthropic) · สร้าง API key ที่ console.anthropic.com (คนละส่วนกับ Claude Pro) · key เก็บในระบบ ไม่แสดงบนหน้าเว็บ','')+'</div>'+
+    '<p class="muted" style="margin:0 0 10px">สถานะ: '+(A.d.aiKey?'<b style="color:var(--ok)">ตั้งค่าแล้ว</b> <span class="mono">'+esc(A.d.aiKey)+'</span>':'<b>ยังไม่ได้ตั้งค่า</b>')+'</p>'+
+    '<div class="grid"><div class="f s6"><label for="ai-key">'+(A.d.aiKey?'เปลี่ยน API key':'API key')+'</label><input class="inp" id="ai-key" type="password" autocomplete="off" placeholder="sk-ant-..."></div></div>'+
+    '<div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn btn-p" id="ai-key-save">บันทึก API key</button>'+(A.d.aiKey?'<button type="button" class="btn" id="ai-key-del">ลบ API key</button>':'')+'</div>';
+  $('#ai-key-save',m).addEventListener('click',function(){var v=$('#ai-key',m).value.trim();if(!v){toast('วาง API key ก่อน',true);return}if(!/^sk-ant-/.test(v)){toast('API key ต้องขึ้นต้นด้วย sk-ant-',true);return}save('aiKey',v,'บันทึก API key แล้ว').catch(function(e){toast(em(e),true)})});
+  var akd=$('#ai-key-del',m);if(akd)akd.addEventListener('click',function(){save('aiKey','','ลบ API key แล้ว').catch(function(e){toast(em(e),true)})});
   $('#co-save',m).addEventListener('click',function(){var o={};$$('[data-co]',m).forEach(function(x){o[x.dataset.co]=x.value.trim()});
     if(!o.name){toast('กรุณากรอกชื่อบริษัท',true);return}save('company',o,'บันทึกข้อมูลบริษัทแล้ว').catch(function(e){toast(em(e),true)})});
   $('#n-save',m).addEventListener('click',function(){var o={hrMail:$('#n-mail').value.trim()};$$('[data-nk]',m).forEach(function(c){o[c.dataset.nk]=c.checked});
