@@ -948,9 +948,10 @@ function stepHtml(i){
   }
   if(i===1){
     h='<p class="eyebrow">ขั้นที่ 2 จาก 6</p><h2>ข้อมูลส่วนตัว</h2><p class="lead">ช่องที่มี <span style="color:var(--bad)">*</span> ต้องกรอก · ข้อมูลนี้ใช้เฉพาะการพิจารณารับสมัครงานตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล</p><div class="grid">'+
-      seg('title','คำนำหน้า',['นาย','นาง','นางสาว'],'s2')+inp('first','ชื่อ','s2')+inp('last','นามสกุล','s2')+
-      inp('firstEn','ชื่อ (ภาษาอังกฤษ)','s2','','เช่น Somchai')+inp('lastEn','นามสกุล (ภาษาอังกฤษ)','s2','','เช่น Jaidee')+inp('nickEn','ชื่อเล่น (ภาษาอังกฤษ)','s2','','เช่น Chai')+idInp()+
-      inp('nick','ชื่อเล่น','s2')+birthInp()+inp('age','อายุ (ปี)','s2','','คำนวณจากวันเกิด','number')+
+      seg('title','คำนำหน้า',['นาย','นาง','นางสาว'],'s6')+
+      inp('first','ชื่อ','s2')+inp('last','นามสกุล','s2')+inp('nick','ชื่อเล่น','s2')+
+      inp('firstEn','ชื่อ (ภาษาอังกฤษ)','s2','','เช่น Somchai')+inp('lastEn','นามสกุล (ภาษาอังกฤษ)','s2','','เช่น Jaidee')+inp('nickEn','ชื่อเล่น (ภาษาอังกฤษ)','s2','','เช่น Chai')+
+      idInp()+birthInp()+inp('age','อายุ (ปี)','s2','','คำนวณจากวันเกิด','number')+
       selInp('race','เชื้อชาติ',NATIONS,'s2')+selInp('nation','สัญชาติ',NATIONS,'s2')+selInp('religion','ศาสนา',RELIGIONS,'s2')+
       inp('height','ส่วนสูง (ซม.)','s2','','','number')+inp('weight','น้ำหนัก (กก.)','s2','','','number')+inp('email','อีเมล','s2','','','email')+
       '<div class="sec">ที่อยู่ที่ติดต่อได้ <span class="muted" style="font-weight:400;font-size:13px">· พิมพ์ตำบล อำเภอ จังหวัด หรือรหัสไปรษณีย์ แล้วเลือกจากรายการ ระบบเติมช่องที่เหลือให้</span></div>'+
