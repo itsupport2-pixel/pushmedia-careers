@@ -626,13 +626,13 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 
 /* หน้าเข้าสู่ระบบผู้ดูแล */
 .lg{max-width:900px;margin:40px auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(22,24,29,.06)}
-.lg-side{background:#16181D;color:#E9EAEE;padding:36px 34px;display:flex;flex-direction:column;gap:16px}
-.lg-eye{margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#9AA0AD;font-weight:600}
-.lg-side h2{margin:0;font-size:26px;line-height:1.35;color:#fff;text-wrap:balance}
+.lg-side{background:linear-gradient(160deg,#F4F7FE 0%,#E9EFFD 100%);color:var(--ink);padding:36px 34px;display:flex;flex-direction:column;gap:16px;border-right:1px solid #E1E7F6}
+.lg-eye{margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.lg-side h2{margin:0;font-size:26px;line-height:1.35;color:var(--ink);text-wrap:balance}
 .lg-side ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:12px}
-.lg-side li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.55;color:#D5D8DF}
-.lg-side li::before{content:'';position:absolute;left:0;top:5px;width:14px;height:14px;border-radius:4px;background:#2F6BFF;box-shadow:inset 0 0 0 3px #16181D,0 0 0 1px #2F6BFF}
-.lg-pdpa{margin-top:auto;font-size:12.5px;line-height:1.6;color:#8E94A1;border-top:1px solid #2A2D35;padding-top:14px}
+.lg-side li{position:relative;padding-left:32px;font-size:14.5px;line-height:1.55;color:var(--ink-2)}
+.lg-side li::before{content:'✓';position:absolute;left:0;top:0;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--accent);display:grid;place-items:center;font-size:12.5px;font-weight:700;box-shadow:0 0 0 1px #D5DEF6}
+.lg-pdpa{margin-top:auto;font-size:12.5px;line-height:1.6;color:var(--ink-3);border-top:1px solid #D9E1F5;padding-top:14px}
 .lg-form{padding:36px 34px;display:grid;grid-template-columns:minmax(0,1fr)!important;gap:14px;align-content:start}
 .lg-form>*{grid-column:1/-1!important;min-width:0}
 .lg-form h1{font-size:24px;margin:0}
@@ -642,7 +642,7 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .lg-pw .inp{padding-right:70px}
 .lg-eyebtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:var(--sunk);color:var(--ink-2);font:600 12.5px var(--f-ui);padding:6px 10px;border-radius:6px;cursor:pointer}
 .lg-eyebtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.lg-rem{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.lg-rem{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:2px 0}
 .lg-rem input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:none}
 .lg-rem b{display:block;font-size:14px;font-weight:600}
 .lg-rem small{display:block;font-size:12.5px;color:var(--ink-3);line-height:1.5}
@@ -650,7 +650,7 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .lg-go .spin{width:16px;height:16px;border-width:2px;border-color:rgba(255,255,255,.4);border-top-color:#fff}
 .lg-help{margin:2px 0 0;font-size:13px;color:var(--ink-3);text-align:center}
 .lg-help a{color:var(--accent)}
-@media (max-width:760px){.lg{grid-template-columns:1fr;margin:20px auto}.lg-side{padding:22px 22px}.lg-side ul,.lg-pdpa{display:none}.lg-side h2{font-size:20px}.lg-form{padding:24px 22px}}
+@media (max-width:760px){.lg{grid-template-columns:1fr;margin:20px auto}.lg-side{border-right:0;border-bottom:1px solid #E1E7F6}.lg-side{padding:22px 22px}.lg-side ul,.lg-pdpa{display:none}.lg-side h2{font-size:20px}.lg-form{padding:24px 22px}}
 </style>
 </head>
 <body>
@@ -1267,19 +1267,19 @@ function renderLogin(){
   MAIN.innerHTML='<div class="lg"><section class="lg-side" aria-hidden="true"><p class="lg-eye">Push Media Careers</p><h2>ระบบรับสมัครงาน<br>สำหรับผู้ดูแล</h2>'+
     '<ul><li>ดูใบสมัคร ไฟล์แนบ และพิมพ์ใบสมัคร A4</li><li>นัดสัมภาษณ์ ระบบส่งอีเมลแจ้งผู้สมัครให้</li><li>ให้คะแนน แสดงความเห็น และวิเคราะห์คุณสมบัติ</li></ul>'+
     '<p class="lg-pdpa">ข้อมูลผู้สมัครคุ้มครองตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล · ใช้เพื่อการพิจารณารับสมัครงานเท่านั้น</p></section>'+
-    '<form class="lg-form" id="lf" novalidate><h1>เข้าสู่ระบบ</h1><p class="lg-sub">สำหรับ HR หัวหน้าแผนก และผู้บริหาร</p><div id="lerr" role="alert"></div>'+
-    '<div class="f"><label for="l-code">รหัสผู้ใช้ (รหัสพนักงาน)</label><input class="inp" id="l-code" autocomplete="username" maxlength="30" inputmode="text" placeholder="เช่น 0077"></div>'+
-    '<div class="f"><label for="l-pw">รหัสผ่าน</label><div class="lg-pw"><input class="inp" id="l-pw" type="password" autocomplete="current-password"><button type="button" class="lg-eyebtn" id="l-eye" aria-label="แสดงรหัสผ่าน" aria-pressed="false">แสดง</button></div></div>'+
-    '<label class="lg-rem"><input type="checkbox" id="l-rem"'+(rem?' checked':'')+'><span><b>จดจำการเข้าสู่ระบบ 7 วัน</b><small>ไม่ติ๊ก = อยู่ในระบบ 24 ชั่วโมง · ใช้เครื่องร่วมกับผู้อื่นไม่ควรติ๊ก</small></span></label>'+
-    '<button class="btn btn-p lg-go" type="submit">เข้าสู่ระบบ</button>'+
-    '<p class="lg-help">ลืมรหัสผ่าน ติดต่อ HR เพื่อตั้งรหัสใหม่ · <a href="'+esc(BOOTV.url)+'" target="_top">กลับหน้าสมัครงาน</a></p></form></div>';
+    '<form class="lg-form" id="lf" novalidate lang="en"><h1>Sign in</h1><p class="lg-sub">For HR, department heads and executives</p><div id="lerr" role="alert"></div>'+
+    '<div class="f"><label for="l-code">Username</label><input class="inp" id="l-code" autocomplete="username" maxlength="30" inputmode="text" placeholder="e.g. 0077"></div>'+
+    '<div class="f"><label for="l-pw">Password</label><div class="lg-pw"><input class="inp" id="l-pw" type="password" autocomplete="current-password"><button type="button" class="lg-eyebtn" id="l-eye" aria-label="Show password" aria-pressed="false">Show</button></div></div>'+
+    '<label class="lg-rem"><input type="checkbox" id="l-rem"'+(rem?' checked':'')+'><span><b>Remember me for 7 days</b><small>Unchecked: stay signed in for 24 hours · Leave unchecked on shared computers</small></span></label>'+
+    '<button class="btn btn-p lg-go" type="submit">Sign in</button>'+
+    '<p class="lg-help">Forgot your password? Contact HR · <a href="'+esc(BOOTV.url)+'" target="_top">Back to careers</a></p></form></div>';
   $('#l-code').focus();
-  $('#l-eye').addEventListener('click',function(){var i=$('#l-pw'),on=i.type==='password';i.type=on?'text':'password';this.textContent=on?'ซ่อน':'แสดง';this.setAttribute('aria-pressed',on);this.setAttribute('aria-label',on?'ซ่อนรหัสผ่าน':'แสดงรหัสผ่าน')});
+  $('#l-eye').addEventListener('click',function(){var i=$('#l-pw'),on=i.type==='password';i.type=on?'text':'password';this.textContent=on?'Hide':'Show';this.setAttribute('aria-pressed',on);this.setAttribute('aria-label',on?'Hide password':'Show password')});
   $('#lf').addEventListener('submit',function(e){e.preventDefault();var b=$('#lf .lg-go'),code=$('#l-code').value.trim(),pw=$('#l-pw').value,rm=$('#l-rem').checked;
-    if(!code||!pw){$('#lerr').innerHTML='<div class="err-box">กรุณากรอกรหัสผู้ใช้และรหัสผ่าน</div>';return}
-    store('pmc_rem',rm);b.disabled=true;b.innerHTML='<span class="spin"></span> กำลังเข้าสู่ระบบ...';$('#lerr').innerHTML='';
-    call('login',code,pw,rm).then(function(r){if(!r.ok){$('#lerr').innerHTML='<div class="err-box">'+esc(r.msg)+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ';return}
-      A.token=r.token;A.user=r.user;store('pmc_tok',r.token);startAdmin(r.boot||null)}).catch(function(e){$('#lerr').innerHTML='<div class="err-box">'+esc(em(e))+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ'})});
+    if(!code||!pw){$('#lerr').innerHTML='<div class="err-box">Please enter your username and password</div>';return}
+    store('pmc_rem',rm);b.disabled=true;b.innerHTML='<span class="spin"></span> Signing in...';$('#lerr').innerHTML='';
+    call('login',code,pw,rm).then(function(r){if(!r.ok){$('#lerr').innerHTML='<div class="err-box">'+esc(r.msg)+'</div>';b.disabled=false;b.textContent='Sign in';return}
+      A.token=r.token;A.user=r.user;store('pmc_tok',r.token);startAdmin(r.boot||null)}).catch(function(e){$('#lerr').innerHTML='<div class="err-box">'+esc(em(e))+'</div>';b.disabled=false;b.textContent='Sign in'})});
 }
 function stg(){return A.d.stages}
 function ST(k){return stg().filter(function(s){return s.k===k})[0]||{k:k,t:k}}
