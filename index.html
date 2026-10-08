@@ -617,6 +617,12 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .ai-ul.ok li::before{content:'✓';color:var(--ok)}.ai-ul.warn li::before{content:'!';color:var(--warn);left:4px}
 .ai-ol{margin:0;padding-left:20px;display:grid;gap:4px}.ai-ol li{font-size:13px;line-height:1.55}
 .ai-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);line-height:1.5}
+
+/* PDF viewer (PDF.js) */
+.viewer .pdfv{width:min(900px,100%);max-height:80vh;overflow:auto;display:grid;gap:10px;justify-items:center;align-content:start;border-radius:6px}
+.viewer .pdfv canvas{width:100%;height:auto;background:#fff;border-radius:4px;display:block}
+.viewer .pdfv .loading{padding:40px 0}
+.viewer .pdfv-more,.viewer .pdfv-err{color:#fff;font-size:13.5px;margin:6px 0;text-align:center}
 </style>
 </head>
 <body>
@@ -1174,10 +1180,26 @@ function bindCombo(p){
 }
 
 /* ═════════════════ VIEWER ═════════════════ */
+/* ───── PDF: แสดงด้วย PDF.js (ไม่พึ่งตัวอ่าน PDF ของ Chrome ซึ่งบางเครื่องถูกปิด → "blocked by Chrome") ───── */
+var PDFJS_V='3.11.174',PDFJS_P=null;
+function pdfjs(){if(PDFJS_P)return PDFJS_P;var base='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_V+'/';
+  PDFJS_P=new Promise(function(ok,no){var s=document.createElement('script');s.src=base+'pdf.min.js';
+    s.onload=function(){var L=window.pdfjsLib;if(!L){PDFJS_P=null;return no(new Error('โหลดตัวอ่าน PDF ไม่สำเร็จ'))}
+      try{L.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob(["importScripts('"+base+"pdf.worker.min.js')"],{type:'text/javascript'}))}catch(e){L.GlobalWorkerOptions.workerSrc=base+'pdf.worker.min.js'}ok(L)};
+    s.onerror=function(){PDFJS_P=null;no(new Error('โหลดตัวอ่าน PDF ไม่สำเร็จ'))};document.head.appendChild(s)});
+  return PDFJS_P}
+function b64Bytes(b64){var bin=atob(b64),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return arr}
+function pdfDoc(bytes){return pdfjs().then(function(L){return L.getDocument({data:bytes}).promise})}
+function pdfCanvas(doc,n,width){return doc.getPage(n).then(function(pg){var v1=pg.getViewport({scale:1}),vp=pg.getViewport({scale:width/v1.width}),cv=document.createElement('canvas');cv.width=Math.round(vp.width);cv.height=Math.round(vp.height);
+  var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);return pg.render({canvasContext:cx,viewport:vp}).promise.then(function(){return cv})})}
+/* รูปตัวอย่างหน้าแรก (JPEG) → แสดงในแท็บไฟล์แนบ + ส่งไปเก็บถาวร */
+function pdfThumbOf(a,fileId,doc){return pdfCanvas(doc,1,360).then(function(cv){var url=cv.toDataURL('image/jpeg',0.72);if(url.length>48000)url=cv.toDataURL('image/jpeg',0.5);
+  A.fthumbs=A.fthumbs||{};A.fthumbs[fileId]=url;var el=$('[data-fth="'+fileId+'"]');if(el){el.style.backgroundImage='url("'+url+'")';el.classList.add('has')}
+  if(url.length<=48000)aCall('saveFileThumb',a.no,fileId,url).catch(function(){});return url})}
 function openViewer(f,title){
   var w=document.createElement('div');w.className='viewer';w.setAttribute('role','dialog');w.setAttribute('aria-label','พรีวิว '+title);
   var body=f.loading?loadingHtml('กำลังโหลดไฟล์...').replace('class="loading"','class="loading" style="color:#fff"'):
-    (f.type==='img'?'<div class="img" style="background-image:url(&quot;'+f.url+'&quot;)"></div>':(f.url?'<iframe src="'+f.url+'" title="'+esc(title)+'" style="width:min(900px,100%);height:78vh;border:0;border-radius:6px;background:#fff"></iframe>':'<div class="img" style="display:grid;place-items:center;max-width:520px;color:#B42318;font-weight:600">PDF</div>'));
+    (f.type==='pdfjs'?'<div class="pdfv" tabindex="0" aria-label="'+esc(title)+'"><div class="loading" style="color:#fff">กำลังแสดงไฟล์...</div></div>':f.type==='img'?'<div class="img" style="background-image:url(&quot;'+f.url+'&quot;)"></div>':(f.url?'<iframe src="'+f.url+'" title="'+esc(title)+'" style="width:min(900px,100%);height:78vh;border:0;border-radius:6px;background:#fff"></iframe>':'<div class="img" style="display:grid;place-items:center;max-width:520px;color:#B42318;font-weight:600">PDF</div>'));
   w.innerHTML='<div class="bar"><b>'+esc(title)+'</b>'+(f.driveUrl?'<a class="btn btn-sm" href="'+esc(f.driveUrl)+'" target="_blank" rel="noopener">เปิดใน Google Drive</a>':'')+'<button type="button" class="btn btn-sm" id="vx">✕ ปิด</button></div>'+body;
   w.addEventListener('click',function(e){if(e.target===w)w.remove()});
   document.body.appendChild(w);$('#vx',w).focus();$('#vx',w).addEventListener('click',function(){w.remove()});w.addEventListener('keydown',function(e){if(e.key==='Escape')w.remove()});
@@ -1404,7 +1426,11 @@ function loadFileThumbs(a){
   A.fthumbs=A.fthumbs||{};if(!a.files.some(function(f){return !(f.fileId in A.fthumbs)}))return;
   a.files.forEach(function(f){if(!(f.fileId in A.fthumbs))A.fthumbs[f.fileId]=''});
   aCall('getFileThumbs',a.no).then(function(m){Object.keys(m).forEach(function(id){A.fthumbs[id]=m[id];var el=$('[data-fth="'+id+'"]');if(el){el.style.backgroundImage='url("'+m[id]+'")';el.classList.add('has');var sp=el.querySelector('.spin');if(sp)sp.remove()}});
-    $$('[data-fth]').forEach(function(el){if(!el.classList.contains('has')){var sp=el.querySelector('.spin');if(sp)sp.outerHTML='<span class="badge">ไฟล์</span>'}})}).catch(function(){});
+    $$('[data-fth]').forEach(function(el){if(!el.classList.contains('has')){var sp=el.querySelector('.spin');if(sp)sp.outerHTML='<span class="badge">ไฟล์</span>'}});
+    var todo=a.files.filter(function(f){return /pdf/.test(f.mime)&&!A.fthumbs[f.fileId]});
+    (function next(){var f=todo.shift();if(!f||!A.open||A.open.no!==a.no)return;
+      aCall('getFileData',a.no,f.fileId).then(function(r){if(r.tooBig||!r.b64)return;return pdfDoc(b64Bytes(r.b64)).then(function(doc){return pdfThumbOf(a,f.fileId,doc)})}).catch(function(){}).then(next)})();
+  }).catch(function(){});
 }
 function bindTab(a){
   if(A.dTab==='files')loadFileThumbs(a);
@@ -1412,8 +1438,14 @@ function bindTab(a){
   var pp=$('#pv-print');if(pp)pp.addEventListener('click',function(){printDoc(docObj(a))});
   $$('[data-file]').forEach(function(b){b.addEventListener('click',function(){var f=a.files[+b.dataset.file];var w=openViewer({loading:true},f.name);
     aCall('getFileData',a.no,f.fileId).then(function(r){w.remove();if(r.tooBig){openViewer({type:'pdf',url:'',driveUrl:r.url},f.name);return}
-      var img=/^image\//.test(r.mime),url;if(img)url='data:'+r.mime+';base64,'+r.b64;else{var bin=atob(r.b64),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);url=URL.createObjectURL(new Blob([arr],{type:r.mime}))}
-      openViewer({type:img?'img':'pdf',url:url,driveUrl:r.url},f.name)}).catch(function(e){w.remove();toast('เปิดไฟล์ไม่สำเร็จ: '+em(e),true)})})});
+      var img=/^image\//.test(r.mime);if(img){openViewer({type:'img',url:'data:'+r.mime+';base64,'+r.b64,driveUrl:r.url},f.name);return}
+      if(/pdf/.test(r.mime)){var vw=openViewer({type:'pdfjs',driveUrl:r.url},f.name),box=vw.querySelector('.pdfv');
+        pdfDoc(b64Bytes(r.b64)).then(function(doc){box.innerHTML='';var W=Math.min(900,window.innerWidth-40)*(window.devicePixelRatio||1),n=Math.min(doc.numPages,30),i=0;
+          if(!(A.fthumbs||{})[f.fileId])pdfThumbOf(a,f.fileId,doc).catch(function(){});
+          (function next(){if(++i>n||!document.body.contains(box))return;pdfCanvas(doc,i,W).then(function(cv){cv.setAttribute('aria-label','หน้า '+i);box.appendChild(cv);next()})})();
+          if(doc.numPages>30){var m=document.createElement('p');m.className='pdfv-more';m.textContent='แสดง 30 หน้าแรก · เปิดใน Google Drive เพื่อดูทั้งหมด';box.appendChild(m)}
+        }).catch(function(e){box.innerHTML='<div class="pdfv-err">แสดงไฟล์ไม่ได้ ('+esc(em(e))+') · กด "เปิดใน Google Drive"</div>'});return}
+      var arr=b64Bytes(r.b64);openViewer({type:'pdf',url:URL.createObjectURL(new Blob([arr],{type:r.mime})),driveUrl:r.url},f.name)}).catch(function(e){w.remove();toast('เปิดไฟล์ไม่สำเร็จ: '+em(e),true)})})});
   var hf=$('#hr-file');if(hf)hf.addEventListener('change',function(){var f=hf.files[0];if(!f)return;if(f.size>10485760){toast('ไฟล์ใหญ่เกิน 10 MB',true);return}
     fileToB64(f).then(function(b64){return act(['แนบไฟล์ '+f.name+'?','','อัปโหลด'],null,function(){return aCall('addAdminFile',a.no,{name:f.name,mime:f.type||'application/octet-stream'},b64)},'แนบไฟล์ '+f.name+' แล้ว')})});
 }
