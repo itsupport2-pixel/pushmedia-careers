@@ -1306,11 +1306,12 @@ function act(conf,local,call,msg){
 var AI_RUN={};
 function aiCard(a){
   if(!A.user||A.user.role==='mgr'||a.loading)return '';
-  var x=a.ai,busy=AI_RUN[a.no],h='<div class="card ai-card"><div class="ai-h"><h3>AI วิเคราะห์คุณสมบัติ</h3><span class="ai-tag">Claude</span></div>';
-  if(busy)return h+'<div class="ai-busy"><span class="spin"></span>กำลังวิเคราะห์ใบสมัคร… ใช้เวลาประมาณ 15–40 วินาที</div></div>';
+  var x=a.ai,busy=AI_RUN[a.no],cl=a.aiMode==='claude',loc=x?x.model==='local-rules':!cl;
+  var h='<div class="card ai-card"><div class="ai-h"><h3>'+(loc?'วิเคราะห์คุณสมบัติ':'AI วิเคราะห์คุณสมบัติ')+'</h3><span class="ai-tag">'+(loc?'เกณฑ์ระบบ':'Claude')+'</span></div>';
+  if(busy)return h+'<div class="ai-busy"><span class="spin"></span>'+(cl?'กำลังวิเคราะห์ใบสมัคร… ใช้เวลาประมาณ 15–40 วินาที':'กำลังวิเคราะห์ใบสมัคร…')+'</div></div>';
   if(!x){
-    if(!a.aiOn)return h+'<p class="muted ai-note">ยังไม่ได้ตั้งค่า API key'+(A.user.role==='hr'?' · <a href="#" id="ai-set">ไปที่ตั้งค่า</a>':' · ติดต่อ HR')+'</p></div>';
-    return h+'<p class="muted ai-note">ให้ AI สรุปความเหมาะสมกับตำแหน่ง จุดเด่น ข้อควรพิจารณา และคำถามสัมภาษณ์ · ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะ (ไม่ส่งชื่อ เลขบัตร เบอร์โทร ที่อยู่ รูป)</p><button type="button" class="btn btn-sm btn-p" id="ai-run" style="width:100%;margin-top:10px">วิเคราะห์ด้วย AI</button></div>';
+    if(!a.aiOn)return '';
+    return h+'<p class="muted ai-note">'+(cl?'ให้ AI สรุปความเหมาะสมกับตำแหน่ง จุดเด่น ข้อควรพิจารณา และคำถามสัมภาษณ์ · ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะ (ไม่ส่งชื่อ เลขบัตร เบอร์โทร ที่อยู่ รูป)':'ให้คะแนนตามเกณฑ์ของระบบจากทักษะ ประสบการณ์ วุฒิ และการขับขี่ เทียบกับตำแหน่ง · ไม่มีค่าใช้จ่าย ไม่ส่งข้อมูลออกนอกระบบ')+'</p><button type="button" class="btn btn-sm btn-p" id="ai-run" style="width:100%;margin-top:10px">'+(cl?'วิเคราะห์ด้วย AI':'วิเคราะห์คุณสมบัติ')+'</button></div>';
   }
   var r=x.r||{},tone=r.fit==='สูง'?'ok':r.fit==='ต่ำ'?'bad':'warn',li=function(arr,cls){return (arr||[]).length?'<ul class="ai-ul '+cls+'">'+arr.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>':''};
   return h+'<div class="ai-fit ai-'+tone+'"><div><span class="ai-lbl">ความเหมาะสมกับตำแหน่ง</span><b>'+esc(r.fit||'-')+'</b></div><div class="ai-score"><b>'+(r.score|0)+'</b><span>/100</span></div></div>'+
@@ -1320,12 +1321,12 @@ function aiCard(a){
     ((r.concerns||[]).length?'<div class="ai-sec">ข้อควรพิจารณา</div>'+li(r.concerns,'warn'):'')+
     (r.salary?'<div class="ai-sec">เงินเดือนที่ขอ</div><p class="ai-p">'+esc(r.salary)+'</p>':'')+
     ((r.questions||[]).length?'<div class="ai-sec">คำถามแนะนำสำหรับสัมภาษณ์</div><ol class="ai-ol">'+r.questions.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ol>':'')+
-    '<div class="ai-foot"><span>วิเคราะห์ '+esc(x.at)+' · '+esc(x.by)+'<br>ผลจาก AI ใช้ประกอบการตัดสินใจเท่านั้น</span>'+(a.aiOn?'<button type="button" class="btn btn-sm" id="ai-run">วิเคราะห์ใหม่</button>':'')+'</div></div>';
+    '<div class="ai-foot"><span>วิเคราะห์ '+esc(x.at)+' · '+esc(x.by)+'<br>'+(loc?'ประเมินตามเกณฑ์ของระบบ (ไม่ใช้ AI)':'ผลจาก AI')+' ใช้ประกอบการตัดสินใจเท่านั้น</span>'+(a.aiOn?'<button type="button" class="btn btn-sm" id="ai-run">วิเคราะห์ใหม่</button>':'')+'</div></div>';
 }
 function runAi(a){
-  confirmBox(a.ai?'วิเคราะห์ใบสมัครนี้ใหม่?':'ให้ AI วิเคราะห์ใบสมัครนี้?','ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะไปที่ Claude (Anthropic) · มีค่าใช้จ่ายตามการใช้งาน','วิเคราะห์').then(function(ok){
+  (a.aiMode==='claude'?confirmBox(a.ai?'วิเคราะห์ใบสมัครนี้ใหม่?':'ให้ AI วิเคราะห์ใบสมัครนี้?','ส่งเฉพาะข้อมูลการศึกษา ประสบการณ์ และทักษะไปที่ Claude (Anthropic) · มีค่าใช้จ่ายตามการใช้งาน','วิเคราะห์'):Promise.resolve(true)).then(function(ok){
     if(!ok)return;AI_RUN[a.no]=1;if(A.open&&A.open.no===a.no)renderDrawer();
-    aCall('aiAnalyze',a.no).then(function(res){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no){A.open.ai=res;renderDrawer()}toast('AI วิเคราะห์เสร็จแล้ว')})
+    aCall('aiAnalyze',a.no).then(function(res){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no){A.open.ai=res;renderDrawer()}toast('วิเคราะห์เสร็จแล้ว')})
       .catch(function(e){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no)renderDrawer();toast(em(e),true)});
   });
 }
