@@ -623,6 +623,34 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .viewer .pdfv canvas{width:100%;height:auto;background:#fff;border-radius:4px;display:block}
 .viewer .pdfv .loading{padding:40px 0}
 .viewer .pdfv-more,.viewer .pdfv-err{color:#fff;font-size:13.5px;margin:6px 0;text-align:center}
+
+/* หน้าเข้าสู่ระบบผู้ดูแล */
+.lg{max-width:900px;margin:40px auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(22,24,29,.06)}
+.lg-side{background:#16181D;color:#E9EAEE;padding:36px 34px;display:flex;flex-direction:column;gap:16px}
+.lg-eye{margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#9AA0AD;font-weight:600}
+.lg-side h2{margin:0;font-size:26px;line-height:1.35;color:#fff;text-wrap:balance}
+.lg-side ul{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:12px}
+.lg-side li{position:relative;padding-left:26px;font-size:14.5px;line-height:1.55;color:#D5D8DF}
+.lg-side li::before{content:'';position:absolute;left:0;top:5px;width:14px;height:14px;border-radius:4px;background:#2F6BFF;box-shadow:inset 0 0 0 3px #16181D,0 0 0 1px #2F6BFF}
+.lg-pdpa{margin-top:auto;font-size:12.5px;line-height:1.6;color:#8E94A1;border-top:1px solid #2A2D35;padding-top:14px}
+.lg-form{padding:36px 34px;display:grid;grid-template-columns:minmax(0,1fr)!important;gap:14px;align-content:start}
+.lg-form>*{grid-column:1/-1!important;min-width:0}
+.lg-form h1{font-size:24px;margin:0}
+.lg-sub{margin:-8px 0 2px;color:var(--ink-3);font-size:14.5px}
+.lg-form .f{margin:0}
+.lg-pw{position:relative}
+.lg-pw .inp{padding-right:70px}
+.lg-eyebtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:var(--sunk);color:var(--ink-2);font:600 12.5px var(--f-ui);padding:6px 10px;border-radius:6px;cursor:pointer}
+.lg-eyebtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.lg-rem{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--sunk)}
+.lg-rem input{margin-top:3px;width:17px;height:17px;accent-color:var(--accent);flex:none}
+.lg-rem b{display:block;font-size:14px;font-weight:600}
+.lg-rem small{display:block;font-size:12.5px;color:var(--ink-3);line-height:1.5}
+.lg-go{width:100%;height:46px;font-size:15.5px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.lg-go .spin{width:16px;height:16px;border-width:2px;border-color:rgba(255,255,255,.4);border-top-color:#fff}
+.lg-help{margin:2px 0 0;font-size:13px;color:var(--ink-3);text-align:center}
+.lg-help a{color:var(--accent)}
+@media (max-width:760px){.lg{grid-template-columns:1fr;margin:20px auto}.lg-side{padding:22px 22px}.lg-side ul,.lg-pdpa{display:none}.lg-side h2{font-size:20px}.lg-form{padding:24px 22px}}
 </style>
 </head>
 <body>
@@ -682,6 +710,7 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 /* เรียกเซิร์ฟเวอร์: ใน Apps Script ใช้ google.script.run · บน GitHub Pages ใช้ fetch ไปที่ /exec (doPost) */
+var NO_HEDGE=['getFileData','getFileThumbs','getThumbs'];
 var READ_FNS=['getPublicConfig','getStatus','adminBootstrap','listApplications','getApplication','getThumbs','getFileThumbs','getFileData'];
 function call(fn){var args=Array.prototype.slice.call(arguments,1);
   if(window.google&&google.script&&google.script.run)return new Promise(function(res,rej){var r=google.script.run.withSuccessHandler(res).withFailureHandler(rej);r[fn].apply(r,args)});
@@ -690,7 +719,7 @@ function call(fn){var args=Array.prototype.slice.call(arguments,1);
     .then(function(r){return r.text()}).then(function(t){var j;try{j=JSON.parse(t)}catch(e){throw {retry:true}}if(!j.ok)throw new Error(j.error||'เกิดข้อผิดพลาด');return j.r})
     .catch(function(e){if((e&&e.retry||e instanceof TypeError)&&n>1)return new Promise(function(ok){setTimeout(ok,700)}).then(function(){return go(n-1)});
       if(e&&e.retry||e instanceof TypeError)throw new Error('เชื่อมต่อเซิร์ฟเวอร์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง');throw e})}
-  if(tries===1)return go(1);
+  if(tries===1||NO_HEDGE.indexOf(fn)>=0)return go(tries);
   /* Google ตอบช้าแบบสุ่มบางครั้ง (8–30 วิ) → คำสั่งอ่านข้อมูล: ถ้า 4 วิยังไม่ตอบ ยิงซ้ำคู่ขนาน ใช้ผลที่มาก่อน */
   return new Promise(function(res,rej){var done=false,fails=0,n=1;
     function run(k){go(k).then(function(r){if(!done){done=true;res(r)}},function(e){fails++;if(!done&&fails>=n){done=true;rej(e)}})}
@@ -1211,7 +1240,7 @@ var A={thumbs:{},token:store('pmc_tok'),user:null,d:null,q:'',fPos:'',fStage:'',
 var ROLE_T={hr:'HR',mgr:'หัวหน้าแผนก',exec:'ผู้บริหาร',system:'System Developer'};
 function aCall(){var args=arguments;return call.apply(null,[args[0],A.token].concat(Array.prototype.slice.call(args,1))).catch(function(e){if(em(e)==='SESSION_EXPIRED'){store('pmc_tok',null);store('pmc_boot',null);A.token=null;toast('หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่',true);renderLogin();throw new Error('หมดเวลาการใช้งาน')}throw e})}
 /* ข้อมูลหน้าผู้ดูแลชุดล่าสุด: เก็บในเครื่อง ผูกกับ token (หมดอายุ 8 ชม. เท่า session) · ลบเมื่อออกจากระบบ */
-function bootSnap(){var x=store('pmc_boot');return x&&x.tok===A.token&&x.d&&Date.now()-(x.t||0)<8*3600000?x.d:null}
+function bootSnap(){var x=store('pmc_boot');return x&&x.tok===A.token&&x.d&&Date.now()-(x.t||0)<7*86400000?x.d:null}
 function keepBoot(){if(!A.d)return;var d={};Object.keys(A.d).forEach(function(k){if(k!=='thumbs')d[k]=A.d[k]});store('pmc_boot',{tok:A.token,t:Date.now(),d:d})}   /* ไม่เก็บรูป (กันเกินพื้นที่ localStorage) */
 function applyBoot(d){A.d=d;setCO(d.company);A.user=d.user;buildFD(d.fields);if(d.thumbs)Object.keys(d.thumbs).forEach(function(n){A.thumbs[n]=d.thumbs[n]});setTop();keepBoot()}
 function startAdmin(pre){
@@ -1231,15 +1260,25 @@ function setTop(){
   n.innerHTML=A.user?'<span class="me">'+esc(A.user.name)+' · '+(A.user.label||ROLE_T[A.user.role])+(A.user.role==='mgr'&&A.user.scope!=='ทุกแผนก'?' '+esc(A.user.scope):'')+'</span><button type="button" id="tn-ref">รีเฟรช</button><button type="button" id="tn-pw">เปลี่ยนรหัสผ่าน</button><button type="button" id="tn-out">ออกจากระบบ</button>':'<a href="'+esc(BOOTV.url)+'" target="_top">หน้าสมัครงาน</a>';
   if(A.user){$('#tn-out').addEventListener('click',function(){store('pmc_boot',null);call('logout',A.token);store('pmc_tok',null);A.token=null;A.user=null;A.d=null;setTop();renderLogin()});$('#tn-ref').addEventListener('click',startAdmin);
     $('#tn-pw').addEventListener('click',function(){modal({title:'เปลี่ยนรหัสผ่าน',ok:'เปลี่ยนรหัสผ่าน',body:'<div class="grid"><div class="f s6"><label for="m-op">รหัสผ่านเดิม</label><input class="inp" id="m-op" name="op" type="password" autocomplete="current-password"></div><div class="f s6"><label for="m-np">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input class="inp" id="m-np" name="np" type="password" autocomplete="new-password"></div><div class="f s6"><label for="m-np2">ยืนยันรหัสผ่านใหม่</label><input class="inp" id="m-np2" name="np2" type="password" autocomplete="new-password"></div></div>',
-      onSave:function(fm){var a=fv(fm,'op'),b=fv(fm,'np');if(!a||!b)return 'กรุณากรอกให้ครบ';if(b.length<6)return 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';if(b!==fv(fm,'np2'))return 'ยืนยันรหัสผ่านไม่ตรงกัน';return aCall('changePassword',a,b).then(function(){toast('เปลี่ยนรหัสผ่านแล้ว')})}})})}
+      onSave:function(fm){var a=fv(fm,'op'),b=fv(fm,'np');if(!a||!b)return 'กรุณากรอกให้ครบ';if(b.length<6)return 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';if(b!==fv(fm,'np2'))return 'ยืนยันรหัสผ่านไม่ตรงกัน';return aCall('changePassword',a,b).then(function(r){if(r&&r.token){A.token=r.token;store('pmc_tok',r.token);keepBoot()}toast('เปลี่ยนรหัสผ่านแล้ว')})}})})}
 }
 function renderLogin(){
-  MAIN.innerHTML='<form class="card login" id="lf" novalidate><h1>เข้าสู่ระบบผู้ดูแล</h1><p>สำหรับ HR หัวหน้าแผนก และผู้บริหาร · ใช้รหัสผู้ใช้และรหัสผ่านที่ HR ตั้งให้ในระบบนี้</p><div id="lerr"></div>'+
-    '<div class="f"><label for="l-code">รหัสผู้ใช้ (รหัสพนักงาน)</label><input class="inp" id="l-code" autocomplete="username" maxlength="30"></div><div class="f"><label for="l-pw">รหัสผ่าน</label><input class="inp" id="l-pw" type="password" autocomplete="current-password"></div>'+
-    '<button class="btn btn-p" type="submit" style="width:100%">เข้าสู่ระบบ</button></form>';
+  var rem=store('pmc_rem');if(rem===null)rem=true;
+  MAIN.innerHTML='<div class="lg"><section class="lg-side" aria-hidden="true"><p class="lg-eye">Push Media Careers</p><h2>ระบบรับสมัครงาน<br>สำหรับผู้ดูแล</h2>'+
+    '<ul><li>ดูใบสมัคร ไฟล์แนบ และพิมพ์ใบสมัคร A4</li><li>นัดสัมภาษณ์ ระบบส่งอีเมลแจ้งผู้สมัครให้</li><li>ให้คะแนน แสดงความเห็น และวิเคราะห์คุณสมบัติ</li></ul>'+
+    '<p class="lg-pdpa">ข้อมูลผู้สมัครคุ้มครองตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล · ใช้เพื่อการพิจารณารับสมัครงานเท่านั้น</p></section>'+
+    '<form class="lg-form" id="lf" novalidate><h1>เข้าสู่ระบบ</h1><p class="lg-sub">สำหรับ HR หัวหน้าแผนก และผู้บริหาร</p><div id="lerr" role="alert"></div>'+
+    '<div class="f"><label for="l-code">รหัสผู้ใช้ (รหัสพนักงาน)</label><input class="inp" id="l-code" autocomplete="username" maxlength="30" inputmode="text" placeholder="เช่น 0077"></div>'+
+    '<div class="f"><label for="l-pw">รหัสผ่าน</label><div class="lg-pw"><input class="inp" id="l-pw" type="password" autocomplete="current-password"><button type="button" class="lg-eyebtn" id="l-eye" aria-label="แสดงรหัสผ่าน" aria-pressed="false">แสดง</button></div></div>'+
+    '<label class="lg-rem"><input type="checkbox" id="l-rem"'+(rem?' checked':'')+'><span><b>จดจำการเข้าสู่ระบบ 7 วัน</b><small>ไม่ติ๊ก = อยู่ในระบบ 24 ชั่วโมง · ใช้เครื่องร่วมกับผู้อื่นไม่ควรติ๊ก</small></span></label>'+
+    '<button class="btn btn-p lg-go" type="submit">เข้าสู่ระบบ</button>'+
+    '<p class="lg-help">ลืมรหัสผ่าน ติดต่อ HR เพื่อตั้งรหัสใหม่ · <a href="'+esc(BOOTV.url)+'" target="_top">กลับหน้าสมัครงาน</a></p></form></div>';
   $('#l-code').focus();
-  $('#lf').addEventListener('submit',function(e){e.preventDefault();var b=$('#lf button[type=submit]');b.disabled=true;b.textContent='กำลังตรวจสอบ...';
-    call('login',$('#l-code').value,$('#l-pw').value).then(function(r){if(!r.ok){$('#lerr').innerHTML='<div class="err-box">'+esc(r.msg)+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ';return}
+  $('#l-eye').addEventListener('click',function(){var i=$('#l-pw'),on=i.type==='password';i.type=on?'text':'password';this.textContent=on?'ซ่อน':'แสดง';this.setAttribute('aria-pressed',on);this.setAttribute('aria-label',on?'ซ่อนรหัสผ่าน':'แสดงรหัสผ่าน')});
+  $('#lf').addEventListener('submit',function(e){e.preventDefault();var b=$('#lf .lg-go'),code=$('#l-code').value.trim(),pw=$('#l-pw').value,rm=$('#l-rem').checked;
+    if(!code||!pw){$('#lerr').innerHTML='<div class="err-box">กรุณากรอกรหัสผู้ใช้และรหัสผ่าน</div>';return}
+    store('pmc_rem',rm);b.disabled=true;b.innerHTML='<span class="spin"></span> กำลังเข้าสู่ระบบ...';$('#lerr').innerHTML='';
+    call('login',code,pw,rm).then(function(r){if(!r.ok){$('#lerr').innerHTML='<div class="err-box">'+esc(r.msg)+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ';return}
       A.token=r.token;A.user=r.user;store('pmc_tok',r.token);startAdmin(r.boot||null)}).catch(function(e){$('#lerr').innerHTML='<div class="err-box">'+esc(em(e))+'</div>';b.disabled=false;b.textContent='เข้าสู่ระบบ'})});
 }
 function stg(){return A.d.stages}
@@ -1422,14 +1461,18 @@ function dTab(a){
   }
   return '<div class="card" style="padding:18px"><ul class="cm">'+[{by:'ระบบ',role:'',at:a.at,t:'รับใบสมัครออนไลน์ · ส่งอีเมลยืนยันถึงผู้สมัคร'}].concat(a.comments).map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')+'</ul></div>';
 }
+/* ข้อมูลไฟล์แนบ: โหลดครั้งเดียวต่อใบสมัคร (ใช้ร่วมกันระหว่างรูปตัวอย่าง / โหลดล่วงหน้า / กดเปิด) */
+function fileData(a,f){if(A.fdNo!==a.no){A.fd={};A.fdNo=a.no}
+  return A.fd[f.fileId]||(A.fd[f.fileId]=aCall('getFileData',a.no,f.fileId).catch(function(e){delete A.fd[f.fileId];throw e}))}
 function loadFileThumbs(a){
   A.fthumbs=A.fthumbs||{};if(!a.files.some(function(f){return !(f.fileId in A.fthumbs)}))return;
   a.files.forEach(function(f){if(!(f.fileId in A.fthumbs))A.fthumbs[f.fileId]=''});
   aCall('getFileThumbs',a.no).then(function(m){Object.keys(m).forEach(function(id){A.fthumbs[id]=m[id];var el=$('[data-fth="'+id+'"]');if(el){el.style.backgroundImage='url("'+m[id]+'")';el.classList.add('has');var sp=el.querySelector('.spin');if(sp)sp.remove()}});
     $$('[data-fth]').forEach(function(el){if(!el.classList.contains('has')){var sp=el.querySelector('.spin');if(sp)sp.outerHTML='<span class="badge">ไฟล์</span>'}});
-    var todo=a.files.filter(function(f){return /pdf/.test(f.mime)&&!A.fthumbs[f.fileId]});
+    /* โหลดไฟล์ล่วงหน้าทีละไฟล์ (PDF ที่ยังไม่มีรูปตัวอย่างก่อน) → กดเปิดแล้วขึ้นทันที */
+    var small=a.files.filter(function(f){return (Number(f.sizeKB)||0)<=8000}),todo=small.filter(function(f){return /pdf/.test(f.mime)&&!A.fthumbs[f.fileId]}).concat(small.filter(function(f){return !(/pdf/.test(f.mime)&&!A.fthumbs[f.fileId])}));
     (function next(){var f=todo.shift();if(!f||!A.open||A.open.no!==a.no)return;
-      aCall('getFileData',a.no,f.fileId).then(function(r){if(r.tooBig||!r.b64)return;return pdfDoc(b64Bytes(r.b64)).then(function(doc){return pdfThumbOf(a,f.fileId,doc)})}).catch(function(){}).then(next)})();
+      fileData(a,f).then(function(r){if(r.tooBig||!r.b64||!/pdf/.test(f.mime)||A.fthumbs[f.fileId])return;return pdfDoc(b64Bytes(r.b64)).then(function(doc){return pdfThumbOf(a,f.fileId,doc)})}).catch(function(){}).then(next)})();
   }).catch(function(){});
 }
 function bindTab(a){
@@ -1437,7 +1480,7 @@ function bindTab(a){
   $$('[data-edsec]').forEach(function(b){b.addEventListener('click',function(){editApplicant(a,b.dataset.edsec)})});
   var pp=$('#pv-print');if(pp)pp.addEventListener('click',function(){printDoc(docObj(a))});
   $$('[data-file]').forEach(function(b){b.addEventListener('click',function(){var f=a.files[+b.dataset.file];var w=openViewer({loading:true},f.name);
-    aCall('getFileData',a.no,f.fileId).then(function(r){w.remove();if(r.tooBig){openViewer({type:'pdf',url:'',driveUrl:r.url},f.name);return}
+    fileData(a,f).then(function(r){w.remove();if(r.tooBig){openViewer({type:'pdf',url:'',driveUrl:r.url},f.name);return}
       var img=/^image\//.test(r.mime);if(img){openViewer({type:'img',url:'data:'+r.mime+';base64,'+r.b64,driveUrl:r.url},f.name);return}
       if(/pdf/.test(r.mime)){var vw=openViewer({type:'pdfjs',driveUrl:r.url},f.name),box=vw.querySelector('.pdfv');
         pdfDoc(b64Bytes(r.b64)).then(function(doc){box.innerHTML='';var W=Math.min(900,window.innerWidth-40)*(window.devicePixelRatio||1),n=Math.min(doc.numPages,30),i=0;
