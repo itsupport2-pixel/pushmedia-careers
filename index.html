@@ -651,6 +651,11 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .lg-help{margin:2px 0 0;font-size:13px;color:var(--ink-3);text-align:center}
 .lg-help a{color:var(--accent)}
 @media (max-width:760px){.lg{grid-template-columns:1fr;margin:20px auto}.lg-side{border-right:0;border-bottom:1px solid #E1E7F6}.lg-side{padding:22px 22px}.lg-side ul,.lg-pdpa{display:none}.lg-side h2{font-size:20px}.lg-form{padding:24px 22px}}
+
+/* เตือนพิมพ์ผิดภาษา · วันเริ่มงาน */
+.lang-warn{font-size:12.5px;color:var(--bad);margin-top:2px}
+.hire-start{margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--ok-soft);color:var(--ok);font-size:13.5px}
+.hire-start b{color:var(--ink)}.hire-start a{color:var(--ok)}
 </style>
 </head>
 <body>
@@ -856,6 +861,11 @@ function renderApply(){
 }
 function on(k){return !FD[k]||FD[k].on}
 function lbl(id,label,req){var d=FD[id];if(d){label=d.label;req=d.req}return esc(label)+(req?' <span class="req">*</span>':'')}
+var LANG_ONLY={first:'th',last:'th',nick:'th',firstEn:'en',lastEn:'en',nickEn:'en'};
+function langMode(k){var m=LANG_ONLY[k];if(m==='th'&&S.form&&S.form.nation&&S.form.nation!=='ไทย')return '';return m||''}
+function langFix(k,v){var m=langMode(k),o=m==='th'?v.replace(/[^\u0E00-\u0E7F .\-]/g,''):m==='en'?v.replace(/[^A-Za-z .'\-]/g,''):v;return o===v?v:o.replace(/^\s+/,'').replace(/\s{2,}/g,' ')}
+function langWarn(el,k){var w=el.parentNode.querySelector('.lang-warn');if(!w){w=document.createElement('span');w.className='lang-warn';w.setAttribute('role','status');el.parentNode.appendChild(w)}
+  w.textContent=langMode(k)==='th'?'ช่องนี้พิมพ์ได้เฉพาะภาษาไทย':'ช่องนี้พิมพ์ได้เฉพาะภาษาอังกฤษ (A–Z)';clearTimeout(w._t);w.hidden=false;w._t=setTimeout(function(){w.hidden=true},2600)}
 function inp(id,label,span,req,ph,type){
   var d=FD[id];if(d&&!d.on)return '';
   return '<div class="f '+(span||'')+'" data-fw="'+id+'"><label for="f-'+id+'">'+lbl(id,label,req)+'</label><input class="inp" id="f-'+id+'" data-k="'+id+'" type="'+(type||'text')+'" value="'+esc(S.form[id])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>'+(d&&d.help?'<span class="muted" style="font-size:12px">'+esc(d.help)+'</span>':'')+'</div>';
@@ -984,7 +994,7 @@ function stepHtml(i){
   if(i===1){
     h='<p class="eyebrow">ขั้นที่ 2 จาก 6</p><h2>ข้อมูลส่วนตัว</h2><p class="lead">ช่องที่มี <span style="color:var(--bad)">*</span> ต้องกรอก · ข้อมูลนี้ใช้เฉพาะการพิจารณารับสมัครงานตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล</p><div class="grid">'+
       seg('title','คำนำหน้า',['นาย','นาง','นางสาว'],'s6')+
-      inp('first','ชื่อ','s2')+inp('last','นามสกุล','s2')+inp('nick','ชื่อเล่น','s2')+
+      inp('first','ชื่อ','s2','','เช่น สมชาย')+inp('last','นามสกุล','s2','','เช่น ใจดี')+inp('nick','ชื่อเล่น','s2','','เช่น ชาย')+
       inp('firstEn','ชื่อ (ภาษาอังกฤษ)','s2','','เช่น Somchai')+inp('lastEn','นามสกุล (ภาษาอังกฤษ)','s2','','เช่น Jaidee')+inp('nickEn','ชื่อเล่น (ภาษาอังกฤษ)','s2','','เช่น Chai')+
       idInp()+birthInp()+inp('age','อายุ (ปี)','s2','','คำนวณจากวันเกิด','number')+
       selInp('race','เชื้อชาติ',NATIONS,'s2')+selInp('nation','สัญชาติ',NATIONS,'s2')+selInp('religion','ศาสนา',RELIGIONS,'s2')+
@@ -1056,6 +1066,7 @@ function missingStep(i){
   Object.keys(FD).forEach(function(k){var d=FD[k];if(d.step!==i||!d.on||!d.req)return;var v=F[k];if(Array.isArray(v)?!v.length:!String(v==null?'':v).trim())out.push([i,d.label,k])});
   if(i===1&&F.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.email))out.push([1,'อีเมล (รูปแบบไม่ถูกต้อง)','email']);
   if(i===1&&F.idcard&&!idOk(F.idcard)&&(!FD.idcard||FD.idcard.on))out.push([1,'เลขบัตรประชาชน (ไม่ถูกต้อง)','idcard']);
+  if(i===1)[['first','ชื่อ'],['last','นามสกุล'],['nick','ชื่อเล่น']].forEach(function(x){if(F[x[0]]&&langMode(x[0])==='th'&&/[^\u0E00-\u0E7F .\-]/.test(String(F[x[0]]).trim()))out.push([1,x[1]+' (ใช้ตัวอักษรภาษาไทย)',x[0]])});
   if(i===1)[['firstEn','ชื่อ (ภาษาอังกฤษ)'],['lastEn','นามสกุล (ภาษาอังกฤษ)'],['nickEn','ชื่อเล่น (ภาษาอังกฤษ)']].forEach(function(x){if(F[x[0]]&&!/^[A-Za-z][A-Za-z .'-]*$/.test(String(F[x[0]]).trim()))out.push([1,x[1]+' (ใช้ตัวอักษรภาษาอังกฤษ)',x[0]])});
   (CFG.extra||[]).forEach(function(x){if(x.step===i&&x.on&&x.req&&!String((F.extra||{})[x.id]||'').trim())out.push([i,x.label,'x:'+x.id])});
   if(i===4){if(!S.files.photo)out.push([4,'รูปถ่ายหน้าตรง','photo']);CFG.docs.forEach(function(d){if(d.req&&!S.files[d.k])out.push([4,d.t,d.k])});
@@ -1075,7 +1086,8 @@ function validate(i){
 }
 function bindStep(){
   var p=$('#step-panel');
-  $$('[data-k]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.k]=el.value;saveDraft()});el.addEventListener('change',function(){S.form[el.dataset.k]=el.value;saveDraft()})});
+  $$('[data-k]',p).forEach(function(el){el.addEventListener('input',function(){var k=el.dataset.k;if(LANG_ONLY[k]&&!el._ime){var nv=langFix(k,el.value);if(nv!==el.value){el.value=nv;langWarn(el,k)}}S.form[k]=el.value;saveDraft()});
+    if(LANG_ONLY[el.dataset.k]){el.addEventListener('compositionstart',function(){el._ime=1});el.addEventListener('compositionend',function(){el._ime=0;el.dispatchEvent(new Event('input'))})}el.addEventListener('change',function(){S.form[el.dataset.k]=el.value;saveDraft()})});
   $$('[data-seg]',p).forEach(function(b){b.addEventListener('click',function(){S.form[b.dataset.seg]=b.dataset.v;saveDraft();
     if(/^(car|moto)(Drive|Lic|Own)$/.test(b.dataset.seg)){var y=window.scrollY;renderApply();window.scrollTo(0,y);return}
     $$('[data-seg="'+b.dataset.seg+'"]',p).forEach(function(x){x.setAttribute('aria-pressed',String(x===b))})})});
@@ -1368,7 +1380,7 @@ function syncRow(a){var r=A.d.apps.filter(function(x){return x.no===a.no})[0];if
 /* บันทึกแบบไม่ต้องรอ: ยืนยัน → อัปเดตหน้าจอทันที → ส่งเบื้องหลัง → ไม่สำเร็จ = คืนค่าเดิม */
 function busy(on){var d=$('.drawer');if(d)d.classList.toggle('busy',!!on)}
 function act(conf,local,call,msg){
-  return confirmBox(conf[0],conf[1]||'',conf[2]||'บันทึก',conf[3]).then(function(ok){if(!ok)return;
+  return (conf?confirmBox(conf[0],conf[1]||'',conf[2]||'บันทึก',conf[3]):Promise.resolve(true)).then(function(ok){if(!ok)return;
     var a=A.open,snap=JSON.stringify(a),photo=a.photo;
     if(local){local(a);syncRow(a);renderDrawer();if(A.admTab==='apps')renderApps()}
     busy(true);toast('กำลังบันทึก...');
@@ -1404,6 +1416,16 @@ function runAi(a){
       .catch(function(e){delete AI_RUN[a.no];if(A.open&&A.open.no===a.no)renderDrawer();toast(em(e),true)});
   });
 }
+/* รับเข้าทำงาน: ต้องระบุวันที่เริ่มงาน → บันทึก + ส่งอีเมลแจ้งผู้สมัครพร้อมวันเริ่มงาน */
+function askHire(a){
+  var cur=(a.form&&a.form.hireStart)||'',tm=new Date(Date.now()+86400000),def=cur||tm.getFullYear()+'-'+('0'+(tm.getMonth()+1)).slice(-2)+'-'+('0'+tm.getDate()).slice(-2);
+  modal({title:cur?'แก้ไขวันที่เริ่มงาน':'รับเข้าทำงาน',ok:cur?'บันทึกวันเริ่มงาน':'รับเข้าทำงาน',
+    body:'<p style="margin:0 0 12px">'+esc(((a.form||{}).title||'')+(a.form||{}).first+' '+(a.form||{}).last)+' · '+esc(a.posName||'')+'</p><div class="f"><label for="m-hs">วันที่เริ่มงาน <span style="color:var(--bad)">*</span></label><input class="inp" type="date" id="m-hs" name="hs" value="'+esc(def)+'" required></div>'+
+      '<p class="muted" style="font-size:13px;margin:10px 0 0">'+(ST('hired').msg?'ระบบจะส่งอีเมลแจ้งผู้สมัครพร้อมวันเริ่มงาน':'สถานะนี้ยังไม่ได้ตั้งข้อความอีเมล จึงไม่ส่งอีเมล')+'</p>',
+    onSave:function(fm){var v=fv(fm,'hs');if(!/^\d{4}-\d{2}-\d{2}$/.test(v||''))return 'กรุณาเลือกวันที่เริ่มงาน';
+      setTimeout(function(){act(null,function(x){x.stage='hired';x.form=x.form||{};x.form.hireStart=v},function(){return aCall('updateStage',a.no,'hired',{startDate:v})},cur?'บันทึกวันเริ่มงานแล้ว':'รับเข้าทำงานแล้ว · เริ่มงาน '+thDate(v))},0)}});
+}
+function thDate(v){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(v||'');return m?(+m[3])+' '+TH_MON[+m[2]-1]+' '+(+m[1]+543):v}
 function renderDrawer(){
   var a=A.open;if(!a)return;
   var old=$('.drawer'),sc=$('.scrim');if(old)old.remove();if(!sc){sc=document.createElement('div');sc.className='scrim';sc.addEventListener('click',askClose);document.body.appendChild(sc)}
@@ -1414,7 +1436,7 @@ function renderDrawer(){
     '<button type="button" class="btn btn-sm x" id="dclose" aria-label="ปิด">✕ ปิด</button></div>'+
     '<div class="dr-body"><div><div class="tabs" role="tablist">'+[['profile','ข้อมูลผู้สมัคร'],['doc','ใบสมัคร (A4)'],['files','ไฟล์แนบ ('+a.files.length+')'],['log','ประวัติ ('+a.comments.length+')']].map(function(t){return '<button type="button" role="tab" data-tab="'+t[0]+'" aria-selected="'+(A.dTab===t[0])+'">'+t[1]+'</button>'}).join('')+'</div><div id="dtab">'+dTab(a)+'</div></div>'+
     '<div class="act"><div class="card"><h3 style="font-size:15px;margin-bottom:10px">สถานะใบสมัคร</h3><div class="stage-btns">'+stg().map(function(s){var ok=canStage||['screen','interview','reject'].indexOf(s.k)>=0;return '<button type="button" class="btn btn-sm" data-stage="'+s.k+'" aria-pressed="'+(a.stage===s.k)+'"'+(ok?'':' disabled')+'>'+esc(s.t)+'</button>'}).join('')+'</div>'+
-      '<p class="muted" style="font-size:12.5px;margin:10px 0 0">'+(role==='mgr'?'หัวหน้าแผนกเปลี่ยนได้เฉพาะ คัดกรอง / นัดสัมภาษณ์ / ไม่ผ่าน':'เปลี่ยนสถานะแล้วระบบส่งอีเมลแจ้งผู้สมัคร (ถ้าสถานะนั้นตั้งข้อความไว้)')+'</p></div>'+
+      (a.stage==='hired'&&a.form&&a.form.hireStart?'<p class="hire-start">เริ่มงาน <b>'+esc(thDate(a.form.hireStart))+'</b>'+(role!=='mgr'?' · <a href="#" id="hs-edit">แก้ไข</a>':'')+'</p>':'')+'<p class="muted" style="font-size:12.5px;margin:10px 0 0">'+(role==='mgr'?'หัวหน้าแผนกเปลี่ยนได้เฉพาะ คัดกรอง / นัดสัมภาษณ์ / ไม่ผ่าน':'เปลี่ยนสถานะแล้วระบบส่งอีเมลแจ้งผู้สมัคร (ถ้าสถานะนั้นตั้งข้อความไว้)')+'</p></div>'+
       '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">นัดสัมภาษณ์</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="ivd" type="datetime-local" value="'+esc(a.interview?a.interview.replace(' ','T'):'')+'" style="flex:1;min-width:180px" aria-label="วันเวลาสัมภาษณ์"><button type="button" class="btn btn-sm btn-p" id="ivset">บันทึกนัด</button></div>'+(a.interview?'<p class="muted" style="font-size:12.5px;margin:8px 0 0">นัดไว้ '+esc(a.interview)+' · <a href="#" id="ivclr">ยกเลิกนัด</a></p>':'')+'</div>'+
       '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">คะแนนและความเห็น</h3><div class="rating" role="group" aria-label="คะแนน">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-rate="'+n+'" aria-pressed="'+(a.rating>=n)+'" aria-label="'+n+' ดาว">'+n+'</button>'}).join('')+'</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px"><input class="inp" id="cmt" placeholder="เขียนความเห็นถึงทีม" style="flex:1" aria-label="ความเห็น"><button type="button" class="btn btn-sm" id="cmtadd">ส่ง</button></div>'+
@@ -1423,7 +1445,8 @@ function renderDrawer(){
   $('#dclose').addEventListener('click',closeDrawer);
   d.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('.md-wrap')&&!$('.viewer'))askClose()});
   $$('[data-tab]',d).forEach(function(b){b.addEventListener('click',function(){A.dTab=b.dataset.tab;renderDrawer()})});
-  $$('[data-stage]',d).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.stage===a.stage)return;var k=b.dataset.stage;act(['เปลี่ยนสถานะเป็น "'+ST(k).t+'"?',ST(k).msg&&k!=='screen'?'ระบบจะส่งอีเมลแจ้งผู้สมัครด้วย':'','เปลี่ยนสถานะ',k==='reject'],function(x){x.stage=k},function(){return aCall('updateStage',a.no,k)},'เปลี่ยนสถานะเป็น "'+ST(k).t+'" แล้ว')})});
+  $$('[data-stage]',d).forEach(function(b){b.addEventListener('click',function(){if(b.dataset.stage===a.stage)return;var k=b.dataset.stage;if(k==='hired')return askHire(a);act(['เปลี่ยนสถานะเป็น "'+ST(k).t+'"?',ST(k).msg&&k!=='screen'?'ระบบจะส่งอีเมลแจ้งผู้สมัครด้วย':'','เปลี่ยนสถานะ',k==='reject'],function(x){x.stage=k},function(){return aCall('updateStage',a.no,k)},'เปลี่ยนสถานะเป็น "'+ST(k).t+'" แล้ว')})});
+  var hse=$('#hs-edit',d);if(hse)hse.addEventListener('click',function(e){e.preventDefault();askHire(a)});
   var aib=$('#ai-run',d);if(aib)aib.addEventListener('click',function(){runAi(a)});
   var ais=$('#ai-set',d);if(ais)ais.addEventListener('click',function(e){e.preventDefault();closeDrawer();A.admTab='set';A.setSec='noti';renderAdmin()});
   $$('[data-rate]',d).forEach(function(b){b.addEventListener('click',function(){var n=+b.dataset.rate;act(['ให้คะแนน '+n+'/5?','','บันทึกคะแนน'],function(x){x.rating=n},function(){return aCall('rateApplication',a.no,n)},'บันทึกคะแนนแล้ว')})});
