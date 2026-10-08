@@ -795,9 +795,9 @@ function startApply(){
     var d=store('pmc_draft');
     if(d&&d.form&&Date.now()-d.t<7*86400000){S.form=Object.assign(emptyForm(),d.form);S.files=d.files||{};S.draftId=d.draftId;S.step=Math.min(d.step||0,5)}
     else{S.form=emptyForm();S.draftId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
-    renderApply();
+    if(!(S.view==='status'&&$('.stx')))renderApply();
   }
-  if(cached)boot(cached.v);else MAIN.innerHTML=loadingHtml('กำลังโหลดแบบฟอร์ม...');
+  if(cached)boot(cached.v);else if(S.view==='status')renderStatus();else MAIN.innerHTML=loadingHtml('กำลังโหลดแบบฟอร์ม...');
   call('getPublicConfig').then(function(cf){
     store('pmc_cfg',{t:Date.now(),v:cf});
     if(!cached)return boot(cf);
@@ -1125,7 +1125,7 @@ function renderStatus(){
     '<form id="stf" class="stx-search" novalidate><label for="st-q" class="sr">เลขบัตรประชาชน หรือ เบอร์โทรศัพท์</label><span class="stx-ic">'+ST_ICON.search+'</span><input id="st-q" inputmode="numeric" autocomplete="off" placeholder="เลขบัตรประชาชน 13 หลัก หรือเบอร์โทรศัพท์"><button class="btn btn-p" type="submit">ตรวจสอบ</button></form>'+
     '<div id="st-out"></div>'+
     '<div class="stx-foot"><a href="#" id="back-apply">← กลับไปหน้าสมัครงาน</a><span>สอบถามเพิ่มเติม ฝ่ายบุคคล '+ST_ICON.phone+' '+esc(CO.phone)+'</span></div></section>';
-  $('#back-apply').addEventListener('click',function(e){e.preventDefault();S.view='apply';renderApply()});
+  $('#back-apply').addEventListener('click',function(e){e.preventDefault();S.view='apply';if(!CFG||!S.form)return startApply();renderApply()});
   $('#st-q').focus();
   $('#stf').addEventListener('submit',function(e){e.preventDefault();var o=$('#st-out'),q=$('#st-q').value,b=$('#stf button');if(!q.trim()){$('#st-q').focus();return}
     b.disabled=true;b.textContent='กำลังค้นหา...';o.innerHTML='';
@@ -1625,7 +1625,7 @@ function editUser(i){
 
 /* ═════════ boot ═════════ */
 $('#brand-sub').textContent=BOOTV.mode==='admin'?'ระบบรับสมัครงาน · ผู้ดูแล':'ใบสมัครงานออนไลน์';
-if(BOOTV.mode==='admin')startAdmin();else{setTop();startApply()}
+if(BOOTV.mode==='admin')startAdmin();else{if(/[?&]status\b/.test(location.search))S.view='status';setTop();startApply()}   /* ?status=1 (ลิงก์จากอีเมล) = เปิดหน้าติดตามสถานะ */
 })();
 </script>
 </body>
