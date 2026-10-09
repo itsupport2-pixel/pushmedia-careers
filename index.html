@@ -656,6 +656,11 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .lang-warn{font-size:12.5px;color:var(--bad);margin-top:2px}
 .hire-start{margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--ok-soft);color:var(--ok);font-size:13.5px}
 .hire-start b{color:var(--ink)}.hire-start a{color:var(--ok)}
+
+/* ปฏิทินวันที่เริ่มงานได้ */
+.dp-d:disabled{opacity:.28;cursor:default}
+.dp-d.td{box-shadow:inset 0 0 0 1px var(--accent)}
+.dp-f{display:flex;justify-content:flex-end;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -938,6 +943,35 @@ function bindBirth(p){
   btn.addEventListener('click',function(){if(!pop.hidden){close();return}draw();pop.hidden=false;document.addEventListener('mousedown',outside)});
   pop.addEventListener('keydown',function(e){if(e.key==='Escape'){close();btn.focus()}});
 }
+/* วันที่เริ่มงานได้: ปฏิทิน พ.ศ. (วันนี้ถึง 2 ปีข้างหน้า) + ปุ่ม "เริ่มได้ทันที" · เก็บเป็นข้อความ เช่น "1 พ.ย. 2569" หรือ "ทันที" */
+var CAL_SVG='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+function startInp(){var d=FD.start;if(d&&!d.on)return '';var v=S.form.start||'';
+  return '<div class="f s2 dp-wrap" data-fw="start"><label for="f-start">'+lbl('start','วันที่สามารถเริ่มงานได้',1)+'</label><button type="button" class="inp dp-btn" id="f-start" aria-haspopup="dialog"><span class="'+(v?'':'ph')+'">'+esc(v||'เลือกวันที่เริ่มงานได้')+'</span>'+CAL_SVG+'</button><div class="dp-pop" hidden role="dialog" aria-label="เลือกวันที่เริ่มงานได้"></div></div>'}
+function bindStart(p){
+  var btn=$('#f-start',p);if(!btn)return;var pop=$('.dp-pop',btn.parentNode),now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),yNow=now.getFullYear()+543;
+  var cur=function(){var m=/^(\d{1,2}) (\S+) (\d{4})$/.exec(S.form.start||'');return m&&TH_MON.indexOf(m[2])>=0?{d:+m[1],m:TH_MON.indexOf(m[2]),y:+m[3]}:null};
+  var c0=cur(),st={y:c0?c0.y:yNow,m:c0?c0.m:now.getMonth()};
+  var set=function(txt){S.form.start=txt;var t=$('span',btn);t.textContent=txt;t.className='';var w=btn.closest('[data-fw]');if(w)w.classList.remove('bad');saveDraft();close();btn.focus()};
+  var draw=function(){var first=new Date(st.y-543,st.m,1).getDay(),nd=new Date(st.y-543,st.m+1,0).getDate(),c1=cur(),cells='';
+    for(var i=0;i<first;i++)cells+='<span></span>';
+    for(var d=1;d<=nd;d++){var dt=new Date(st.y-543,st.m,d),past=dt<today,on=c1&&c1.d===d&&c1.m===st.m&&c1.y===st.y,td=+dt===+today;
+      cells+='<button type="button" class="dp-d'+(on?' on':'')+(td?' td':'')+'" data-d="'+d+'"'+(past?' disabled':'')+'>'+d+'</button>'}
+    var ys=[yNow,yNow+1,yNow+2];
+    pop.innerHTML='<div class="dp-h"><button type="button" class="ib" data-mv="-1" aria-label="เดือนก่อน">‹</button><select class="inp" data-dm aria-label="เดือน">'+TH_MON_F.map(function(m,i){return '<option value="'+i+'"'+(i===st.m?' selected':'')+'>'+m+'</option>'}).join('')+'</select><select class="inp" data-dy aria-label="ปี พ.ศ.">'+ys.map(function(y){return '<option'+(y===st.y?' selected':'')+'>'+y+'</option>'}).join('')+'</select><button type="button" class="ib" data-mv="1" aria-label="เดือนถัดไป">›</button></div>'+
+      '<div class="dp-g">'+['อา','จ','อ','พ','พฤ','ศ','ส'].map(function(x){return '<b>'+x+'</b>'}).join('')+cells+'</div>'+
+      '<div class="dp-f"><button type="button" class="btn btn-sm" data-now>เริ่มได้ทันที</button></div>';
+    $('[data-dm]',pop).addEventListener('change',function(e){st.m=+e.target.value;fix();draw()});
+    $('[data-dy]',pop).addEventListener('change',function(e){st.y=+e.target.value;fix();draw()});
+    $$('[data-mv]',pop).forEach(function(x){x.addEventListener('click',function(){st.m+=+x.dataset.mv;if(st.m<0){st.m=11;st.y--}if(st.m>11){st.m=0;st.y++}fix();draw()})});
+    $$('[data-d]',pop).forEach(function(x){x.addEventListener('click',function(){set(x.dataset.d+' '+TH_MON[st.m]+' '+st.y)})});
+    $('[data-now]',pop).addEventListener('click',function(){set('ทันที')});
+  };
+  var fix=function(){if(st.y<yNow||(st.y===yNow&&st.m<now.getMonth())){st.y=yNow;st.m=now.getMonth()}if(st.y>yNow+2){st.y=yNow+2;st.m=11}};
+  var close=function(){pop.hidden=true;document.removeEventListener('mousedown',outside)};
+  var outside=function(e){if(!pop.contains(e.target)&&e.target!==btn&&!btn.contains(e.target))close()};
+  btn.addEventListener('click',function(){if(!pop.hidden){close();return}fix();draw();pop.hidden=false;document.addEventListener('mousedown',outside)});
+  pop.addEventListener('keydown',function(e){if(e.key==='Escape'){close();btn.focus()}});
+}
 function bindSelects(p){
   $$('[data-sel]',p).forEach(function(el){el.addEventListener('change',function(){var k=el.dataset.sel,o=$('[data-selo="'+k+'"]',p);if(el.value==='__o'){o.hidden=false;o.focus();S.form[k]=o.value.trim()}else{o.hidden=true;S.form[k]=el.value}saveDraft()})});
   $$('[data-selo]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.selo]=el.value.trim();saveDraft()})});
@@ -988,7 +1022,7 @@ function stepHtml(i){
         '<div class="cb-list" id="cb-list" role="listbox" aria-label="ตำแหน่งที่เปิดรับ"></div>'+
         (F.pos&&p.desc?'<div class="pos-desc"><b>รายละเอียดงาน:</b> '+esc(p.desc)+'</div>':'')+
         '<span class="muted" style="font-size:12.5px">เปิดรับ '+CFG.positions.length+' ตำแหน่ง</span></div>'+
-      inp('start','วันที่สามารถเริ่มงานได้','s2',1,'เช่น 1 พ.ย. 2569 หรือ ทันที')+inp('salary','เงินเดือนที่ต้องการ (บาท)','s2',1)+
+      startInp()+inp('salary','เงินเดือนที่ต้องการ (บาท)','s2',1)+
       (on('source')?'<div class="f s2" data-fw="source"><label for="f-source">'+lbl('source')+'</label><select class="inp" id="f-source" data-k="source"><option value="">— เลือก —</option>'+['Facebook Push Media','JobThai','JobsDB','พนักงานแนะนำ','เว็บไซต์บริษัท','อื่น ๆ'].map(function(o){return '<option'+(F.source===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div>':'')+'</div>';
   }
   if(i===1){
@@ -1099,7 +1133,7 @@ function bindStep(){
   var ski=$('#sk-in',p);if(ski){var addSk=function(){var t=ski.value.trim().slice(0,60);if(!t)return;if(S.form.skillTags.indexOf(t)<0)S.form.skillTags.push(t);saveDraft();var y=window.scrollY;renderApply();window.scrollTo(0,y);var n=$('#sk-in');if(n)n.focus()};
     $('#sk-btn',p).addEventListener('click',addSk);ski.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addSk()}})}
   if($('#posq',p))bindCombo(p);
-  bindAddr(p);bindSelects(p);bindBirth(p);
+  bindAddr(p);bindSelects(p);bindBirth(p);bindStart(p);
   var idc=$('[data-idc]',p);if(idc)idc.addEventListener('input',function(){var f=idFmt(idc.value);if(f!==idc.value)idc.value=f;S.form.idcard=f;saveDraft();var w=$('[data-fw="idcard"]',p);if(w)w.classList.toggle('bad',f.replace(/\D/g,'').length===13&&!idOk(f))});
   var nx=$('#next',p),pv=$('#prev',p),sb=$('#submit',p);
   if(nx)nx.addEventListener('click',function(){S.step++;S.err='';saveDraft();renderApply();window.scrollTo(0,0)});
