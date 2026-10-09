@@ -1252,16 +1252,17 @@ var A={thumbs:{},token:store('pmc_tok'),user:null,d:null,q:'',fPos:'',fStage:'',
 var ROLE_T={hr:'HR',mgr:'หัวหน้าแผนก',exec:'ผู้บริหาร',system:'System Developer'};
 function aCall(){var args=arguments;return call.apply(null,[args[0],A.token].concat(Array.prototype.slice.call(args,1))).catch(function(e){if(em(e)==='SESSION_EXPIRED'){store('pmc_tok',null);store('pmc_boot',null);A.token=null;toast('หมดเวลาการใช้งาน กรุณาเข้าสู่ระบบใหม่',true);renderLogin();throw new Error('หมดเวลาการใช้งาน')}throw e})}
 /* ข้อมูลหน้าผู้ดูแลชุดล่าสุด: เก็บในเครื่อง ผูกกับ token (หมดอายุ 8 ชม. เท่า session) · ลบเมื่อออกจากระบบ */
-function bootSnap(){var x=store('pmc_boot');return x&&x.tok===A.token&&x.d&&Date.now()-(x.t||0)<7*86400000?x.d:null}
-function keepBoot(){if(!A.d)return;var d={};Object.keys(A.d).forEach(function(k){if(k!=='thumbs')d[k]=A.d[k]});store('pmc_boot',{tok:A.token,t:Date.now(),d:d})}   /* ไม่เก็บรูป (กันเกินพื้นที่ localStorage) */
-function applyBoot(d){A.d=d;setCO(d.company);A.user=d.user;buildFD(d.fields);if(d.thumbs)Object.keys(d.thumbs).forEach(function(n){A.thumbs[n]=d.thumbs[n]});setTop();keepBoot()}
+function bootSnap(){var x=store('pmc_boot');if(x&&!(x.d&&x.d.user&&Array.isArray(x.d.apps))){store('pmc_boot',null);return null}   /* ข้อมูลเสีย → ลบทิ้ง */
+  return x&&x.tok===A.token&&Date.now()-(x.t||0)<7*86400000?x.d:null}
+function keepBoot(){if(!A.d||!A.d.user||!Array.isArray(A.d.apps))return;var d={};Object.keys(A.d).forEach(function(k){if(k!=='thumbs')d[k]=A.d[k]});store('pmc_boot',{tok:A.token,t:Date.now(),d:d})}   /* ไม่เก็บรูป (กันเกินพื้นที่ localStorage) */
+function applyBoot(d){if(!d||!d.user)throw new Error('ข้อมูลไม่ครบ กรุณากดรีเฟรชอีกครั้ง');A.d=d;setCO(d.company);A.user=d.user;buildFD(d.fields);if(d.thumbs)Object.keys(d.thumbs).forEach(function(n){A.thumbs[n]=d.thumbs[n]});setTop();keepBoot()}
 function startAdmin(pre){
   setTop();
   if(!A.token)return renderLogin();
   try{sessionStorage.removeItem('pmc_boot')}catch(e){}
   if(pre&&pre.user&&pre.apps){applyBoot(pre);return renderAdmin()}   /* pre = ข้อมูลจาก login เท่านั้น (กันส่ง event มาผิด) */
   var snap=bootSnap();
-  if(snap){A.d=snap;setCO(snap.company);A.user=snap.user;buildFD(snap.fields);if(snap.thumbs)Object.keys(snap.thumbs).forEach(function(n){A.thumbs[n]=snap.thumbs[n]});setTop();renderAdmin()}
+  if(snap){try{A.d=snap;setCO(snap.company);A.user=snap.user;buildFD(snap.fields);if(snap.thumbs)Object.keys(snap.thumbs).forEach(function(n){A.thumbs[n]=snap.thumbs[n]});setTop();renderAdmin()}catch(e){store('pmc_boot',null);snap=null;A.d=null;MAIN.innerHTML=loadingHtml('กำลังโหลดข้อมูล...')}}
   else MAIN.innerHTML=loadingHtml('กำลังโหลดข้อมูล...');
   aCall('adminBootstrap').then(function(d){applyBoot(d);
     if($('.drawer')||$('.md-wrap'))return;var y=window.scrollY;renderAdmin();window.scrollTo(0,y)}).catch(function(e){if(A.token&&!snap)MAIN.innerHTML='<div class="card track-card"><div class="err-box">'+esc(em(e))+'</div><button class="btn" onclick="location.reload()">ลองใหม่</button></div>';else if(A.token)toast('อัปเดตข้อมูลล่าสุดไม่สำเร็จ · กด รีเฟรช อีกครั้ง',true)});
