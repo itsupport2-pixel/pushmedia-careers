@@ -664,6 +664,13 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 
 /* โลโก้บนใบสมัคร A4 (Logo Push Media-ดำ.svg) */
 .a4 .logo .a4-logo{height:48px;width:auto;display:block}
+
+/* ปฏิทินกลาง: แถวเวลา + ปุ่ม */
+.dp-f{gap:8px;align-items:center;flex-wrap:wrap}
+.dp-t{display:inline-flex;align-items:center;gap:4px;margin-right:auto;font-size:14px}
+.dp-t .inp{width:auto;min-height:34px;padding:4px 8px}
+.dpx .dp-btn span.ph{color:var(--ink-3)}
+.md .dp-pop{z-index:80}
 </style>
 </head>
 <body>
@@ -976,6 +983,49 @@ function bindStart(p){
   btn.addEventListener('click',function(){if(!pop.hidden){close();return}fix();draw();pop.hidden=false;document.addEventListener('mousedown',outside)});
   pop.addEventListener('keydown',function(e){if(e.key==='Escape'){close();btn.focus()}});
 }
+/* ───── ปฏิทินกลาง: รูปแบบเดียวทั้งระบบ (วันที่ / วันที่+เวลา) ─────
+   dpInput({id,name,value,time,min:'today',ph,dataX,clear}) → <input type=hidden> เก็บค่า ISO: "YYYY-MM-DD" หรือ "YYYY-MM-DDTHH:mm"
+   ผูกอัตโนมัติด้วย MutationObserver · ตั้งค่าแล้วยิง input/change ที่ hidden input */
+function dpFmt(v){var m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(v||'');if(!m)return v||'';return (+m[3])+' '+TH_MON[+m[2]-1]+' '+(+m[1]+543)+(m[4]?' เวลา '+('0'+m[4]).slice(-2)+':'+m[5]+' น.':'')}
+function dpInput(o){var v=o.value||'';
+  return '<div class="dp-wrap dpx" data-dpx data-time="'+(o.time?1:'')+'" data-min="'+(o.min||'')+'" data-clear="'+(o.clear?1:'')+'"'+(o.style?' style="'+o.style+'"':'')+'><input type="hidden" id="'+o.id+'"'+(o.name?' name="'+o.name+'"':'')+(o.dataX?' data-x="'+o.dataX+'"':'')+' value="'+esc(v)+'">'+
+    '<button type="button" class="inp dp-btn" aria-haspopup="dialog" data-ph="'+esc(o.ph||(o.time?'เลือกวันและเวลา':'เลือกวันที่'))+'"'+(o.label?' aria-label="'+esc(o.label)+'"':'')+'><span class="'+(v?'':'ph')+'">'+esc(v?dpFmt(v):(o.ph||(o.time?'เลือกวันและเวลา':'เลือกวันที่')))+'</span>'+CAL_SVG+'</button><div class="dp-pop" hidden role="dialog" aria-label="'+esc(o.label||'เลือกวันที่')+'"></div></div>'}
+function dpBind(w){
+  if(w._dp)return;w._dp=1;
+  var hid=$('input[type=hidden]',w),btn=$('.dp-btn',w),pop=$('.dp-pop',w),time=!!w.dataset.time,minToday=w.dataset.min==='today',now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate()),yNow=now.getFullYear()+543;
+  var parse=function(){var m=/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/.exec(hid.value||'');return m?{y:+m[1]+543,m:+m[2]-1,d:+m[3],hh:m[4]?('0'+m[4]).slice(-2):'10',mm:m[5]||'00'}:null};
+  var st,sel;
+  var reset=function(){var p=parse();sel=p?{y:p.y,m:p.m,d:p.d}:null;st={y:p?p.y:yNow,m:p?p.m:now.getMonth(),hh:p?p.hh:'10',mm:p?p.mm:'00'}};
+  var y0=minToday?yNow:yNow-5,y1=yNow+(minToday?3:5);
+  var fix=function(){if(minToday&&(st.y<yNow||(st.y===yNow&&st.m<now.getMonth()))){st.y=yNow;st.m=now.getMonth()}if(st.y<y0){st.y=y0;st.m=0}if(st.y>y1){st.y=y1;st.m=11}};
+  var iso=function(s){var g=s.y-543;return g+'-'+('0'+(s.m+1)).slice(-2)+'-'+('0'+s.d).slice(-2)+(time?'T'+st.hh+':'+st.mm:'')};
+  var commit=function(v){hid.value=v;var t=$('span',btn);t.textContent=v?dpFmt(v):(btn.dataset.ph||'เลือกวันที่');t.className=v?'':'ph';
+    hid.dispatchEvent(new Event('input',{bubbles:true}));hid.dispatchEvent(new Event('change',{bubbles:true}));var fw=w.closest('[data-fw]');if(fw)fw.classList.remove('bad');close();btn.focus()};
+  var draw=function(){var first=new Date(st.y-543,st.m,1).getDay(),nd=new Date(st.y-543,st.m+1,0).getDate(),cells='',ys=[];
+    for(var y=y0;y<=y1;y++)ys.push(y);
+    for(var i=0;i<first;i++)cells+='<span></span>';
+    for(var d=1;d<=nd;d++){var dt=new Date(st.y-543,st.m,d),past=minToday&&dt<today,on=sel&&sel.d===d&&sel.m===st.m&&sel.y===st.y,td=+dt===+today;
+      cells+='<button type="button" class="dp-d'+(on?' on':'')+(td?' td':'')+'" data-d="'+d+'"'+(past?' disabled':'')+'>'+d+'</button>'}
+    var hh=[];for(var h=7;h<=21;h++)hh.push(('0'+h).slice(-2));if(hh.indexOf(st.hh)<0)hh.push(st.hh);var mms=['00','15','30','45'];if(mms.indexOf(st.mm)<0)mms.push(st.mm);
+    pop.innerHTML='<div class="dp-h"><button type="button" class="ib" data-mv="-1" aria-label="เดือนก่อน">‹</button><select class="inp" data-dm aria-label="เดือน">'+TH_MON_F.map(function(m,i){return '<option value="'+i+'"'+(i===st.m?' selected':'')+'>'+m+'</option>'}).join('')+'</select><select class="inp" data-dy aria-label="ปี พ.ศ.">'+ys.map(function(y){return '<option'+(y===st.y?' selected':'')+'>'+y+'</option>'}).join('')+'</select><button type="button" class="ib" data-mv="1" aria-label="เดือนถัดไป">›</button></div>'+
+      '<div class="dp-g">'+['อา','จ','อ','พ','พฤ','ศ','ส'].map(function(x){return '<b>'+x+'</b>'}).join('')+cells+'</div>'+
+      '<div class="dp-f">'+(time?'<span class="dp-t"><select class="inp" data-hh aria-label="ชั่วโมง">'+hh.map(function(x){return '<option'+(x===st.hh?' selected':'')+'>'+x+'</option>'}).join('')+'</select>:<select class="inp" data-mm aria-label="นาที">'+mms.map(function(x){return '<option'+(x===st.mm?' selected':'')+'>'+x+'</option>'}).join('')+'</select> น.</span>':'')+
+      (w.dataset.clear&&hid.value?'<button type="button" class="btn btn-sm" data-clr>ล้าง</button>':'')+(time?'<button type="button" class="btn btn-sm btn-p" data-ok'+(sel?'':' disabled')+'>ตกลง</button>':'')+'</div>';
+    $('[data-dm]',pop).addEventListener('change',function(e){st.m=+e.target.value;fix();draw()});
+    $('[data-dy]',pop).addEventListener('change',function(e){st.y=+e.target.value;fix();draw()});
+    $$('[data-mv]',pop).forEach(function(x){x.addEventListener('click',function(){st.m+=+x.dataset.mv;if(st.m<0){st.m=11;st.y--}if(st.m>11){st.m=0;st.y++}fix();draw()})});
+    $$('[data-d]',pop).forEach(function(x){x.addEventListener('click',function(){sel={y:st.y,m:st.m,d:+x.dataset.d};if(time)draw();else commit(iso(sel))})});
+    var H=$('[data-hh]',pop),M=$('[data-mm]',pop);if(H)H.addEventListener('change',function(){st.hh=H.value});if(M)M.addEventListener('change',function(){st.mm=M.value});
+    var ok=$('[data-ok]',pop);if(ok)ok.addEventListener('click',function(){if(sel)commit(iso(sel))});
+    var clr=$('[data-clr]',pop);if(clr)clr.addEventListener('click',function(){commit('')});
+  };
+  var close=function(){pop.hidden=true;document.removeEventListener('mousedown',outside,true)};
+  var outside=function(e){if(!w.contains(e.target))close()};
+  btn.addEventListener('click',function(){if(!pop.hidden){close();return}reset();fix();draw();pop.hidden=false;document.addEventListener('mousedown',outside,true)});
+  pop.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();close();btn.focus()}});
+}
+(function(){var go=function(n){if(n.nodeType!==1)return;if(n.matches&&n.matches('[data-dpx]'))dpBind(n);if(n.querySelectorAll)$$('[data-dpx]',n).forEach(dpBind)};
+  try{new MutationObserver(function(ms){ms.forEach(function(m){m.addedNodes.forEach(go)})}).observe(document.documentElement,{childList:true,subtree:true})}catch(e){}})();
 function bindSelects(p){
   $$('[data-sel]',p).forEach(function(el){el.addEventListener('change',function(){var k=el.dataset.sel,o=$('[data-selo="'+k+'"]',p);if(el.value==='__o'){o.hidden=false;o.focus();S.form[k]=o.value.trim()}else{o.hidden=true;S.form[k]=el.value}saveDraft()})});
   $$('[data-selo]',p).forEach(function(el){el.addEventListener('input',function(){S.form[el.dataset.selo]=el.value.trim();saveDraft()})});
@@ -1013,7 +1063,8 @@ function extraHtml(step){
     var lab='<label for="x-'+x.id+'">'+esc(x.label)+(x.req?' <span class="req">*</span>':'')+'</label>',help=x.help?'<span class="muted" style="font-size:12px">'+esc(x.help)+'</span>':'',val=esc(E[x.id]||'');
     if(x.type==='choice')return '<div class="f s6" data-fw="x:'+x.id+'"><span class="lbl">'+esc(x.label)+(x.req?' <span style="color:var(--bad)">*</span>':'')+'</span><div class="seg">'+String(x.opts||'').split(',').map(function(o){o=o.trim();return '<button type="button" class="chip" data-xseg="'+x.id+'" data-v="'+esc(o)+'" aria-pressed="'+(E[x.id]===o)+'">'+esc(o)+'</button>'}).join('')+'</div>'+help+'</div>';
     if(x.type==='long')return '<div class="f s6" data-fw="x:'+x.id+'">'+lab+'<textarea class="inp" id="x-'+x.id+'" data-x="'+x.id+'">'+val+'</textarea>'+help+'</div>';
-    return '<div class="f s3" data-fw="x:'+x.id+'">'+lab+'<input class="inp" id="x-'+x.id+'" data-x="'+x.id+'" type="'+({number:'number',date:'date'}[x.type]||'text')+'" value="'+val+'">'+help+'</div>'}).join('')+'</div>';
+    if(x.type==='date')return '<div class="f s3" data-fw="x:'+x.id+'">'+lab+dpInput({id:'x-'+x.id,dataX:x.id,value:E[x.id]||'',clear:!x.req,label:x.label})+help+'</div>';
+    return '<div class="f s3" data-fw="x:'+x.id+'">'+lab+'<input class="inp" id="x-'+x.id+'" data-x="'+x.id+'" type="'+({number:'number'}[x.type]||'text')+'" value="'+val+'">'+help+'</div>'}).join('')+'</div>';
 }
 function stepHtml(i){
   var F=S.form,h='';
@@ -1461,7 +1512,7 @@ function askOffer(a){
   var F=a.form||{},cur=F.offerStart||'',tm=new Date(Date.now()+86400000),def=cur||tm.getFullYear()+'-'+('0'+(tm.getMonth()+1)).slice(-2)+'-'+('0'+tm.getDate()).slice(-2);
   modal({title:cur?'แก้ไขข้อเสนองาน':'เสนองาน',ok:cur?'บันทึกข้อเสนอ':'เสนองาน',
     body:'<p style="margin:0 0 12px">'+esc((F.title||'')+F.first+' '+F.last)+' · '+esc(a.posName||'')+'</p>'+
-      '<div class="f"><label for="m-os">วันที่เริ่มงาน <span style="color:var(--bad)">*</span></label><input class="inp" type="date" id="m-os" name="os" value="'+esc(def)+'" required></div>'+
+      '<div class="f"><label for="m-os">วันที่เริ่มงาน <span style="color:var(--bad)">*</span></label>'+dpInput({id:'m-os',name:'os',value:def,min:'today',label:'วันที่เริ่มงาน'})+'</div>'+
       '<div class="f" style="margin-top:12px"><label for="m-osal">เงินเดือนที่เสนอ (บาท)</label><input class="inp" type="number" min="0" step="500" id="m-osal" name="osal" value="'+esc(F.offerSalary||'')+'" placeholder="เว้นว่าง = ไม่แสดงในอีเมล">'+(F.salary?'<span class="muted" style="font-size:12.5px">ผู้สมัครขอ '+esc(Number(String(F.salary).replace(/[^\d.]/g,''))?Number(String(F.salary).replace(/[^\d.]/g,'')).toLocaleString():F.salary)+' บาท</span>':'')+'</div>'+
       '<p class="muted" style="font-size:13px;margin:12px 0 0">ระบบจะส่งอีเมลข้อเสนองานถึงผู้สมัคร พร้อมวันเริ่มงาน'+(curRole()==='mgr'?'':' และเงินเดือนที่เสนอ (ถ้ากรอก)')+'</p>',
     onSave:function(fm){var v=fv(fm,'os'),sal=fv(fm,'osal');if(!/^\d{4}-\d{2}-\d{2}$/.test(v||''))return 'กรุณาเลือกวันที่เริ่มงาน';
@@ -1471,7 +1522,7 @@ function curRole(){return (A.user||{}).role}
 function askHire(a){
   var cur=(a.form&&a.form.hireStart)||'',tm=new Date(Date.now()+86400000),def=cur||(a.form&&a.form.offerStart)||tm.getFullYear()+'-'+('0'+(tm.getMonth()+1)).slice(-2)+'-'+('0'+tm.getDate()).slice(-2);
   modal({title:cur?'แก้ไขวันที่เริ่มงาน':'รับเข้าทำงาน',ok:cur?'บันทึกวันเริ่มงาน':'รับเข้าทำงาน',
-    body:'<p style="margin:0 0 12px">'+esc(((a.form||{}).title||'')+(a.form||{}).first+' '+(a.form||{}).last)+' · '+esc(a.posName||'')+'</p><div class="f"><label for="m-hs">วันที่เริ่มงาน <span style="color:var(--bad)">*</span></label><input class="inp" type="date" id="m-hs" name="hs" value="'+esc(def)+'" required></div>'+
+    body:'<p style="margin:0 0 12px">'+esc(((a.form||{}).title||'')+(a.form||{}).first+' '+(a.form||{}).last)+' · '+esc(a.posName||'')+'</p><div class="f"><label for="m-hs">วันที่เริ่มงาน <span style="color:var(--bad)">*</span></label>'+dpInput({id:'m-hs',name:'hs',value:def,min:'today',label:'วันที่เริ่มงาน'})+'</div>'+
       '<p class="muted" style="font-size:13px;margin:10px 0 0">'+(ST('hired').msg?'ระบบจะส่งอีเมลแจ้งผู้สมัครพร้อมวันเริ่มงาน':'สถานะนี้ยังไม่ได้ตั้งข้อความอีเมล จึงไม่ส่งอีเมล')+'</p>',
     onSave:function(fm){var v=fv(fm,'hs');if(!/^\d{4}-\d{2}-\d{2}$/.test(v||''))return 'กรุณาเลือกวันที่เริ่มงาน';
       setTimeout(function(){act(null,function(x){x.stage='hired';x.form=x.form||{};x.form.hireStart=v},function(){return aCall('updateStage',a.no,'hired',{startDate:v})},cur?'บันทึกวันเริ่มงานแล้ว':'รับเข้าทำงานแล้ว · เริ่มงาน '+thDate(v))},0)}});
@@ -1488,7 +1539,7 @@ function renderDrawer(){
     '<div class="dr-body"><div><div class="tabs" role="tablist">'+[['profile','ข้อมูลผู้สมัคร'],['doc','ใบสมัคร (A4)'],['files','ไฟล์แนบ ('+a.files.length+')'],['log','ประวัติ ('+a.comments.length+')']].map(function(t){return '<button type="button" role="tab" data-tab="'+t[0]+'" aria-selected="'+(A.dTab===t[0])+'">'+t[1]+'</button>'}).join('')+'</div><div id="dtab">'+dTab(a)+'</div></div>'+
     '<div class="act"><div class="card"><h3 style="font-size:15px;margin-bottom:10px">สถานะใบสมัคร</h3><div class="stage-btns">'+stg().map(function(s){var ok=canStage||['screen','interview','reject'].indexOf(s.k)>=0;return '<button type="button" class="btn btn-sm" data-stage="'+s.k+'" aria-pressed="'+(a.stage===s.k)+'"'+(ok?'':' disabled')+'>'+esc(s.t)+'</button>'}).join('')+'</div>'+
       (a.stage==='offer'&&a.form&&a.form.offerStart?'<p class="hire-start">เสนอเริ่มงาน <b>'+esc(thDate(a.form.offerStart))+'</b>'+(a.form.offerSalary?' · เงินเดือน <b>'+esc(Number(a.form.offerSalary).toLocaleString())+'</b> บาท':'')+(role!=='mgr'?' · <a href="#" id="of-edit">แก้ไข</a>':'')+'</p>':'')+(a.stage==='hired'&&a.form&&a.form.hireStart?'<p class="hire-start">เริ่มงาน <b>'+esc(thDate(a.form.hireStart))+'</b>'+(role!=='mgr'?' · <a href="#" id="hs-edit">แก้ไข</a>':'')+'</p>':'')+'<p class="muted" style="font-size:12.5px;margin:10px 0 0">'+(role==='mgr'?'หัวหน้าแผนกเปลี่ยนได้เฉพาะ คัดกรอง / นัดสัมภาษณ์ / ไม่ผ่าน':'เปลี่ยนสถานะแล้วระบบส่งอีเมลแจ้งผู้สมัคร (ถ้าสถานะนั้นตั้งข้อความไว้)')+'</p></div>'+
-      '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">นัดสัมภาษณ์</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input class="inp" id="ivd" type="datetime-local" value="'+esc(a.interview?a.interview.replace(' ','T'):'')+'" style="flex:1;min-width:180px" aria-label="วันเวลาสัมภาษณ์"><button type="button" class="btn btn-sm btn-p" id="ivset">บันทึกนัด</button></div>'+(a.interview?'<p class="muted" style="font-size:12.5px;margin:8px 0 0">นัดไว้ '+esc(a.interview)+' · <a href="#" id="ivclr">ยกเลิกนัด</a></p>':'')+'</div>'+
+      '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">นัดสัมภาษณ์</h3><div style="display:flex;gap:8px;flex-wrap:wrap">'+dpInput({id:'ivd',value:a.interview?a.interview.replace(' ','T'):'',time:true,min:'today',label:'วันเวลาสัมภาษณ์',ph:'เลือกวันและเวลานัด',style:'flex:1;min-width:200px'})+'<button type="button" class="btn btn-sm btn-p" id="ivset">บันทึกนัด</button></div>'+(a.interview?'<p class="muted" style="font-size:12.5px;margin:8px 0 0">นัดไว้ '+esc(a.interview)+' · <a href="#" id="ivclr">ยกเลิกนัด</a></p>':'')+'</div>'+
       '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">คะแนนและความเห็น</h3><div class="rating" role="group" aria-label="คะแนน">'+[1,2,3,4,5].map(function(n){return '<button type="button" data-rate="'+n+'" aria-pressed="'+(a.rating>=n)+'" aria-label="'+n+' ดาว">'+n+'</button>'}).join('')+'</div>'+
       '<div style="display:flex;gap:8px;margin-top:12px"><input class="inp" id="cmt" placeholder="เขียนความเห็นถึงทีม" style="flex:1" aria-label="ความเห็น"><button type="button" class="btn btn-sm" id="cmtadd">ส่ง</button></div>'+
       '<ul class="cm" style="margin-top:12px">'+(a.comments.filter(function(c){return !/^(เปลี่ยนสถานะ|ให้คะแนน|แนบไฟล์|นัดสัมภาษณ์|ยกเลิกนัด|แก้ไขข้อมูล)/.test(c.t)}).slice(-4).reverse().map(function(c){return '<li><b>'+esc(c.by)+'</b> <span class="muted" style="font-size:11.5px">'+esc(c.role)+'</span><time>'+esc(c.at)+'</time><div>'+esc(c.t)+'</div></li>'}).join('')||'<li class="muted">ยังไม่มีความเห็น</li>')+'</ul></div>'+aiCard(a)+'</div></div>';
@@ -1643,7 +1694,7 @@ function editPos(i){
       '<div class="f s4"><label for="m-dept">แผนก</label><input class="inp" id="m-dept" name="dept" list="m-dl" value="'+esc(x.dept)+'"><datalist id="m-dl">'+depts().map(function(d){return '<option value="'+esc(d)+'">'}).join('')+'</datalist></div>'+
       '<div class="f s2"><label for="m-open">จำนวนอัตรา</label><input class="inp" id="m-open" name="open" type="number" min="0" value="'+x.open+'"></div>'+
       '<div class="f s6"><label for="m-desc">รายละเอียดงาน / คุณสมบัติ (ผู้สมัครเห็น)</label><textarea class="inp" id="m-desc" name="desc">'+esc(x.desc||'')+'</textarea></div>'+
-      '<div class="f s3"><label for="m-close">ปิดรับอัตโนมัติวันที่ (ไม่บังคับ)</label><input class="inp" id="m-close" name="close" type="date" value="'+esc(x.close||'')+'"></div>'+
+      '<div class="f s3"><label for="m-close">ปิดรับอัตโนมัติวันที่ (ไม่บังคับ)</label>'+dpInput({id:'m-close',name:'close',value:x.close||'',clear:true,ph:'ไม่กำหนด',label:'วันปิดรับ'})+'</div>'+
       '<div class="f s3"><span class="lbl">สถานะ</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',x.on!==false,'เปิดรับ')+' เปิดรับสมัคร</label></div></div>'+
       (used?'<p class="muted" style="font-size:12.5px;margin:12px 0 0">ตำแหน่งนี้มีใบสมัครแล้ว ลบไม่ได้ · ใช้ "ปิดรับ" แทน</p>':''),
     onSave:function(fm){var n=fv(fm,'name');if(!n)return 'กรุณากรอกชื่อตำแหน่ง';
