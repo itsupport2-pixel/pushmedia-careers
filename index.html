@@ -671,6 +671,9 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 .dp-t .inp{width:auto;min-height:34px;padding:4px 8px}
 .dpx .dp-btn span.ph{color:var(--ink-3)}
 .md .dp-pop{z-index:80}
+
+/* ปฏิทินลอย (position:fixed) อยู่เหนือหน้าต่างทุกชั้น */
+.dp-pop.dp-float{position:fixed;margin-top:0;z-index:120}
 </style>
 </head>
 <body>
@@ -1011,6 +1014,7 @@ function dpBind(w){
       '<div class="dp-g">'+['อา','จ','อ','พ','พฤ','ศ','ส'].map(function(x){return '<b>'+x+'</b>'}).join('')+cells+'</div>'+
       '<div class="dp-f">'+(time?'<span class="dp-t"><select class="inp" data-hh aria-label="ชั่วโมง">'+hh.map(function(x){return '<option'+(x===st.hh?' selected':'')+'>'+x+'</option>'}).join('')+'</select>:<select class="inp" data-mm aria-label="นาที">'+mms.map(function(x){return '<option'+(x===st.mm?' selected':'')+'>'+x+'</option>'}).join('')+'</select> น.</span>':'')+
       (w.dataset.clear&&hid.value?'<button type="button" class="btn btn-sm" data-clr>ล้าง</button>':'')+(time?'<button type="button" class="btn btn-sm btn-p" data-ok'+(sel?'':' disabled')+'>ตกลง</button>':'')+'</div>';
+    if(!pop.hidden)setTimeout(place,0);
     $('[data-dm]',pop).addEventListener('change',function(e){st.m=+e.target.value;fix();draw()});
     $('[data-dy]',pop).addEventListener('change',function(e){st.y=+e.target.value;fix();draw()});
     $$('[data-mv]',pop).forEach(function(x){x.addEventListener('click',function(){st.m+=+x.dataset.mv;if(st.m<0){st.m=11;st.y--}if(st.m>11){st.m=0;st.y++}fix();draw()})});
@@ -1019,9 +1023,15 @@ function dpBind(w){
     var ok=$('[data-ok]',pop);if(ok)ok.addEventListener('click',function(){if(sel)commit(iso(sel))});
     var clr=$('[data-clr]',pop);if(clr)clr.addEventListener('click',function(){commit('')});
   };
-  var close=function(){pop.hidden=true;document.removeEventListener('mousedown',outside,true)};
+  /* ลอยเหนือทุกชั้น (ไม่ถูกตัดในหน้าต่าง/ลิ้นชักที่เลื่อนได้) · ที่ด้านล่างไม่พอ → แสดงด้านบน */
+  var place=function(){var r=btn.getBoundingClientRect(),pw=pop.offsetWidth||300,ph=pop.offsetHeight||380,top=r.bottom+4;
+    if(top+ph>innerHeight-8&&r.top-ph-4>8)top=r.top-ph-4;top=Math.max(8,Math.min(top,innerHeight-ph-8));
+    pop.style.left=Math.max(8,Math.min(r.left,innerWidth-pw-8))+'px';pop.style.top=top+'px'};
+  var onScroll=function(e){if(pop.contains(e.target))return;place()};
+  var close=function(){pop.hidden=true;document.removeEventListener('mousedown',outside,true);window.removeEventListener('scroll',onScroll,true);window.removeEventListener('resize',place)};
   var outside=function(e){if(!w.contains(e.target))close()};
-  btn.addEventListener('click',function(){if(!pop.hidden){close();return}reset();fix();draw();pop.hidden=false;document.addEventListener('mousedown',outside,true)});
+  pop.classList.add('dp-float');
+  btn.addEventListener('click',function(){if(!pop.hidden){close();return}reset();fix();draw();pop.hidden=false;place();document.addEventListener('mousedown',outside,true);window.addEventListener('scroll',onScroll,true);window.addEventListener('resize',place)});
   pop.addEventListener('keydown',function(e){if(e.key==='Escape'){e.stopPropagation();close();btn.focus()}});
 }
 (function(){var go=function(n){if(n.nodeType!==1)return;if(n.matches&&n.matches('[data-dpx]'))dpBind(n);if(n.querySelectorAll)$$('[data-dpx]',n).forEach(dpBind)};
