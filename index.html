@@ -1259,7 +1259,7 @@ function startAdmin(pre){
   setTop();
   if(!A.token)return renderLogin();
   try{sessionStorage.removeItem('pmc_boot')}catch(e){}
-  if(pre){applyBoot(pre);return renderAdmin()}
+  if(pre&&pre.user&&pre.apps){applyBoot(pre);return renderAdmin()}   /* pre = ข้อมูลจาก login เท่านั้น (กันส่ง event มาผิด) */
   var snap=bootSnap();
   if(snap){A.d=snap;setCO(snap.company);A.user=snap.user;buildFD(snap.fields);if(snap.thumbs)Object.keys(snap.thumbs).forEach(function(n){A.thumbs[n]=snap.thumbs[n]});setTop();renderAdmin()}
   else MAIN.innerHTML=loadingHtml('กำลังโหลดข้อมูล...');
@@ -1270,7 +1270,7 @@ function setTop(){
   var n=$('#topnav');
   if(BOOTV.mode!=='admin'){n.innerHTML='<a href="#" id="tn-status">ติดตามสถานะ</a>';$('#tn-status').addEventListener('click',function(e){e.preventDefault();S.view=S.view==='status'?'apply':'status';renderApply()});return}
   n.innerHTML=A.user?'<span class="me">'+esc(A.user.name)+' · '+(A.user.label||ROLE_T[A.user.role])+(A.user.role==='mgr'&&A.user.scope!=='ทุกแผนก'?' '+esc(A.user.scope):'')+'</span><button type="button" id="tn-ref">รีเฟรช</button><button type="button" id="tn-pw">เปลี่ยนรหัสผ่าน</button><button type="button" id="tn-out">ออกจากระบบ</button>':'<a href="'+esc(BOOTV.url)+'" target="_top">หน้าสมัครงาน</a>';
-  if(A.user){$('#tn-out').addEventListener('click',function(){store('pmc_boot',null);call('logout',A.token);store('pmc_tok',null);A.token=null;A.user=null;A.d=null;setTop();renderLogin()});$('#tn-ref').addEventListener('click',startAdmin);
+  if(A.user){$('#tn-out').addEventListener('click',function(){store('pmc_boot',null);call('logout',A.token);store('pmc_tok',null);A.token=null;A.user=null;A.d=null;setTop();renderLogin()});$('#tn-ref').addEventListener('click',function(){startAdmin()});
     $('#tn-pw').addEventListener('click',function(){modal({title:'เปลี่ยนรหัสผ่าน',ok:'เปลี่ยนรหัสผ่าน',body:'<div class="grid"><div class="f s6"><label for="m-op">รหัสผ่านเดิม</label><input class="inp" id="m-op" name="op" type="password" autocomplete="current-password"></div><div class="f s6"><label for="m-np">รหัสผ่านใหม่ (อย่างน้อย 6 ตัวอักษร)</label><input class="inp" id="m-np" name="np" type="password" autocomplete="new-password"></div><div class="f s6"><label for="m-np2">ยืนยันรหัสผ่านใหม่</label><input class="inp" id="m-np2" name="np2" type="password" autocomplete="new-password"></div></div>',
       onSave:function(fm){var a=fv(fm,'op'),b=fv(fm,'np');if(!a||!b)return 'กรุณากรอกให้ครบ';if(b.length<6)return 'รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัวอักษร';if(b!==fv(fm,'np2'))return 'ยืนยันรหัสผ่านไม่ตรงกัน';return aCall('changePassword',a,b).then(function(r){if(r&&r.token){A.token=r.token;store('pmc_tok',r.token);keepBoot()}toast('เปลี่ยนรหัสผ่านแล้ว')})}})})}
 }
