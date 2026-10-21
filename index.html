@@ -419,7 +419,11 @@ table.mg tr.off td{color:var(--ink-3)}
 .topnav a,.topnav button{color:#fff;opacity:.8;text-decoration:none;font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid #ffffff33;background:none;cursor:pointer}
 .topnav a:hover,.topnav button:hover{opacity:1}
 .topnav .me{border:0;opacity:.75;cursor:default}
-.pos-desc{font-size:13px;color:var(--ink-2);background:var(--sunk);border-radius:8px;padding:10px 12px;margin-top:8px;white-space:pre-line}
+.pos-desc{font-size:13.5px;line-height:1.6;color:var(--ink-2);background:var(--sunk);border-radius:10px;padding:14px 16px;margin-top:8px}
+.pos-desc .pd-h{font-weight:700;font-size:14px;color:var(--ink);margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,.08)}
+.pos-desc .pd-list{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:3px}
+.pos-desc .pd-list li::marker{color:var(--ink-3,#8a8f98)}
+.pos-desc .pd-p{margin:0 0 4px}
 .share-url{display:flex;gap:6px;margin-top:6px}
 .share-url input{flex:1;min-width:0;font-size:12.5px}
 #print-area{display:none}
@@ -879,7 +883,7 @@ function renderApply(){
   bindStep();
 }
 var SKIP_SECS={family:{t:'ครอบครัว',k:['sib','order','sib1','sib1s','father','fage','falive','fjob','mother','mage','malive','mjob']},emer:{t:'ผู้ติดต่อกรณีฉุกเฉิน',k:['emer','emerTel','emerRel']},en:{t:'ชื่อภาษาอังกฤษ',k:['firstEn','lastEn','nickEn']}};
-function posSkip(){var F=S&&S.form;return (F&&F.pos&&pos(F.pos).skip)||[]}
+function posSkip(){return Object.keys(SKIP_SECS)}   /* 21 ต.ค. 2569 ผู้ใช้สั่ง: ตัดครอบครัว / ผู้ติดต่อฉุกเฉิน / ชื่อภาษาอังกฤษ ออกทุกตำแหน่ง */
 function skipSec(sec){return posSkip().indexOf(sec)>=0}
 function skipped(k){return Object.keys(SKIP_SECS).some(function(sec){return skipSec(sec)&&SKIP_SECS[sec].k.indexOf(k)>=0})}
 function stepName(i){if(i===2){var f=skipSec('family'),e=skipSec('emer');if(f&&e)return 'การขับขี่ & ทักษะ';if(f)return 'ผู้ติดต่อ ขับขี่ & ทักษะ';}return STEPS[i]}
@@ -1050,6 +1054,9 @@ function idFmt(v){var d=String(v||'').replace(/\D/g,'').slice(0,13),p=[1,4,5,2,1
 function idInp(){var d=FD.idcard;if(d&&!d.on)return '';return '<div class="f s2" data-fw="idcard"><label for="f-idcard">'+lbl('idcard','เลขบัตรประชาชน')+'</label><input class="inp" id="f-idcard" data-idc inputmode="numeric" maxlength="17" placeholder="x-xxxx-xxxxx-xx-x" value="'+esc(idFmt(S.form.idcard))+'"><span class="muted" style="font-size:12px">ใช้ติดตามสถานะใบสมัคร</span></div>'}
 function chipSet(key,opts){return '<div class="seg" role="group">'+opts.map(function(o){return '<button type="button" class="chip" data-seg="'+key+'" data-v="'+esc(o)+'" aria-pressed="'+(S.form[key]===o)+'">'+esc(o)+'</button>'}).join('')+'</div>'}
 function seg(id,label,opts,span){var d=FD[id];if(d&&!d.on)return '';return '<div class="f '+(span||'')+'" data-fw="'+id+'"><span class="lbl">'+lbl(id,label)+'</span>'+chipSet(id,opts)+'</div>'}
+/* รายละเอียดงาน: บรรทัดที่ขึ้นต้นด้วย - • * หรือเลขข้อ = รายการ · บรรทัดอื่น = ย่อหน้า */
+function descHtml(t){var out='',list=[];function flush(){if(list.length){out+='<ul class="pd-list">'+list.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';list=[]}}
+  String(t||'').split(/\r?\n/).forEach(function(l){var x=l.trim();if(!x)return flush();var m=x.match(/^(?:[-•*·]|\d+[.)])\s*(.*)$/);if(m){if(m[1])list.push(m[1])}else{flush();out+='<p class="pd-p">'+esc(x)+'</p>'}});flush();return out}
 function blk(ic,title,sub,body){return '<section class="blk"><h3 class="blk-h"><span class="ico">'+(ICONS[ic]||'')+'</span>'+title+'</h3>'+(sub?'<p class="blk-sub">'+sub+'</p>':'<div style="height:10px"></div>')+body+'</section>'}
 function famRow(who,nameK,ageK,stK,stOpts,jobK){
   var F=S.form,fi=function(k,l,t){return '<div class="f'+(k===nameK?' fname':'')+'"><label for="f-'+k+'">'+l+'</label><input class="inp" id="f-'+k+'" data-k="'+k+'" type="'+(t||'text')+'" value="'+esc(F[k]||'')+'"></div>'};
@@ -1090,7 +1097,7 @@ function stepHtml(i){
         '<input class="inp" id="posq" type="text" role="combobox" aria-expanded="true" aria-controls="cb-list" aria-autocomplete="list" autocomplete="off" placeholder="พิมพ์ค้นหาตำแหน่ง หรือแผนก เช่น ช่าง, LED, บัญชี" value="'+esc(F.pos?p.name:'')+'">'+
         '<button type="button" class="clr" id="posclr" aria-label="ล้างคำค้นหา">✕</button>'+
         '<div class="cb-list" id="cb-list" role="listbox" aria-label="ตำแหน่งที่เปิดรับ"></div>'+
-        (F.pos&&p.desc?'<div class="pos-desc"><b>รายละเอียดงาน:</b> '+esc(p.desc)+'</div>':'')+
+        (F.pos&&p.desc?'<div class="pos-desc"><div class="pd-h">รายละเอียดงาน</div>'+descHtml(p.desc)+'</div>':'')+
         '<span class="muted" style="font-size:12.5px">เปิดรับ '+CFG.positions.length+' ตำแหน่ง</span></div>'+
       startInp()+inp('salary','เงินเดือนที่ต้องการ (บาท)','s2',1)+
       (on('source')?'<div class="f s2" data-fw="source"><label for="f-source">'+lbl('source')+'</label><select class="inp" id="f-source" data-k="source"><option value="">— เลือก —</option>'+['Facebook Push Media','JobThai','JobsDB','พนักงานแนะนำ','เว็บไซต์บริษัท','อื่น ๆ'].map(function(o){return '<option'+(F.source===o?' selected':'')+'>'+o+'</option>'}).join('')+'</select></div>':'')+'</div>';
@@ -1697,7 +1704,7 @@ function setPos(m){
   var cnt={};A.d.apps.forEach(function(a){cnt[a.pos]=(cnt[a.pos]||0)+1});
   m.innerHTML=head('ตำแหน่งงานที่เปิดรับ','ตำแหน่งที่เปิดอยู่จะขึ้นให้ผู้สมัครค้นหาในขั้นที่ 1 · ปิดรับแล้วใบสมัครเดิมยังอยู่ครบ · แก้ในชีต Positions โดยตรงได้เช่นกัน','+ เพิ่มตำแหน่ง')+
     '<div class="list-wrap"><table class="mg"><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>อัตรา</th><th>ใบสมัคร</th><th>เปิดรับ</th><th></th></tr></thead><tbody>'+
-    (A.d.positions.length?A.d.positions.map(function(x,i){return '<tr class="'+(x.on?'':'off')+'"><td><b style="font-weight:600">'+esc(x.name)+'</b>'+((x.skip||[]).length?' <span class="muted" style="font-size:11.5px;border:1px solid #D9DCE1;border-radius:99px;padding:0 7px;margin-left:4px;white-space:nowrap">ฟอร์มย่อ</span>':'')+(x.close?'<div class="muted" style="font-size:12px">ปิดรับ '+esc(x.close)+'</div>':'')+'</td><td>'+esc(x.dept)+'</td><td>'+x.open+'</td><td>'+(cnt[x.id]||0)+'</td><td>'+swHtml('',x.on,'เปิดรับ '+x.name,false,'data-pon="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ped="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่มีตำแหน่ง</td></tr>')+'</tbody></table></div>';
+    (A.d.positions.length?A.d.positions.map(function(x,i){return '<tr class="'+(x.on?'':'off')+'"><td><b style="font-weight:600">'+esc(x.name)+'</b>'+(x.close?'<div class="muted" style="font-size:12px">ปิดรับ '+esc(x.close)+'</div>':'')+'</td><td>'+esc(x.dept)+'</td><td>'+x.open+'</td><td>'+(cnt[x.id]||0)+'</td><td>'+swHtml('',x.on,'เปิดรับ '+x.name,false,'data-pon="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ped="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่มีตำแหน่ง</td></tr>')+'</tbody></table></div>';
   $('#add',m).addEventListener('click',function(){editPos(-1)});
   $$('[data-ped]',m).forEach(function(b){b.addEventListener('click',function(){editPos(+b.dataset.ped)})});
   $$('[data-pon]',m).forEach(function(c){c.addEventListener('change',function(){var arr=clone(A.d.positions);arr[+c.dataset.pon].on=c.checked;save('positions',arr,(c.checked?'เปิดรับ ':'ปิดรับ ')+arr[+c.dataset.pon].name+' แล้ว').catch(function(e){toast(em(e),true);renderSettings()})})});
@@ -1711,7 +1718,7 @@ function editPos(i){
       '<div class="f s6"><label for="m-desc">รายละเอียดงาน / คุณสมบัติ (ผู้สมัครเห็น)</label><textarea class="inp" id="m-desc" name="desc">'+esc(x.desc||'')+'</textarea></div>'+
       '<div class="f s3"><label for="m-close">ปิดรับอัตโนมัติวันที่ (ไม่บังคับ)</label>'+dpInput({id:'m-close',name:'close',value:x.close||'',clear:true,ph:'ไม่กำหนด',label:'วันปิดรับ'})+'</div>'+
       '<div class="f s3"><span class="lbl">สถานะ</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',x.on!==false,'เปิดรับ')+' เปิดรับสมัคร</label></div>'+
-      '<div class="f s6"><span class="lbl">หัวข้อที่ตำแหน่งนี้ไม่ต้องกรอก (ฟอร์มสั้นลง)</span><div style="display:flex;gap:18px;flex-wrap:wrap;min-height:40px;align-items:center">'+Object.keys(SKIP_SECS).map(function(k){return '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="skip_'+k+'"'+((x.skip||[]).indexOf(k)>=0?' checked':'')+'> ไม่ต้องกรอก'+SKIP_SECS[k].t+'</label>'}).join('')+'</div></div></div>'+
+      '</div>'+
       (used?'<p class="muted" style="font-size:12.5px;margin:12px 0 0">ตำแหน่งนี้มีใบสมัครแล้ว ลบไม่ได้ · ใช้ "ปิดรับ" แทน</p>':''),
     onSave:function(fm){var n=fv(fm,'name');if(!n)return 'กรุณากรอกชื่อตำแหน่ง';
       var arr=clone(A.d.positions),y={id:i>=0?x.id:'p'+Date.now().toString(36),name:n,dept:fv(fm,'dept')||'ไม่ระบุแผนก',open:Math.max(0,+fv(fm,'open')||0),desc:fv(fm,'desc'),close:fv(fm,'close'),on:fv(fm,'on'),skip:Object.keys(SKIP_SECS).filter(function(k){return fv(fm,'skip_'+k)===true})};
