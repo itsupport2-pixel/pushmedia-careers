@@ -678,6 +678,19 @@ table.list .ph-av{width:46px;height:58px;border-radius:8px;background-size:cover
 
 /* ปฏิทินลอย (position:fixed) อยู่เหนือหน้าต่างทุกชั้น */
 .dp-pop.dp-float{position:fixed;margin-top:0;z-index:120}
+
+/* ใบสมัคร A4: กันส่วนท้าย (หน้า/เลขที่) ทับเนื้อหา + พิมพ์ให้เท่าหน้าจอ (21 ต.ค. 2569) */
+.a4{padding-bottom:88px}
+.a4 .pg,.a4 .stamp{bottom:34px}
+.a4 .ln.drv{padding-left:20px;flex-wrap:nowrap;column-gap:10px}
+.a4 .drv-t{min-width:88px}
+.a4 .drv .box{margin-right:4px}
+.a4 .drv .v{min-width:110px}
+@media print{
+  #print-area .a4{width:210mm;height:297mm;min-height:0;padding:46px 58px 88px;overflow:hidden;break-after:page;page-break-after:always;break-inside:avoid}
+  #print-area .a4:last-child{break-after:auto;page-break-after:auto}
+  .a4{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -819,8 +832,8 @@ function docHtml(a){
     '<div class="ln"><span class="fld">มารดา ชื่อ – สกุล'+v(F.mother,'w')+'</span><span class="fld">อายุ'+v(F.mage)+'ปี</span>'+bx(F.malive==='มีชีวิตอยู่','มีชีวิตอยู่')+bx(F.malive==='ถึงแก่กรรม','ถึงแก่กรรม')+'<span class="fld">อาชีพ'+v(F.mjob)+'</span></div>':'')+
     (secShow('emer',F)?'<div class="ln" style="margin-top:8px"><span class="fld">บุคคลที่ติดต่อได้กรณีฉุกเฉิน'+v(F.emer,'w')+'</span><span class="fld">โทรศัพท์'+v(F.emerTel)+'</span><span class="fld">ความสัมพันธ์'+v(F.emerRel)+'</span></div>':'')+'</div>':'')+
     '<div style="margin-top:14px">'+[['ท่านเคยผ่านการเกณฑ์ทหารหรือไม่','military'],['ท่านเคยอุปสมบทหรือไม่','ordain'],['ท่านเคยต้องโทษจำคุกหรือไม่','jail']].map(function(q){return '<div class="ln"><span style="min-width:250px">'+q[0]+'</span>'+bx(F[q[1]]==='เคย','เคย')+bx(F[q[1]]==='ไม่เคย','ไม่เคย')+(F[q[1]]&&F[q[1]]!=='เคย'&&F[q[1]]!=='ไม่เคย'?'<span class="fld">'+v(F[q[1]])+'</span>':'')+'</div>'}).join('')+
-    '<div class="ln"><span style="min-width:250px">ความสามารถในการขับขี่ยานพาหนะ</span>'+bx(F.carLic==='มี','มี (รถยนต์)')+'<span class="fld">ใบขับขี่เลขที่'+v(F.carLic==='มี'?F.carLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.carOwn==='มี'?F.carNo:'')+'</span>'+bx(!!F.carDrive&&F.carLic!=='มี','ไม่มี')+'</div>'+
-    '<div class="ln"><span style="min-width:250px"></span>'+bx(F.motoLic==='มี','มี (จักรยานยนต์)')+'<span class="fld">ใบขับขี่เลขที่'+v(F.motoLic==='มี'?F.motoLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.motoOwn==='มี'?F.motoNo:'')+'</span>'+bx(!!F.motoDrive&&F.motoLic!=='มี','ไม่มี')+'</div></div>'+
+    '<div class="ln" style="margin-top:4px">ความสามารถในการขับขี่ยานพาหนะ</div>'+'<div class="ln drv"><span class="drv-t">รถยนต์</span>'+bx(F.carLic==='มี','มีใบขับขี่')+bx(!!F.carDrive&&F.carLic!=='มี','ไม่มี')+'<span class="fld">เลขที่'+v(F.carLic==='มี'?F.carLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.carOwn==='มี'?F.carNo:'')+'</span></div>'+
+    '<div class="ln drv"><span class="drv-t">จักรยานยนต์</span>'+bx(F.motoLic==='มี','มีใบขับขี่')+bx(!!F.motoDrive&&F.motoLic!=='มี','ไม่มี')+'<span class="fld">เลขที่'+v(F.motoLic==='มี'?F.motoLicNo:'')+'</span><span class="fld">ทะเบียนรถ'+v(F.motoOwn==='มี'?F.motoNo:'')+'</span></div>'+'</div>'+
     '<div class="pg">หน้า 1/2</div><div class="stamp">'+(isDraft?'ฉบับร่าง · ยังไม่ได้ส่ง':'เลขที่ '+esc(a.no)+'<br>ส่งออนไลน์ '+esc(a.at))+'</div></div>';
   var p2='<div class="a4"><h4>ประวัติการศึกษา</h4><table><thead><tr><th rowspan="2">ระดับการศึกษา</th><th rowspan="2">สถาบันการศึกษา</th><th rowspan="2">สาขาวิชาเอก</th><th colspan="2">ปีการศึกษา</th><th rowspan="2">คะแนนเฉลี่ย</th></tr><tr><th>เข้าศึกษา</th><th>สำเร็จ</th></tr></thead><tbody>'+
     eduL.map(function(t,r){var row=edu[r]||[];return '<tr><td>'+t+'</td>'+[0,1,2,3,4].map(function(c){return '<td class="v2">'+esc(row[c]||'')+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table>'+
@@ -835,7 +848,9 @@ function docHtml(a){
     '<div class="pg">หน้า 2/2</div><div class="stamp">'+(isDraft?'ฉบับร่าง':'ยืนยันข้อความ PDPA ออนไลน์<br>'+esc(a.at))+'</div></div>';
   return p1+p2;
 }
-function printDoc(a){var pa=$('#print-area');pa.innerHTML=docHtml(a);setTimeout(function(){window.print()},150)}
+function printDoc(a){var pa=$('#print-area');pa.innerHTML=docHtml(a);   /* รอฟอนต์+รูปผู้สมัครโหลดก่อนพิมพ์ */
+  var w=[document.fonts&&document.fonts.ready].concat($$('img',pa).map(function(i){return i.complete?0:new Promise(function(r){i.onload=i.onerror=r})}));
+  Promise.race([Promise.all(w),new Promise(function(r){setTimeout(r,2500)})]).then(function(){setTimeout(function(){window.print()},100)})}
 
 /* ═════════════════ APPLICANT ═════════════════ */
 var CFG=null;
@@ -1457,7 +1472,9 @@ function renderApps(){
   $('#qrsave',v).addEventListener('click',function(){var url=qrPng(applyUrl);if(!url)return;var a=document.createElement('a');a.href=url;a.download='QR-สมัครงาน-PushMedia.png';document.body.appendChild(a);a.click();a.remove();
     setTimeout(function(){var w=openViewer({type:'img',url:url},'QR code หน้าสมัครงาน · คลิกขวาที่รูปเพื่อบันทึก')},300)});
   loadThumbs(list);
-  $$('tr.row',v).forEach(function(tr){tr.addEventListener('click',function(){openApp(tr.dataset.open)});tr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openApp(tr.dataset.open)}})});
+  $$('tr.row',v).forEach(function(tr,i){var ht;if(i<3)setTimeout(function(){prefetchApp(tr.dataset.open).catch(function(){})},600+i*900);
+    tr.addEventListener('mouseenter',function(){ht=setTimeout(function(){prefetchApp(tr.dataset.open).catch(function(){})},120)});tr.addEventListener('mouseleave',function(){clearTimeout(ht)});tr.addEventListener('touchstart',function(){prefetchApp(tr.dataset.open).catch(function(){})},{passive:true});
+    tr.addEventListener('click',function(){openApp(tr.dataset.open)});tr.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openApp(tr.dataset.open)}})});
 }
 
 /* รูปย่อในรายการ — โหลดเบื้องหลังเฉพาะที่ยังไม่มี */
@@ -1469,7 +1486,18 @@ function loadThumbs(list){
   aCall('getThumbs',need).then(function(m){thumbBusy=false;Object.keys(m).forEach(function(n){A.thumbs[n]=m[n];var el=$('[data-thumb="'+n+'"]');if(el){el.style.backgroundImage='url("'+m[n]+'")';el.textContent=''}})}).catch(function(){thumbBusy=false});
 }
 /* drawer */
-function openApp(no){A.open={no:no,loading:true};A.dTab='profile';renderDrawer();aCall('getApplication',no).then(function(a){A.open=a;renderDrawer()}).catch(function(e){closeDrawer();toast(em(e),true)})}
+/* ใบสมัครที่เปิดแล้ว/โหลดล่วงหน้า เก็บไว้ในหน่วยความจำ → เปิดซ้ำทันที แล้วอัปเดตเบื้องหลัง (21 ต.ค. 2569) */
+var DC={};
+function prefetchApp(no){var c=DC[no];if(c)return c.p||Promise.resolve(c.v);
+  c=DC[no]={p:aCall('getApplication',no).then(function(a){DC[no]={v:a,t:Date.now()};return a},function(e){delete DC[no];throw e})};return c.p}
+function openApp(no){A.dTab='profile';var c=DC[no];
+  if(c&&c.v){A.open=c.v;renderDrawer();if(Date.now()-c.t>15000)aCall('getApplication',no).then(function(a){
+      var ae=document.activeElement,typing=ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName);
+      if(!A.open||A.open.no!==no||A.open.loading||$('.md-wrap')||typing)return;
+      if(!a.photo)a.photo=A.open.photo;if(JSON.stringify(a)===JSON.stringify(A.open)){DC[no].t=Date.now();return}
+      var b=$('.drawer .dr-body'),y=b?b.scrollTop:0;A.open=a;renderDrawer();b=$('.drawer .dr-body');if(b)b.scrollTop=y}).catch(function(){});return}
+  A.open={no:no,loading:true};renderDrawer();
+  prefetchApp(no).then(function(a){if(A.open&&A.open.no===no&&A.open.loading){A.open=a;renderDrawer()}}).catch(function(e){if(A.open&&A.open.no===no&&A.open.loading){closeDrawer();toast(em(e),true)}})}
 /* ป๊อปอัปยืนยันก่อนบันทึก (ทุกการบันทึก) → Promise<boolean> */
 function confirmBox(title,msg,okText,danger){return new Promise(function(res){
   var w=document.createElement('div');w.className='md-wrap cf-wrap';
@@ -1555,7 +1583,8 @@ function renderDrawer(){
   var a=A.open;if(!a)return;
   var old=$('.drawer'),sc=$('.scrim');if(old)old.remove();if(!sc){sc=document.createElement('div');sc.className='scrim';sc.addEventListener('click',askClose);document.body.appendChild(sc)}
   var d=document.createElement('div');d.className='drawer';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label','ใบสมัคร '+a.no);
-  if(a.loading){d.innerHTML='<div class="dr-head"><h2>'+esc(a.no)+'</h2><button type="button" class="btn btn-sm x" id="dclose">✕ ปิด</button></div>'+loadingHtml('กำลังโหลดใบสมัคร...');document.body.appendChild(d);document.body.style.overflow='hidden';$('#dclose').addEventListener('click',closeDrawer);return}
+  if(a.loading){var L=(A.d&&A.d.apps||[]).filter(function(x){return x.no===a.no})[0];d.innerHTML='<div class="dr-head"><div><h2>'+esc(L?L.first+' '+L.last:a.no)+'</h2>'+(L?'<div class="muted" style="font-size:13px"><span class="mono">'+esc(a.no)+'</span> · '+esc(L.posName)+'</div>':'')+'</div><button type="button" class="btn btn-sm x" id="dclose">✕ ปิด</button></div>'+loadingHtml('กำลังโหลดใบสมัคร...');document.body.appendChild(d);document.body.style.overflow='hidden';$('#dclose').addEventListener('click',closeDrawer);return}
+  if(!DC[a.no]||DC[a.no].v!==a)DC[a.no]={v:a,t:Date.now()};
   var F=a.form,role=A.user.role,canStage=role!=='mgr';
   d.innerHTML='<div class="dr-head"><span class="av" style="'+(a.photo?'background-image:url(&quot;'+a.photo+'&quot;)':'')+'">'+(a.photo?'':esc(String(F.nick||F.first||'?').slice(0,2)))+'</span><div><h2>'+esc((F.title||'')+F.first+' '+F.last)+(F.nick?' <span class="muted" style="font-weight:400">('+esc(F.nick)+')</span>':'')+'</h2><div class="muted" style="font-size:13px"><span class="mono">'+esc(a.no)+'</span> · '+esc(a.posName)+' · ส่ง '+esc(a.at)+'</div></div>'+pill(a.stage)+
     '<button type="button" class="btn btn-sm x" id="dclose" aria-label="ปิด">✕ ปิด</button></div>'+
