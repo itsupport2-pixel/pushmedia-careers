@@ -1681,7 +1681,7 @@ function editApplicant(a,sec){
 /* ═════════ SETTINGS ═════════ */
 var SET_SECS=[['pos','ตำแหน่งงานที่เปิดรับ','เพิ่ม / แก้ / ปิดรับ'],['form','ฟอร์มใบสมัคร','ช่องในแต่ละขั้น'],['docs','เอกสารแนบ','ประเภทเอกสารที่ขอ'],['skills','รายการทักษะ','ตัวเลือกทักษะให้ผู้สมัคร'],['stage','สถานะใบสมัคร','ข้อความแจ้งผู้สมัคร'],['noti','การแจ้งเตือน & ข้อมูลบริษัท','อีเมล HR · ที่อยู่บริษัท'],['users','ผู้ใช้และสิทธิ์','HR หัวหน้าแผนก ผู้บริหาร']];
 function save(key,value,msg){var T={positions:'ตำแหน่งงาน',fields:'ฟอร์มใบสมัคร',extra:'ช่องเพิ่มเติม',docs:'เอกสารแนบ',skills:'รายการทักษะ',stages:'สถานะใบสมัคร',notify:'การแจ้งเตือน',company:'ข้อมูลบริษัท',aiKey:'API key ของ AI',users:'ผู้ใช้และสิทธิ์'};
-  return confirmBox('บันทึกการเปลี่ยนแปลง '+(T[key]||key)+'?','มีผลกับระบบทันที','บันทึก').then(function(ok){if(!ok){renderSettings();throw new Error('ยกเลิกแล้ว')}toast('กำลังบันทึก...');return aCall('saveConfig',key,value)}).then(function(d){var apps=A.d.apps;A.d=d;if(!d.apps)A.d.apps=apps;buildFD(d.fields);renderSettings();toast(msg||'บันทึกแล้ว')})}
+  return confirmBox('บันทึกการเปลี่ยนแปลง '+(T[key]||key)+'?','มีผลกับระบบทันที','บันทึก').then(function(ok){if(!ok){renderSettings();throw new Error('ยกเลิกแล้ว')}toast('กำลังบันทึก...');return aCall('saveConfig',key,value)}).then(function(d){var apps=A.d.apps;A.d=d;if(!d.apps)A.d.apps=apps;buildFD(d.fields);keepBoot();renderSettings();toast(msg||'บันทึกแล้ว')})}
 function renderSettings(){
   var secs=SET_SECS.filter(function(x){return A.user.role==='hr'||(x[0]!=='users'&&x[0]!=='noti')});
   if(!secs.some(function(x){return x[0]===A.setSec}))A.setSec='pos';
