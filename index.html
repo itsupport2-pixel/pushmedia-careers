@@ -872,13 +872,18 @@ function renderApply(){
   S.seen=S.seen||{};S.seen[S.step]=1;
   MAIN.innerHTML='<div class="apply"><nav class="card steps" aria-label="ขั้นตอน">'+STEPS.map(function(t,i){
       var miss=i<5?missingStep(i).length:0,seen=S.seen[i]&&i!==S.step,st=seen?(miss?'warn':'done'):'';
-      return '<button type="button" data-step="'+i+'" class="'+st+'"'+(i===S.step?' aria-current="step"':'')+' title="'+(st==='warn'?'ยังกรอกไม่ครบ '+miss+' ช่อง':'')+'"><span class="n">'+(st==='done'?'✓':st==='warn'?'!':i+1)+'</span>'+t+(st==='warn'?' <span class="miss-n">'+miss+'</span>':'')+'</button>'}).join('')+
+      return '<button type="button" data-step="'+i+'" class="'+st+'"'+(i===S.step?' aria-current="step"':'')+' title="'+(st==='warn'?'ยังกรอกไม่ครบ '+miss+' ช่อง':'')+'"><span class="n">'+(st==='done'?'✓':st==='warn'?'!':i+1)+'</span>'+stepName(i)+(st==='warn'?' <span class="miss-n">'+miss+'</span>':'')+'</button>'}).join('')+
     '<div class="save">ระบบบันทึกฉบับร่างในเครื่องนี้อัตโนมัติ กลับมากรอกต่อได้ภายใน 7 วัน</div></nav>'+
     '<div class="card panel" id="step-panel">'+(S.err?'<div class="err-box" role="alert">'+esc(S.err)+'</div>':'')+stepHtml(S.step)+'</div></div>';
   $$('.steps button').forEach(function(b){b.addEventListener('click',function(){S.err='';S.step=+b.dataset.step;saveDraft();renderApply();window.scrollTo(0,0)})});
   bindStep();
 }
-function on(k){return !FD[k]||FD[k].on}
+var SKIP_SECS={family:{t:'ครอบครัว',k:['sib','order','sib1','sib1s','father','fage','falive','fjob','mother','mage','malive','mjob']},emer:{t:'ผู้ติดต่อกรณีฉุกเฉิน',k:['emer','emerTel','emerRel']},en:{t:'ชื่อภาษาอังกฤษ',k:['firstEn','lastEn','nickEn']}};
+function posSkip(){var F=S&&S.form;return (F&&F.pos&&pos(F.pos).skip)||[]}
+function skipSec(sec){return posSkip().indexOf(sec)>=0}
+function skipped(k){return Object.keys(SKIP_SECS).some(function(sec){return skipSec(sec)&&SKIP_SECS[sec].k.indexOf(k)>=0})}
+function stepName(i){if(i===2){var f=skipSec('family'),e=skipSec('emer');if(f&&e)return 'การขับขี่ & ทักษะ';if(f)return 'ผู้ติดต่อ ขับขี่ & ทักษะ';}return STEPS[i]}
+function on(k){if(skipped(k))return false;return !FD[k]||FD[k].on}
 function lbl(id,label,req){var d=FD[id];if(d){label=d.label;req=d.req}return esc(label)+(req?' <span class="req">*</span>':'')}
 var LANG_ONLY={first:'th',last:'th',nick:'th',firstEn:'en',lastEn:'en',nickEn:'en'};
 function langMode(k){var m=LANG_ONLY[k];if(m==='th'&&S.form&&S.form.nation&&S.form.nation!=='ไทย')return '';return m||''}
@@ -886,7 +891,7 @@ function langFix(k,v){var m=langMode(k),o=m==='th'?v.replace(/[^\u0E00-\u0E7F .\
 function langWarn(el,k){var w=el.parentNode.querySelector('.lang-warn');if(!w){w=document.createElement('span');w.className='lang-warn';w.setAttribute('role','status');el.parentNode.appendChild(w)}
   w.textContent=langMode(k)==='th'?'ช่องนี้พิมพ์ได้เฉพาะภาษาไทย':'ช่องนี้พิมพ์ได้เฉพาะภาษาอังกฤษ (A–Z)';clearTimeout(w._t);w.hidden=false;w._t=setTimeout(function(){w.hidden=true},2600)}
 function inp(id,label,span,req,ph,type){
-  var d=FD[id];if(d&&!d.on)return '';
+  var d=FD[id];if(!on(id))return '';
   return '<div class="f '+(span||'')+'" data-fw="'+id+'"><label for="f-'+id+'">'+lbl(id,label,req)+'</label><input class="inp" id="f-'+id+'" data-k="'+id+'" type="'+(type||'text')+'" value="'+esc(S.form[id])+'"'+(ph?' placeholder="'+esc(ph)+'"':'')+'>'+(d&&d.help?'<span class="muted" style="font-size:12px">'+esc(d.help)+'</span>':'')+'</div>';
 }
 /* ───── ที่อยู่ไทย: ค้นหา ตำบล/อำเภอ/จังหวัด/รหัสไปรษณีย์ ───── */
@@ -1106,10 +1111,10 @@ function stepHtml(i){
       seg('status','สถานภาพปัจจุบัน',['กำลังศึกษา','ทำงานประจำ','ว่างงาน','อื่น ๆ'])+seg('marital','สถานภาพครอบครัว',['โสด','สมรส','หย่า','อื่น ๆ'])+'</div>';
   }
   if(i===2){
-    h='<p class="eyebrow">ขั้นที่ 3 จาก 6</p><h2>ครอบครัว การขับขี่ และทักษะ</h2><p class="lead">การขับขี่และทักษะช่วยให้ฝ่ายบุคคลพิจารณาตำแหน่งที่เหมาะกับท่านได้เร็วขึ้น</p>'+
-      blk('family','ครอบครัว','','<div class="grid" style="margin-bottom:14px">'+inp('sib','จำนวนพี่น้อง (คน)','s2','','','number')+inp('order','ท่านเป็นคนที่','s2','','','number')+'</div>'+
-        famRow('พี่น้องคนที่ 1','sib1','','sib1s',['กำลังศึกษา','ทำงาน'],'')+famRow('บิดา','father','fage','falive',['มีชีวิตอยู่','ถึงแก่กรรม'],'fjob')+famRow('มารดา','mother','mage','malive',['มีชีวิตอยู่','ถึงแก่กรรม'],'mjob'))+
-      blk('phone','ผู้ติดต่อกรณีฉุกเฉิน','','<div class="grid">'+inp('emer','ชื่อ–สกุล','s2')+inp('emerTel','โทรศัพท์','s2','','0xx-xxx-xxxx','tel')+inp('emerRel','ความสัมพันธ์','s2','','เช่น บิดา, คู่สมรส')+'</div>')+
+    h='<p class="eyebrow">ขั้นที่ 3 จาก 6</p><h2>'+(skipSec('family')&&skipSec('emer')?'การขับขี่และทักษะ':'ครอบครัว การขับขี่ และทักษะ')+'</h2><p class="lead">การขับขี่และทักษะช่วยให้ฝ่ายบุคคลพิจารณาตำแหน่งที่เหมาะกับท่านได้เร็วขึ้น</p>'+
+      (skipSec('family')?'':blk('family','ครอบครัว','','<div class="grid" style="margin-bottom:14px">'+inp('sib','จำนวนพี่น้อง (คน)','s2','','','number')+inp('order','ท่านเป็นคนที่','s2','','','number')+'</div>'+
+        famRow('พี่น้องคนที่ 1','sib1','','sib1s',['กำลังศึกษา','ทำงาน'],'')+famRow('บิดา','father','fage','falive',['มีชีวิตอยู่','ถึงแก่กรรม'],'fjob')+famRow('มารดา','mother','mage','malive',['มีชีวิตอยู่','ถึงแก่กรรม'],'mjob')))+
+      (skipSec('emer')?'':blk('phone','ผู้ติดต่อกรณีฉุกเฉิน','','<div class="grid">'+inp('emer','ชื่อ–สกุล','s2')+inp('emerTel','โทรศัพท์','s2','','0xx-xxx-xxxx','tel')+inp('emerRel','ความสัมพันธ์','s2','','เช่น บิดา, คู่สมรส')+'</div>'))+
       ((on('carDrive')||on('motoDrive'))?blk('car','การขับขี่','หลายตำแหน่งต้องเดินทางไปหน้างาน (เช่น ช่างติดตั้ง)','<div class="veh-grid">'+(on('carDrive')?vehCard('car','รถยนต์',VEH_CAR):'')+(on('motoDrive')?vehCard('moto','รถจักรยานยนต์',VEH_MOTO):'')+'</div>'):'')+
       (on('skillTags')?blk('spark','ทักษะและความสามารถ','เลือกทุกข้อที่ทำได้ หรือพิมพ์เพิ่มเอง',skillsPicker()):'')+
       blk('list','ประวัติอื่น','',ynRow('military',['เคย','ไม่เคย','ได้รับการยกเว้น'])+ynRow('ordain',['เคย','ไม่เคย'])+ynRow('jail',['เคย','ไม่เคย']));
@@ -1148,13 +1153,13 @@ function stepHtml(i){
   }
   h+=(i<4?extraHtml(i):'');
   h+='<div class="navrow">'+(i>0?'<button type="button" class="btn" id="prev">← ย้อนกลับ</button>':'<span></span>')+
-    (i<5?'<button type="button" class="btn btn-p" id="next">ถัดไป: '+STEPS[i+1]+' →</button>':'<button type="button" class="btn btn-p" id="submit">ส่งใบสมัคร</button>')+'</div>';
+    (i<5?'<button type="button" class="btn btn-p" id="next">ถัดไป: '+stepName(i+1)+' →</button>':'<button type="button" class="btn btn-p" id="submit">ส่งใบสมัคร</button>')+'</div>';
   return h;
 }
 function missBox(miss){
   if(!miss.length)return '<div class="ok-box">กรอกข้อมูลครบทุกช่องที่จำเป็นแล้ว ตรวจทานแล้วกดส่งได้เลย</div>';
   var by={};miss.forEach(function(m){(by[m[0]]=by[m[0]]||[]).push(m[1])});
-  return '<div class="err-box" role="alert" id="miss-box"><b>ยังกรอกไม่ครบ '+miss.length+' ช่อง</b> · กดชื่อขั้นเพื่อไปกรอก<ul class="miss-list">'+Object.keys(by).map(function(k){return '<li><a href="#" data-goto="'+k+'">ขั้นที่ '+(+k+1)+' '+esc(STEPS[k])+'</a>: '+by[k].map(esc).join(', ')+'</li>'}).join('')+'</ul></div>';
+  return '<div class="err-box" role="alert" id="miss-box"><b>ยังกรอกไม่ครบ '+miss.length+' ช่อง</b> · กดชื่อขั้นเพื่อไปกรอก<ul class="miss-list">'+Object.keys(by).map(function(k){return '<li><a href="#" data-goto="'+k+'">ขั้นที่ '+(+k+1)+' '+esc(stepName(+k))+'</a>: '+by[k].map(esc).join(', ')+'</li>'}).join('')+'</ul></div>';
 }
 function draftDoc(){var F=S.form,f2=Object.assign({},F,{work:F.workRows,workPhone:F.work});return {isDraft:true,no:'',at:'',posName:pos(F.pos).name,form:f2,photo:S.files.photo&&S.files.photo.url,slots:Object.keys(S.files),extraRows:extraRows(F)}}
 function extraRows(F){return (CFG.extra||[]).filter(function(x){return x.on&&(F.extra||{})[x.id]}).map(function(x){return [x.label,F.extra[x.id]]})}
@@ -1162,7 +1167,7 @@ function extraRows(F){return (CFG.extra||[]).filter(function(x){return x.on&&(F.
 function missingStep(i){
   var F=S.form,out=[];
   if(i===0&&!F.pos)out.push([0,'ตำแหน่งที่สมัคร','pos']);
-  Object.keys(FD).forEach(function(k){var d=FD[k];if(d.step!==i||!d.on||!d.req)return;var v=F[k];if(Array.isArray(v)?!v.length:!String(v==null?'':v).trim())out.push([i,d.label,k])});
+  Object.keys(FD).forEach(function(k){var d=FD[k];if(d.step!==i||!on(k)||!d.req)return;var v=F[k];if(Array.isArray(v)?!v.length:!String(v==null?'':v).trim())out.push([i,d.label,k])});
   if(i===1&&F.email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(F.email))out.push([1,'อีเมล (รูปแบบไม่ถูกต้อง)','email']);
   if(i===1&&F.idcard&&!idOk(F.idcard)&&(!FD.idcard||FD.idcard.on))out.push([1,'เลขบัตรประชาชน (ไม่ถูกต้อง)','idcard']);
   if(i===1)[['first','ชื่อ'],['last','นามสกุล'],['nick','ชื่อเล่น']].forEach(function(x){if(F[x[0]]&&langMode(x[0])==='th'&&/[^\u0E00-\u0E7F .\-]/.test(String(F[x[0]]).trim()))out.push([1,x[1]+' (ใช้ตัวอักษรภาษาไทย)',x[0]])});
@@ -1692,7 +1697,7 @@ function setPos(m){
   var cnt={};A.d.apps.forEach(function(a){cnt[a.pos]=(cnt[a.pos]||0)+1});
   m.innerHTML=head('ตำแหน่งงานที่เปิดรับ','ตำแหน่งที่เปิดอยู่จะขึ้นให้ผู้สมัครค้นหาในขั้นที่ 1 · ปิดรับแล้วใบสมัครเดิมยังอยู่ครบ · แก้ในชีต Positions โดยตรงได้เช่นกัน','+ เพิ่มตำแหน่ง')+
     '<div class="list-wrap"><table class="mg"><thead><tr><th>ตำแหน่ง</th><th>แผนก</th><th>อัตรา</th><th>ใบสมัคร</th><th>เปิดรับ</th><th></th></tr></thead><tbody>'+
-    (A.d.positions.length?A.d.positions.map(function(x,i){return '<tr class="'+(x.on?'':'off')+'"><td><b style="font-weight:600">'+esc(x.name)+'</b>'+(x.close?'<div class="muted" style="font-size:12px">ปิดรับ '+esc(x.close)+'</div>':'')+'</td><td>'+esc(x.dept)+'</td><td>'+x.open+'</td><td>'+(cnt[x.id]||0)+'</td><td>'+swHtml('',x.on,'เปิดรับ '+x.name,false,'data-pon="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ped="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่มีตำแหน่ง</td></tr>')+'</tbody></table></div>';
+    (A.d.positions.length?A.d.positions.map(function(x,i){return '<tr class="'+(x.on?'':'off')+'"><td><b style="font-weight:600">'+esc(x.name)+'</b>'+((x.skip||[]).length?' <span class="muted" style="font-size:11.5px;border:1px solid #D9DCE1;border-radius:99px;padding:0 7px;margin-left:4px;white-space:nowrap">ฟอร์มย่อ</span>':'')+(x.close?'<div class="muted" style="font-size:12px">ปิดรับ '+esc(x.close)+'</div>':'')+'</td><td>'+esc(x.dept)+'</td><td>'+x.open+'</td><td>'+(cnt[x.id]||0)+'</td><td>'+swHtml('',x.on,'เปิดรับ '+x.name,false,'data-pon="'+i+'"')+'</td><td><div class="acts"><button type="button" class="ib" data-ped="'+i+'">แก้ไข</button></div></td></tr>'}).join(''):'<tr><td colspan="6" class="muted" style="padding:20px;text-align:center">ยังไม่มีตำแหน่ง</td></tr>')+'</tbody></table></div>';
   $('#add',m).addEventListener('click',function(){editPos(-1)});
   $$('[data-ped]',m).forEach(function(b){b.addEventListener('click',function(){editPos(+b.dataset.ped)})});
   $$('[data-pon]',m).forEach(function(c){c.addEventListener('change',function(){var arr=clone(A.d.positions);arr[+c.dataset.pon].on=c.checked;save('positions',arr,(c.checked?'เปิดรับ ':'ปิดรับ ')+arr[+c.dataset.pon].name+' แล้ว').catch(function(e){toast(em(e),true);renderSettings()})})});
@@ -1705,10 +1710,11 @@ function editPos(i){
       '<div class="f s2"><label for="m-open">จำนวนอัตรา</label><input class="inp" id="m-open" name="open" type="number" min="0" value="'+x.open+'"></div>'+
       '<div class="f s6"><label for="m-desc">รายละเอียดงาน / คุณสมบัติ (ผู้สมัครเห็น)</label><textarea class="inp" id="m-desc" name="desc">'+esc(x.desc||'')+'</textarea></div>'+
       '<div class="f s3"><label for="m-close">ปิดรับอัตโนมัติวันที่ (ไม่บังคับ)</label>'+dpInput({id:'m-close',name:'close',value:x.close||'',clear:true,ph:'ไม่กำหนด',label:'วันปิดรับ'})+'</div>'+
-      '<div class="f s3"><span class="lbl">สถานะ</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',x.on!==false,'เปิดรับ')+' เปิดรับสมัคร</label></div></div>'+
+      '<div class="f s3"><span class="lbl">สถานะ</span><label style="display:flex;gap:10px;align-items:center;min-height:40px">'+swHtml('on',x.on!==false,'เปิดรับ')+' เปิดรับสมัคร</label></div>'+
+      '<div class="f s6"><span class="lbl">หัวข้อที่ตำแหน่งนี้ไม่ต้องกรอก (ฟอร์มสั้นลง)</span><div style="display:flex;gap:18px;flex-wrap:wrap;min-height:40px;align-items:center">'+Object.keys(SKIP_SECS).map(function(k){return '<label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="skip_'+k+'"'+((x.skip||[]).indexOf(k)>=0?' checked':'')+'> ไม่ต้องกรอก'+SKIP_SECS[k].t+'</label>'}).join('')+'</div></div></div>'+
       (used?'<p class="muted" style="font-size:12.5px;margin:12px 0 0">ตำแหน่งนี้มีใบสมัครแล้ว ลบไม่ได้ · ใช้ "ปิดรับ" แทน</p>':''),
     onSave:function(fm){var n=fv(fm,'name');if(!n)return 'กรุณากรอกชื่อตำแหน่ง';
-      var arr=clone(A.d.positions),y={id:i>=0?x.id:'p'+Date.now().toString(36),name:n,dept:fv(fm,'dept')||'ไม่ระบุแผนก',open:Math.max(0,+fv(fm,'open')||0),desc:fv(fm,'desc'),close:fv(fm,'close'),on:fv(fm,'on')};
+      var arr=clone(A.d.positions),y={id:i>=0?x.id:'p'+Date.now().toString(36),name:n,dept:fv(fm,'dept')||'ไม่ระบุแผนก',open:Math.max(0,+fv(fm,'open')||0),desc:fv(fm,'desc'),close:fv(fm,'close'),on:fv(fm,'on'),skip:Object.keys(SKIP_SECS).filter(function(k){return fv(fm,'skip_'+k)===true})};
       if(i>=0)arr[i]=y;else arr.push(y);return save('positions',arr,'บันทึกตำแหน่ง '+n+' แล้ว')},
     onDelete:function(){var arr=clone(A.d.positions);arr.splice(i,1);return save('positions',arr,'ลบตำแหน่งแล้ว')}});
 }
