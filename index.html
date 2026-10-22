@@ -1364,6 +1364,16 @@ function pdfCanvas(doc,n,width){return doc.getPage(n).then(function(pg){var v1=p
 function pdfThumbOf(a,fileId,doc){return pdfCanvas(doc,1,360).then(function(cv){var url=cv.toDataURL('image/jpeg',0.72);if(url.length>48000)url=cv.toDataURL('image/jpeg',0.5);
   A.fthumbs=A.fthumbs||{};A.fthumbs[fileId]=url;var el=$('[data-fth="'+fileId+'"]');if(el){el.style.backgroundImage='url("'+url+'")';el.classList.add('has')}
   if(url.length<=48000)aCall('saveFileThumb',a.no,fileId,url).catch(function(){});return url})}
+/* รูปย่อของไฟล์รูป (jpg/png จากมือถือใหญ่เกินที่เซิร์ฟเวอร์ส่งตรง) → ย่อด้วย canvas แล้วเก็บถาวรในชีต (22 ต.ค. 2569) */
+function imgThumbOf(no,fileId,b64,mime){return new Promise(function(ok,bad){var im=new Image();im.onload=function(){
+    var k=Math.min(1,360/Math.max(im.width,im.height)),cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(im.width*k));cv.height=Math.max(1,Math.round(im.height*k));
+    var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);
+    var url=cv.toDataURL('image/jpeg',0.75);if(url.length>48000)url=cv.toDataURL('image/jpeg',0.5);
+    A.fthumbs=A.fthumbs||{};A.fthumbs[fileId]=url;var el=$('[data-fth="'+fileId+'"]');if(el){el.style.backgroundImage='url("'+url+'")';el.classList.add('has');var sp=el.querySelector('.spin,.badge');if(sp)sp.remove()}
+    var ap=A.d&&(A.d.apps||[]).filter(function(x){return x.no===no})[0];
+    if(ap&&ap.photoId===fileId){A.thumbs[no]=url;$$('[data-thumb="'+no+'"]').forEach(function(t){t.style.backgroundImage='url("'+url+'")';t.textContent=''})}
+    if(url.length<=48000)aCall('saveFileThumb',no,fileId,url).catch(function(){});ok(url)};
+  im.onerror=function(){bad(new Error('img'))};im.src='data:'+mime+';base64,'+b64})}
 function openViewer(f,title){
   var w=document.createElement('div');w.className='viewer';w.setAttribute('role','dialog');w.setAttribute('aria-label','พรีวิว '+title);
   var body=f.loading?loadingHtml('กำลังโหลดไฟล์...').replace('class="loading"','class="loading" style="color:#fff"'):
@@ -1483,7 +1493,11 @@ function loadThumbs(list){
   var need=list.filter(function(a){return a.hasPhoto&&!(a.no in A.thumbs)}).map(function(a){return a.no}).slice(0,60);
   if(!need.length||thumbBusy)return;thumbBusy=true;
   need.forEach(function(n){A.thumbs[n]=''});
-  aCall('getThumbs',need).then(function(m){thumbBusy=false;Object.keys(m).forEach(function(n){A.thumbs[n]=m[n];var el=$('[data-thumb="'+n+'"]');if(el){el.style.backgroundImage='url("'+m[n]+'")';el.textContent=''}})}).catch(function(){thumbBusy=false});
+  aCall('getThumbs',need).then(function(m){thumbBusy=false;Object.keys(m).forEach(function(n){A.thumbs[n]=m[n];var el=$('[data-thumb="'+n+'"]');if(el){el.style.backgroundImage='url("'+m[n]+'")';el.textContent=''}});
+    /* รูปที่เซิร์ฟเวอร์ส่งไม่ได้ (ใหญ่) → ดึงไฟล์มาย่อเองทีละรูป แล้วบันทึก ครั้งต่อไปขึ้นทันที */
+    var miss=list.filter(function(a){return need.indexOf(a.no)>=0&&!m[a.no]&&a.photoId}).slice(0,20);
+    (function next(){var a=miss.shift();if(!a)return;aCall('getFileData',a.no,a.photoId).then(function(r){if(r&&r.b64&&!r.tooBig&&/^image\//.test(r.mime))return imgThumbOf(a.no,a.photoId,r.b64,r.mime)}).catch(function(){}).then(next)})();
+  }).catch(function(){thumbBusy=false});
 }
 /* drawer */
 /* ใบสมัครที่เปิดแล้ว/โหลดล่วงหน้า เก็บไว้ในหน่วยความจำ → เปิดซ้ำทันที แล้วอัปเดตเบื้องหลัง (21 ต.ค. 2569) */
@@ -1648,9 +1662,9 @@ function loadFileThumbs(a){
   aCall('getFileThumbs',a.no).then(function(m){Object.keys(m).forEach(function(id){A.fthumbs[id]=m[id];var el=$('[data-fth="'+id+'"]');if(el){el.style.backgroundImage='url("'+m[id]+'")';el.classList.add('has');var sp=el.querySelector('.spin');if(sp)sp.remove()}});
     $$('[data-fth]').forEach(function(el){if(!el.classList.contains('has')){var sp=el.querySelector('.spin');if(sp)sp.outerHTML='<span class="badge">ไฟล์</span>'}});
     /* โหลดไฟล์ล่วงหน้าทีละไฟล์ (PDF ที่ยังไม่มีรูปตัวอย่างก่อน) → กดเปิดแล้วขึ้นทันที */
-    var small=a.files.filter(function(f){return (Number(f.sizeKB)||0)<=8000}),todo=small.filter(function(f){return /pdf/.test(f.mime)&&!A.fthumbs[f.fileId]}).concat(small.filter(function(f){return !(/pdf/.test(f.mime)&&!A.fthumbs[f.fileId])}));
+    var small=a.files.filter(function(f){return (Number(f.sizeKB)||0)<=8000}),todo=small.filter(function(f){return !A.fthumbs[f.fileId]}).concat(small.filter(function(f){return !!A.fthumbs[f.fileId]}));
     (function next(){var f=todo.shift();if(!f||!A.open||A.open.no!==a.no)return;
-      fileData(a,f).then(function(r){if(r.tooBig||!r.b64||!/pdf/.test(f.mime)||A.fthumbs[f.fileId])return;return pdfDoc(b64Bytes(r.b64)).then(function(doc){return pdfThumbOf(a,f.fileId,doc)})}).catch(function(){}).then(next)})();
+      fileData(a,f).then(function(r){if(r.tooBig||!r.b64||A.fthumbs[f.fileId])return;if(/^image\//.test(r.mime||f.mime))return imgThumbOf(a.no,f.fileId,r.b64,r.mime||f.mime);if(!/pdf/.test(f.mime))return;return pdfDoc(b64Bytes(r.b64)).then(function(doc){return pdfThumbOf(a,f.fileId,doc)})}).catch(function(){}).then(next)})();
   }).catch(function(){});
 }
 function bindTab(a){
